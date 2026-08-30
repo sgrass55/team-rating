@@ -628,6 +628,69 @@
       color: var(--muted);
     }
 
+    #archiveModal .archive-modal-head {
+      display: grid;
+      grid-template-columns: 40px minmax(0, 1fr) 40px;
+      align-items: center;
+      gap: 10px;
+    }
+
+    #archiveModal .archive-modal-head .modal-title {
+      grid-column: 2;
+      text-align: center;
+    }
+
+    #archiveModal .close-btn {
+      grid-column: 3;
+      justify-self: end;
+    }
+
+    .archive-back-btn {
+      grid-column: 1;
+      justify-self: start;
+      width: 38px;
+      height: 38px;
+      padding: 0;
+      border: 1px solid rgba(255, 255, 255, 0.11);
+      border-radius: 50%;
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.06);
+      cursor: pointer;
+      font-size: 24px;
+      line-height: 1;
+    }
+
+    .archive-back-btn.hidden,
+    .archive-detail.hidden,
+    .archive-selector.hidden {
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .archive-detail.hidden,
+    .archive-selector.hidden {
+      display: none;
+    }
+
+    .archive-back-btn.hidden {
+      opacity: 0;
+    }
+
+    .archive-month-title {
+      margin-top: 22px;
+    }
+
+    .archive-swipe-hint {
+      margin: 16px 0 4px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    #archiveDetail {
+      touch-action: pan-y;
+    }
+
     /* =====================================================
        HISTORY
        ===================================================== */
@@ -803,61 +866,31 @@
           12px;
       }
 
-      /*
-        В архиве управление периодом всегда остаётся
-        в зоне досягаемости большого пальца. Вместо
-        высокой сетки месяцы и годы листаются по горизонтали.
-      */
+      /* Архив: экран выбора периода прокручивается вертикально,
+         а месяцы и годы остаются крупными кнопками. */
       #archiveModal .archive-controls-panel {
-        position: sticky;
-        bottom: 0;
-        z-index: 6;
-
-        margin-left: -5px;
-        margin-right: -5px;
-        margin-bottom: -5px;
-
-        padding-bottom:
-          max(12px, env(safe-area-inset-bottom));
-
-        background:
-          rgba(10, 22, 41, 0.985);
-
-        box-shadow:
-          0 -14px 34px rgba(0, 0, 0, 0.34);
-
-        backdrop-filter: blur(14px);
-        -webkit-backdrop-filter: blur(14px);
+        position: static;
+        margin: 0;
+        padding: 15px;
+        background: rgba(255, 255, 255, 0.035);
+        box-shadow: none;
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
       }
 
       #archiveModal .archive-years,
       #archiveModal .archive-months {
-        flex-wrap: nowrap;
-        overflow-x: auto;
-        overflow-y: hidden;
-
-        padding: 2px 1px 5px;
-
-        -webkit-overflow-scrolling: touch;
-        scrollbar-width: none;
-        scroll-snap-type: x proximity;
-        touch-action: pan-x;
-      }
-
-      #archiveModal .archive-years::-webkit-scrollbar,
-      #archiveModal .archive-months::-webkit-scrollbar {
-        display: none;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 9px;
+        overflow: visible;
+        touch-action: auto;
       }
 
       #archiveModal .period-button {
-        flex: 0 0 auto;
-        min-height: 44px;
-        min-width: 72px;
-        scroll-snap-align: start;
-      }
-
-      #archiveModal .archive-months .period-button {
-        min-width: 88px;
+        width: 100%;
+        min-width: 0;
+        min-height: 46px;
       }
 
       .modal {
@@ -968,7 +1001,15 @@
       aria-modal="true"
       aria-labelledby="archiveTitle">
 
-      <div class="modal-head">
+      <div class="modal-head archive-modal-head">
+
+        <button
+          class="archive-back-btn hidden"
+          id="archiveBack"
+          type="button"
+          aria-label="Назад к выбору месяца">
+          ←
+        </button>
 
         <h2
           class="modal-title"
@@ -990,30 +1031,44 @@
       <div class="modal-body">
 
         <div
-          class="archive-ranking"
-          id="archiveRanking">
+          class="archive-selector"
+          id="archiveSelector">
 
-          <div class="archive-placeholder">
-            Загрузка архива…
+          <div class="panel archive-controls-panel">
+
+            <div class="section-title">
+              Выберите год
+            </div>
+
+            <div
+              class="archive-years"
+              id="archiveYears">
+            </div>
+
+            <div class="section-title archive-month-title">
+              Выберите месяц
+            </div>
+
+            <div
+              class="archive-months"
+              id="archiveMonths">
+            </div>
+
           </div>
 
         </div>
 
-
-        <div class="panel archive-controls-panel">
-
-          <div class="section-title">
-            Выбор месяца и года
-          </div>
+        <div
+          class="archive-detail hidden"
+          id="archiveDetail">
 
           <div
-            class="archive-years"
-            id="archiveYears">
+            class="archive-ranking"
+            id="archiveRanking">
           </div>
 
-          <div
-            class="archive-months"
-            id="archiveMonths">
+          <div class="archive-swipe-hint">
+            Свайпните влево или вправо для смены месяца
           </div>
 
         </div>
@@ -1248,6 +1303,21 @@
     const archiveClose =
       document.getElementById(
         "archiveClose"
+      );
+
+    const archiveBack =
+      document.getElementById(
+        "archiveBack"
+      );
+
+    const archiveSelector =
+      document.getElementById(
+        "archiveSelector"
+      );
+
+    const archiveDetail =
+      document.getElementById(
+        "archiveDetail"
       );
 
     const archiveYearsEl =
@@ -1692,21 +1762,32 @@
       displaced
     ) {
 
+      /*
+        Один соседний обмен:
+        - карточка, которая поднимается, плавно идёт на место выше;
+        - карточка, которую она вытесняет, ОДНОВРЕМЕННО и плавно
+          опускается на освободившееся место.
+
+        Поэтому визуально нет прыжка:
+        оба блока буквально меняются местами.
+      */
+
       const movingFirst =
         moving.getBoundingClientRect();
 
       const displacedFirst =
         displaced.getBoundingClientRect();
 
+
       /*
-        moving находится сразу ПОСЛЕ displaced.
-        Переставляем его перед displaced и инвертируем
-        визуальное смещение через Web Animations API.
+        Меняем порядок в DOM.
       */
+
       rankingEl.insertBefore(
         moving,
         displaced
       );
+
 
       const movingLast =
         moving.getBoundingClientRect();
@@ -1714,53 +1795,184 @@
       const displacedLast =
         displaced.getBoundingClientRect();
 
-      const movingDelta =
-        movingFirst.top - movingLast.top;
 
-      const displacedDelta =
-        displacedFirst.top - displacedLast.top;
+      const movingDeltaY =
+        movingFirst.top -
+        movingLast.top;
 
-      const options = {
-        duration: 330,
-        easing: "cubic-bezier(.22,.75,.2,1)",
-        fill: "both"
-      };
+      const displacedDeltaY =
+        displacedFirst.top -
+        displacedLast.top;
 
-      const animations = [];
 
-      if (Math.abs(movingDelta) > 0.5) {
-        animations.push(
-          moving.animate(
-            [
-              { transform: `translateY(${movingDelta}px)` },
-              { transform: "translateY(0)" }
-            ],
-            options
-          )
+      /*
+        Во время обмена верхняя карточка находится немного выше
+        по слою, чтобы пересечение выглядело естественно.
+      */
+
+      moving.style.zIndex = "3";
+      displaced.style.zIndex = "2";
+
+
+      /*
+        Оба элемента начинают визуально со СТАРЫХ мест.
+      */
+
+      moving.style.transform =
+        `translate3d(0, ${movingDeltaY}px, 0)`;
+
+      displaced.style.transform =
+        `translate3d(0, ${displacedDeltaY}px, 0)`;
+
+      moving.style.transition = "none";
+      displaced.style.transition = "none";
+
+      moving.style.willChange = "transform";
+      displaced.style.willChange = "transform";
+
+
+      /*
+        Принудительно фиксируем начальное положение.
+      */
+
+      void moving.offsetHeight;
+      void displaced.offsetHeight;
+
+
+      /*
+        На следующем кадре одновременно отправляем:
+        moving -> на новое место,
+        displaced -> на освободившееся место.
+      */
+
+      await new Promise(resolve => {
+
+        requestAnimationFrame(() => {
+
+          requestAnimationFrame(() => {
+
+            const transition =
+              "transform 420ms cubic-bezier(.22,.78,.2,1)";
+
+            moving.style.transition =
+              transition;
+
+            displaced.style.transition =
+              transition;
+
+            moving.style.transform =
+              "translate3d(0, 0, 0)";
+
+            displaced.style.transform =
+              "translate3d(0, 0, 0)";
+
+            resolve();
+          });
+        });
+      });
+
+
+      /*
+        Ждём завершения движения обоих блоков,
+        затем только переходим к следующему соседнему обмену.
+      */
+
+      await new Promise(resolve => {
+
+        let finished = 0;
+
+        const done = () => {
+
+          finished++;
+
+          if (finished >= 2) {
+
+            moving.removeEventListener(
+              "transitionend",
+              onMovingEnd
+            );
+
+            displaced.removeEventListener(
+              "transitionend",
+              onDisplacedEnd
+            );
+
+            resolve();
+          }
+        };
+
+
+        const onMovingEnd = event => {
+
+          if (
+            event.propertyName ===
+            "transform"
+          ) {
+            done();
+          }
+        };
+
+
+        const onDisplacedEnd = event => {
+
+          if (
+            event.propertyName ===
+            "transform"
+          ) {
+            done();
+          }
+        };
+
+
+        moving.addEventListener(
+          "transitionend",
+          onMovingEnd
         );
-      }
 
-      if (Math.abs(displacedDelta) > 0.5) {
-        animations.push(
-          displaced.animate(
-            [
-              { transform: `translateY(${displacedDelta}px)` },
-              { transform: "translateY(0)" }
-            ],
-            options
-          )
+        displaced.addEventListener(
+          "transitionend",
+          onDisplacedEnd
         );
-      }
 
-      if (!animations.length) {
-        return;
-      }
 
-      await Promise.all(
-        animations.map(animation =>
-          animation.finished.catch(() => {})
-        )
-      );
+        /*
+          Страховка на случай, если браузер не пришлёт transitionend.
+        */
+
+        setTimeout(
+          () => {
+
+            if (finished < 2) {
+
+              moving.removeEventListener(
+                "transitionend",
+                onMovingEnd
+              );
+
+              displaced.removeEventListener(
+                "transitionend",
+                onDisplacedEnd
+              );
+
+              resolve();
+            }
+          },
+          520
+        );
+      });
+
+
+      moving.style.transition = "";
+      displaced.style.transition = "";
+
+      moving.style.transform = "";
+      displaced.style.transform = "";
+
+      moving.style.willChange = "";
+      displaced.style.willChange = "";
+
+      moving.style.zIndex = "";
+      displaced.style.zIndex = "";
     }
 
 
@@ -1980,28 +2192,55 @@
         animationId;
 
       /*
-        Меняем число строго по 0,1:
-        90,0 → 89,9 → 89,8 → ... → 87,3
+        Меняем число строго по 0,01:
+        90,00 → 89,99 → 89,98 → ... → 87,34
+
+        Для больших изменений можем проходить несколько сотых
+        за один кадр, чтобы анимация не растягивалась надолго,
+        но отображаемое значение всегда остаётся с двумя знаками.
       */
-      const startValue =
-        Math.round(Number(from) * 10) / 10;
+      const startInt =
+        Math.round(Number(from) * 100);
 
-      const endValue =
-        Math.round(Number(to) * 10) / 10;
+      const endInt =
+        Math.round(Number(to) * 100);
 
-      if (startValue === endValue) {
+      if (startInt === endInt) {
         element.textContent =
           formatPercent(to);
         return;
       }
 
       const direction =
-        endValue > startValue ? 1 : -1;
+        endInt > startInt ? 1 : -1;
 
-      let current =
-        startValue;
+      const distance =
+        Math.abs(endInt - startInt);
 
-      const stepMs = 28;
+      let currentInt =
+        startInt;
+
+      /*
+        Маленькие изменения идут буквально по одной сотой.
+        Большие ускоряем, чтобы интерфейс оставался живым.
+      */
+      let stepInt = 1;
+      let stepMs = 22;
+
+      if (distance > 100) {
+        stepInt = 2;
+        stepMs = 18;
+      }
+
+      if (distance > 300) {
+        stepInt = 4;
+        stepMs = 16;
+      }
+
+      if (distance > 700) {
+        stepInt = 8;
+        stepMs = 14;
+      }
 
       function step() {
 
@@ -2012,28 +2251,42 @@
           return;
         }
 
-        current =
-          Math.round(
-            (current + direction * 0.1) * 10
-          ) / 10;
+        currentInt +=
+          direction * stepInt;
 
         if (
-          (direction > 0 && current >= endValue) ||
-          (direction < 0 && current <= endValue)
+          (direction > 0 && currentInt >= endInt) ||
+          (direction < 0 && currentInt <= endInt)
         ) {
-          element.textContent =
-            formatPercent(to);
-          return;
+          currentInt =
+            endInt;
         }
 
+        const currentValue =
+          currentInt / 100;
+
         element.textContent =
-          formatPercent(current);
+          formatPercent(currentValue);
+
+        element.classList.toggle(
+          "green",
+          currentValue >= 90
+        );
+
+        if (currentInt === endInt) {
+          return;
+        }
 
         setTimeout(step, stepMs);
       }
 
       element.textContent =
-        formatPercent(startValue);
+        formatPercent(startInt / 100);
+
+      element.classList.toggle(
+        "green",
+        startInt / 100 >= 90
+      );
 
       setTimeout(step, stepMs);
     }
@@ -2054,34 +2307,22 @@
           archiveModal
         );
 
+        showArchiveSelector();
 
         if (
           state.archivePeriods
         ) {
 
-          if (!state.archiveSelectedPeriod) {
-            chooseArchiveStartPeriod();
-          }
-
+          ensureArchiveStartYear();
           renderArchiveControls();
-
-          const selected =
-            getSelectedArchivePeriod();
-
-          if (selected) {
-            loadArchiveMonth(selected);
-          }
-
           return;
         }
-
 
         archiveYearsEl.innerHTML =
           '<div class="loader"></div>';
 
         archiveMonthsEl.innerHTML =
           "";
-
 
         try {
 
@@ -2090,7 +2331,6 @@
               mode:
                 "months"
             });
-
 
           const source =
             Array.isArray(
@@ -2103,19 +2343,9 @@
                 ? data.periods
                 : [];
 
-
           const currentKey =
             getCurrentPeriod()
               .key;
-
-
-          /*
-            Текущий месяц не показываем
-            в архиве.
-
-            И не создаём пустые
-            будущие месяцы.
-          */
 
           state.archivePeriods =
             source
@@ -2134,23 +2364,13 @@
                   b.sort
               );
 
-
-          const startPeriod =
-            chooseArchiveStartPeriod();
-
+          ensureArchiveStartYear();
           renderArchiveControls();
 
-          if (startPeriod) {
-            loadArchiveMonth(
-              startPeriod
-            );
-          } else {
-            showEmpty(
-              archiveRankingEl,
-              "Архивных месяцев пока нет"
-            );
+          if (!state.archivePeriods.length) {
+            archiveMonthsEl.innerHTML =
+              '<div class="subtle">Архивных месяцев пока нет</div>';
           }
-
 
         } catch (error) {
 
@@ -2158,54 +2378,92 @@
             error
           );
 
-
           archiveYearsEl.innerHTML =
             "";
 
           archiveMonthsEl.innerHTML =
-            "";
-
-
-          showEmpty(
-            archiveRankingEl,
-            "Не удалось загрузить архив"
-          );
+            '<div class="subtle">Не удалось загрузить архив</div>';
         }
       }
     );
 
 
-    function chooseArchiveStartPeriod() {
+    function showArchiveSelector() {
+      archiveSelector.classList.remove("hidden");
+      archiveDetail.classList.add("hidden");
+      archiveBack.classList.add("hidden");
+    }
 
-      if (
-        !state.archivePeriods ||
-        state.archivePeriods.length === 0
-      ) {
 
-        state.archiveSelectedYear =
-          null;
+    function showArchiveDetail() {
+      archiveSelector.classList.add("hidden");
+      archiveDetail.classList.remove("hidden");
+      archiveBack.classList.remove("hidden");
+    }
 
-        state.archiveSelectedPeriod =
-          null;
 
-        return null;
+    function ensureArchiveStartYear() {
+      const periods = state.archivePeriods || [];
+
+      if (!periods.length) {
+        state.archiveSelectedYear = null;
+        state.archiveSelectedPeriod = null;
+        return;
       }
 
+      const years = [...new Set(periods.map(item => item.year))]
+        .sort((a, b) => b - a);
 
-      const latest =
-        state.archivePeriods[
-          state.archivePeriods.length - 1
-        ];
+      if (!years.includes(state.archiveSelectedYear)) {
+        state.archiveSelectedYear = years[0];
+      }
 
-
-      state.archiveSelectedYear =
-        latest.year;
-
-      state.archiveSelectedPeriod =
-        latest.key;
+      state.archiveSelectedPeriod = null;
+    }
 
 
-      return latest;
+    function enterArchiveMonth(period) {
+      if (!period) {
+        return;
+      }
+
+      state.archiveSelectedYear = period.year;
+      state.archiveSelectedPeriod = period.key;
+      showArchiveDetail();
+      loadArchiveMonth(period);
+    }
+
+
+    function shiftArchiveMonth(direction) {
+      const periods = (state.archivePeriods || [])
+        .slice()
+        .sort((a, b) => a.sort - b.sort);
+
+      if (!periods.length) {
+        return;
+      }
+
+      let index = periods.findIndex(
+        item => item.key === state.archiveSelectedPeriod
+      );
+
+      if (index < 0) {
+        index = periods.length - 1;
+      }
+
+      const nextIndex = index + direction;
+
+      if (nextIndex < 0 || nextIndex >= periods.length) {
+        return;
+      }
+
+      enterArchiveMonth(periods[nextIndex]);
+    }
+
+
+    function chooseArchiveStartPeriod() {
+      ensureArchiveStartYear();
+      return null;
     }
 
 
@@ -2303,38 +2561,10 @@
               state.archiveSelectedYear =
                 year;
 
-              const yearPeriods =
-                (state.archivePeriods || [])
-                  .filter(
-                    item =>
-                      item.year === year
-                  )
-                  .sort(
-                    (a, b) =>
-                      a.month - b.month
-                  );
-
-              const latestInYear =
-                yearPeriods.length
-                  ? yearPeriods[
-                      yearPeriods.length - 1
-                    ]
-                  : null;
-
               state.archiveSelectedPeriod =
-                latestInYear
-                  ? latestInYear.key
-                  : null;
-
+                null;
 
               renderArchiveControls();
-
-
-              if (latestInYear) {
-                loadArchiveMonth(
-                  latestInYear
-                );
-              }
             }
           );
 
@@ -2430,23 +2660,7 @@
             "click",
             () => {
 
-              state.archiveSelectedPeriod =
-                period.key;
-
-
-              renderArchiveMonths();
-
-
-              /*
-                КЛЮЧЕВОЙ МОМЕНТ:
-
-                ranking за месяц
-                загружается только
-                прямо сейчас —
-                после клика по месяцу.
-              */
-
-              loadArchiveMonth(
+              enterArchiveMonth(
                 period
               );
             }
@@ -2576,7 +2790,7 @@
 
 
       header.innerHTML = `
-        <div class="subtitle">Архив</div>
+        <div class="subtitle">Просматриваемый месяц</div>
         <div class="current-period">
           ${escapeHtml(
             MONTH_NAMES[
@@ -3180,18 +3394,18 @@
 
 
     const CHART_PERSON_COLORS = [
-      "#34D5FF",  // cyan
-      "#FF9F43",  // orange
-      "#A970FF",  // violet
-      "#FF5DA2",  // pink
-      "#65E572",  // green
-      "#FFD54A",  // yellow
-      "#FF646D",  // red
-      "#4F86FF",  // blue
-      "#2DE2B5",  // turquoise
-      "#D879FF",  // magenta
-      "#F5A65B",  // amber
-      "#8BE04E"   // lime
+      "#00C2FF",  // голубой
+      "#FF9500",  // оранжевый
+      "#FF3B30",  // красный
+      "#D946EF",  // яркий пурпурный
+      "#22C55E",  // зелёный
+      "#FFD60A",  // жёлтый
+      "#7C4DFF",  // индиго
+      "#FF6B9A",  // розовый
+      "#00E5B0",  // мятно-бирюзовый
+      "#D4A373",  // песочно-коричневый
+      "#F2F2F7",  // светлый
+      "#5AC8FA"   // небесный
     ];
 
 
@@ -3222,34 +3436,12 @@
         a.localeCompare(b, "ru")
       );
 
-      const used = new Set();
-
-      names.forEach(name => {
-        const start =
-          hashPersonName(name) %
-          CHART_PERSON_COLORS.length;
-
-        let index = start;
-
-        for (
-          let step = 0;
-          step < CHART_PERSON_COLORS.length;
-          step++
-        ) {
-          const candidate =
-            (start + step * 5) %
-            CHART_PERSON_COLORS.length;
-
-          if (!used.has(candidate)) {
-            index = candidate;
-            break;
-          }
-        }
-
-        used.add(index);
+      names.forEach((name, index) => {
         map.set(
           name,
-          CHART_PERSON_COLORS[index]
+          CHART_PERSON_COLORS[
+            index % CHART_PERSON_COLORS.length
+          ]
         );
       });
 
@@ -3262,11 +3454,12 @@
       colorMap
     ) {
 
-      if (
-        colorMap &&
-        colorMap.has(name)
-      ) {
-        return colorMap.get(name);
+      const map =
+        colorMap ||
+        buildPersonChartColorMap();
+
+      if (map.has(name)) {
+        return map.get(name);
       }
 
       return CHART_PERSON_COLORS[
@@ -3887,7 +4080,8 @@
               index * 16,
             name,
             getPersonChartColor(
-              name
+              name,
+              personColorMap
             ),
             "start",
             10
@@ -4132,6 +4326,52 @@
           );
       }
     }
+
+
+    archiveBack.addEventListener(
+      "click",
+      () => {
+        showArchiveSelector();
+        renderArchiveControls();
+      }
+    );
+
+
+    let archiveTouchStartX = 0;
+    let archiveTouchStartY = 0;
+
+    archiveDetail.addEventListener(
+      "touchstart",
+      event => {
+        const touch = event.changedTouches[0];
+        archiveTouchStartX = touch.clientX;
+        archiveTouchStartY = touch.clientY;
+      },
+      { passive: true }
+    );
+
+    archiveDetail.addEventListener(
+      "touchend",
+      event => {
+        const touch = event.changedTouches[0];
+        const dx = touch.clientX - archiveTouchStartX;
+        const dy = touch.clientY - archiveTouchStartY;
+
+        if (
+          Math.abs(dx) < 55 ||
+          Math.abs(dx) <= Math.abs(dy) * 1.15
+        ) {
+          return;
+        }
+
+        if (dx < 0) {
+          shiftArchiveMonth(1);
+        } else {
+          shiftArchiveMonth(-1);
+        }
+      },
+      { passive: true }
+    );
 
 
     archiveClose.addEventListener(
@@ -4507,7 +4747,7 @@
 
       return (
         number
-          .toFixed(1)
+          .toFixed(2)
           .replace(
             ".",
             ","
