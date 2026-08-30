@@ -1477,6 +1477,95 @@
 
     function renderMonths() {
 
+  monthsEl.innerHTML = "";
+
+  if (!state.selectedYear) {
+    return;
+  }
+
+  const periodsForYear =
+    getPeriodsForYear(
+      state.selectedYear
+    );
+
+  /*
+    Показываем ТОЛЬКО реально
+    существующие месяцы.
+
+    Будущие / отсутствующие месяцы
+    вообще не создаём.
+  */
+
+  periodsForYear.forEach(period => {
+
+    const month =
+      Number(period.month);
+
+    if (
+      !Number.isFinite(month) ||
+      month < 1 ||
+      month > 12
+    ) {
+      return;
+    }
+
+
+    const button =
+      document.createElement(
+        "button"
+      );
+
+    button.type =
+      "button";
+
+    button.className =
+      "period-button";
+
+    button.textContent =
+      MONTH_NAMES[
+        month - 1
+      ];
+
+
+    if (
+      period.key ===
+      state.selectedPeriod
+    ) {
+
+      button.classList.add(
+        "active"
+      );
+    }
+
+
+    button.addEventListener(
+      "click",
+      () => {
+
+        state.selectedPeriod =
+          period.key;
+
+        /*
+          Год не меняем.
+          Пользователь остаётся
+          в выбранном году.
+        */
+
+        renderPeriodControls();
+
+        loadRanking(
+          period.key
+        );
+      }
+    );
+
+
+    monthsEl.appendChild(
+      button
+    );
+  });
+} {
+
       monthsEl.innerHTML =
         "";
 
