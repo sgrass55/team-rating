@@ -139,158 +139,171 @@
     <div class="status" id="status"></div>
   </div>
 
-  <script>
-    const CSV_URL =
-      "https://docs.google.com/spreadsheets/d/e/2PACX-1vTGL-KACsRd8HUNn2iHLPk6cAgRTsMTcxFMbkL7BkdbHWc3DWaS2fHt53zVx-hQSHXszSzdXVAZO_vS/pub?gid=0&single=true&output=csv";
+<script>
+const CSV_URL =
+  "https://docs.google.com/spreadsheets/d/e/2PACX-1vTGL-KACsRd8HUNn2iHLPk6cAgRTsMTcxFMbkL7BkdbHWc3DWaS2fHt53zVx-hQSHXszSzdXVAZO_vS/pub?gid=0&single=true&output=csv";
 
-    function parseCSV(text) {
-      const rows = [];
-      let row = [];
-      let cell = "";
-      let inQuotes = false;
+let lastCandidate = "";
+let candidateCount = 0;
+let displayedData = "";
 
-      for (let i = 0; i < text.length; i++) {
-        const char = text[i];
-        const next = text[i + 1];
+function parseCSV(text) {
+  const rows = [];
+  let row = [];
+  let cell = "";
+  let inQuotes = false;
 
-        if (char === '"') {
-          if (inQuotes && next === '"') {
-            cell += '"';
-            i++;
-          } else {
-            inQuotes = !inQuotes;
-          }
-        } else if (char === "," && !inQuotes) {
-          row.push(cell);
-          cell = "";
-        } else if ((char === "\n" || char === "\r") && !inQuotes) {
-          if (char === "\r" && next === "\n") {
-            i++;
-          }
+  for (let i = 0; i < text.length; i++) {
+    const char = text[i];
+    const next = text[i + 1];
 
-          row.push(cell);
-          rows.push(row);
-
-          row = [];
-          cell = "";
-        } else {
-          cell += char;
-        }
+    if (char === '"') {
+      if (inQuotes && next === '"') {
+        cell += '"';
+        i++;
+      } else {
+        inQuotes = !inQuotes;
       }
+    } else if (char === "," && !inQuotes) {
+      row.push(cell);
+      cell = "";
+    } else if ((char === "\n" || char === "\r") && !inQuotes) {
+      if (char === "\r" && next === "\n") i++;
 
-      if (cell.length > 0 || row.length > 0) {
-        row.push(cell);
-        rows.push(row);
-      }
+      row.push(cell);
+      rows.push(row);
+      row = [];
+      cell = "";
+    } else {
+      cell += char;
+    }
+  }
 
-      return rows;
+  if (cell.length || row.length) {
+    row.push(cell);
+    rows.push(row);
+  }
+
+  return rows;
+}
+
+function parsePercent(value) {
+  if (!value) return 0;
+
+  return parseFloat(
+    value
+      .replace("%", "")
+      .replace(/\s/g, "")
+      .replace(",", ".")
+  ) || 0;
+}
+
+function medal(index) {
+  if (index === 0) return "🥇";
+  if (index === 1) return "🥈";
+  if (index === 2) return "🥉";
+  return index + 1;
+}
+
+function render(people) {
+  const ranking = document.getElementById("ranking");
+  ranking.innerHTML = "";
+
+  people.forEach((person, index) => {
+    const card = document.createElement("div");
+
+    card.className =
+      "card " +
+      (index === 0
+        ? "top1"
+        : index === 1
+        ? "top2"
+        : index === 2
+        ? "top3"
+        : "");
+
+    card.innerHTML = `
+      <div class="rank">${medal(index)}</div>
+
+      <div class="name">${person.name}</div>
+
+      <div class="percent">
+        ${person.percent.toFixed(1).replace(".", ",")}%
+      </div>
+
+      <div class="bar">
+        <div
+          class="fill"
+          style="width:${Math.min(person.percent, 100)}%">
+        </div>
+      </div>
+    `;
+
+    ranking.appendChild(card);
+  });
+
+  document.getElementById("status").textContent =
+    "Обновлено: " +
+    new Date().toLocaleTimeString("ru-RU");
+}
+
+async function loadRanking() {
+  try {
+    const response = await fetch(
+      CSV_URL + "&t=" + Date.now(),
+      { cache: "no-store" }
+    );
+
+    const text = await response.text();
+    const rows = parseCSV(text);
+
+    const people = rows
+      .slice(1)
+      .map(row => ({
+        name: (row[4] || "").trim(),
+        percent: parsePercent(row[5] || "")
+      }))
+      .filter(person => person.name)
+      .sort((a, b) => b.percent - a.percent)
+      .slice(0, 5);
+
+    const fingerprint = JSON.stringify(people);
+
+    // То же значение пришло повторно
+    if (fingerprint === lastCandidate) {
+      candidateCount++;
+    } else {
+      lastCandidate = fingerprint;
+      candidateCount = 1;
     }
 
-    function parsePercent(value) {
-      if (!value) return 0;
-
-      return (
-        parseFloat(
-          value
-            .replace("%", "")
-            .replace(/\s/g, "")
-            .replace(",", ".")
-        ) || 0
-      );
+    // Первую загрузку показываем сразу
+    if (!displayedData) {
+      displayedData = fingerprint;
+      render(people);
+      return;
     }
 
-    function medal(index) {
-      if (index === 0) return "🥇";
-      if (index === 1) return "🥈";
-      if (index === 2) return "🥉";
-      return index + 1;
+    // Новые данные показываем только после
+    // двух одинаковых ответов подряд
+    if (
+      candidateCount >= 2 &&
+      fingerprint !== displayedData
+    ) {
+      displayedData = fingerprint;
+      render(people);
     }
 
-    async function loadRanking() {
-      try {
-        const response = await fetch(CSV_URL + "&t=" + Date.now(), {
-          cache: "no-store"
-        });
+  } catch (error) {
+    console.log("Ошибка обновления:", error);
+  }
+}
 
-        const text = await response.text();
-        const rows = parseCSV(text);
+// Первая загрузка
+loadRanking();
 
-        /*
-          В опубликованной таблице:
-          D = место
-          E = имя
-          F = процент
-
-          Индексы массива:
-          D -> 3
-          E -> 4
-          F -> 5
-        */
-
-        const people = rows
-          .slice(1)
-          .map(row => {
-            const name = (row[4] || "").trim();
-            const percentText = (row[5] || "").trim();
-
-            return {
-              name,
-              percent: parsePercent(percentText)
-            };
-          })
-          .filter(person => person.name)
-          .sort((a, b) => b.percent - a.percent)
-          .slice(0, 5);
-
-        const ranking = document.getElementById("ranking");
-        ranking.innerHTML = "";
-
-        people.forEach((person, index) => {
-          const card = document.createElement("div");
-
-          card.className =
-            "card " +
-            (index === 0
-              ? "top1"
-              : index === 1
-              ? "top2"
-              : index === 2
-              ? "top3"
-              : "");
-
-          card.innerHTML = `
-            <div class="rank">${medal(index)}</div>
-
-            <div class="name">${person.name}</div>
-
-            <div class="percent">
-              ${person.percent.toFixed(1).replace(".", ",")}%
-            </div>
-
-            <div class="bar">
-              <div
-                class="fill"
-                style="width:${Math.min(person.percent, 100)}%"
-              ></div>
-            </div>
-          `;
-
-          ranking.appendChild(card);
-        });
-
-        document.getElementById("status").textContent =
-          "Обновлено: " +
-          new Date().toLocaleTimeString("ru-RU");
-
-      } catch (error) {
-        document.getElementById("ranking").innerHTML =
-          '<div class="error">Не удалось загрузить данные.</div>';
-      }
-    }
-
-    loadRanking();
-
-    setInterval(loadRanking, 1000);
-  </script>
+// Проверяем каждые 3 секунды
+setInterval(loadRanking, 3000);
+</script>
 </body>
 </html>
