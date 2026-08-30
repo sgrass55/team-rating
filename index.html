@@ -3,42 +3,75 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Рейтинг команды</title>
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Статистика команды</title>
+
 
   <style>
+
     * {
       box-sizing: border-box;
     }
 
+
     :root {
+
       --bg: #050c18;
-      --bg2: #0c1730;
-      --card: rgba(22, 36, 63, 0.92);
-      --card2: rgba(14, 27, 49, 0.98);
-      --border: rgba(255, 255, 255, 0.11);
+
+      --card:
+        rgba(
+          22,
+          36,
+          63,
+          0.92
+        );
+
+      --border:
+        rgba(
+          255,
+          255,
+          255,
+          0.11
+        );
 
       --text: #f5f7ff;
+
       --muted: #8e9bb7;
 
       --blue: #37bff5;
+
       --green: #31d879;
 
       --gold: #f6c626;
+
       --silver: #bac4d1;
+
       --bronze: #cf7b30;
 
       --danger: #ff6174;
+
     }
+
+
 
     html,
     body {
+
       margin: 0;
+
       min-height: 100%;
+
     }
 
+
+
     body {
+
       min-height: 100vh;
 
       font-family:
@@ -49,7 +82,8 @@
         Arial,
         sans-serif;
 
-      color: var(--text);
+      color:
+        var(--text);
 
       background:
         radial-gradient(
@@ -59,112 +93,185 @@
           #050c18 75%
         );
 
-      background-attachment: fixed;
+      background-attachment:
+        fixed;
+
     }
 
+
+
     body.modal-open {
+
       overflow: hidden;
+
     }
+
+
 
     button,
     input {
+
       font: inherit;
+
     }
 
+
+
     button {
-      -webkit-tap-highlight-color: transparent;
+
+      -webkit-tap-highlight-color:
+        transparent;
+
     }
+
 
 
     /* =====================================================
        ОСНОВНАЯ СТРАНИЦА
        ===================================================== */
 
+
     .page {
+
       min-height: 100vh;
 
       padding:
         24px
         16px
         60px;
+
     }
 
+
+
     .container {
+
       width:
         min(
           920px,
           100%
         );
 
-      margin: 0 auto;
+      margin:
+        0 auto;
+
     }
+
 
 
     /* =====================================================
        HEADER
        ===================================================== */
 
+
     .header {
-      text-align: center;
 
-      margin-bottom: 18px;
+      text-align:
+        center;
+
+      margin-bottom:
+        18px;
+
     }
 
-    .title {
-      margin: 0;
 
-      font-size: 34px;
-      line-height: 1.1;
-
-      font-weight: 850;
-
-      letter-spacing: -1px;
-    }
 
     .subtitle {
-      margin-top: 7px;
 
-      color: var(--muted);
+      color:
+        var(--muted);
 
-      font-size: 14px;
+      font-size:
+        14px;
+
     }
+
+
 
     .current-period {
-      margin-top: 12px;
 
-      font-size: 25px;
-      font-weight: 850;
+      margin-top:
+        8px;
+
+      font-size:
+        27px;
+
+      line-height:
+        1.2;
+
+      font-weight:
+        850;
+
+      letter-spacing:
+        -0.4px;
+
     }
+
+
 
     .status {
-      min-height: 18px;
 
-      margin-top: 7px;
+      min-height:
+        0;
 
-      font-size: 12px;
+      margin-top:
+        0;
 
-      color: var(--muted);
+      font-size:
+        12px;
+
+      color:
+        var(--muted);
+
     }
+
+
+
+    .status:not(:empty) {
+
+      min-height:
+        18px;
+
+      margin-top:
+        7px;
+
+    }
+
+
 
     .status.error {
-      color: var(--danger);
+
+      color:
+        var(--danger);
+
     }
+
 
 
     /* =====================================================
        РЕЙТИНГ
        ===================================================== */
 
+
     .ranking {
-      display: grid;
 
-      gap: 9px;
+      display:
+        grid;
 
-      margin-top: 16px;
+      gap:
+        9px;
+
+      margin-top:
+        16px;
+
     }
 
+
+
     .rank-card {
-      display: grid;
+
+      display:
+        grid;
 
       grid-template-columns:
         44px
@@ -172,9 +279,11 @@
         minmax(220px, 4fr)
         auto;
 
-      align-items: center;
+      align-items:
+        center;
 
-      min-height: 66px;
+      min-height:
+        66px;
 
       padding:
         10px
@@ -184,26 +293,45 @@
         1px solid
         var(--border);
 
-      border-radius: 17px;
+      border-radius:
+        17px;
 
       background:
         linear-gradient(
           90deg,
-          rgba(30, 45, 74, 0.94),
-          rgba(15, 26, 47, 0.92)
+          rgba(
+            30,
+            45,
+            74,
+            0.94
+          ),
+          rgba(
+            15,
+            26,
+            47,
+            0.92
+          )
         );
 
       transition:
         transform .15s ease,
         border-color .15s ease;
+
     }
+
+
 
     .rank-card:hover {
+
       transform:
         translateY(-1px);
+
     }
 
+
+
     .rank-card.first {
+
       border-color:
         rgba(
           246,
@@ -211,9 +339,13 @@
           38,
           .75
         );
+
     }
 
+
+
     .rank-card.second {
+
       border-color:
         rgba(
           186,
@@ -221,9 +353,13 @@
           209,
           .55
         );
+
     }
 
+
+
     .rank-card.third {
+
       border-color:
         rgba(
           207,
@@ -231,69 +367,112 @@
           48,
           .72
         );
+
     }
+
+
 
     .place {
-      text-align: center;
 
-      font-size: 20px;
+      text-align:
+        center;
+
+      font-size:
+        20px;
+
     }
+
+
 
     .person-name {
-      min-width: 0;
 
-      overflow: hidden;
+      min-width:
+        0;
 
-      white-space: nowrap;
+      overflow:
+        hidden;
 
-      text-overflow: ellipsis;
+      white-space:
+        nowrap;
 
-      font-size: 16px;
+      text-overflow:
+        ellipsis;
 
-      font-weight: 780;
+      font-size:
+        16px;
+
+      font-weight:
+        780;
+
     }
+
+
 
     .percent {
-      padding-left: 13px;
 
-      white-space: nowrap;
+      padding-left:
+        13px;
 
-      font-size: 21px;
+      white-space:
+        nowrap;
 
-      line-height: 1;
+      font-size:
+        21px;
 
-      font-weight: 850;
+      line-height:
+        1;
 
-      color: var(--blue);
+      font-weight:
+        850;
+
+      color:
+        var(--blue);
+
     }
+
+
 
     .percent.green {
-      color: var(--green);
+
+      color:
+        var(--green);
+
     }
+
 
 
     /* =====================================================
        ШКАЛА
        ===================================================== */
 
+
     .bar-wrap {
-      position: relative;
+
+      position:
+        relative;
 
       padding:
         12px
         7px;
 
-      border-radius: 12px;
+      border-radius:
+        12px;
 
-      cursor: pointer;
+      cursor:
+        pointer;
 
-      outline: none;
+      outline:
+        none;
 
       transition:
         background .15s ease;
+
     }
 
+
+
     .bar-wrap:hover {
+
       background:
         rgba(
           255,
@@ -301,9 +480,13 @@
           255,
           .035
         );
+
     }
 
+
+
     .bar-wrap:focus-visible {
+
       box-shadow:
         0 0 0 2px
         rgba(
@@ -312,16 +495,24 @@
           245,
           .5
         );
+
     }
 
+
+
     .bar {
-      position: relative;
 
-      height: 12px;
+      position:
+        relative;
 
-      overflow: hidden;
+      height:
+        12px;
 
-      border-radius: 999px;
+      overflow:
+        hidden;
+
+      border-radius:
+        999px;
 
       background:
         rgba(
@@ -330,26 +521,36 @@
           255,
           .08
         );
+
     }
+
+
 
     /*
       Деления каждые 5%
     */
 
     .bar::after {
+
       content: "";
 
-      position: absolute;
+      position:
+        absolute;
 
-      inset: 0;
+      inset:
+        0;
 
-      pointer-events: none;
+      pointer-events:
+        none;
 
       background:
         repeating-linear-gradient(
           to right,
+
           transparent 0,
-          transparent calc(5% - 1px),
+
+          transparent
+          calc(5% - 1px),
 
           rgba(
             255,
@@ -367,16 +568,27 @@
           )
           5%
         );
+
     }
 
+
+
     .bar-fill {
-      position: absolute;
 
-      left: 0;
-      top: 0;
-      bottom: 0;
+      position:
+        absolute;
 
-      border-radius: inherit;
+      left:
+        0;
+
+      top:
+        0;
+
+      bottom:
+        0;
+
+      border-radius:
+        inherit;
 
       background:
         linear-gradient(
@@ -387,70 +599,106 @@
 
       transition:
         width .3s ease;
+
     }
 
+
+
     .bar-hint {
-      position: absolute;
 
-      left: 50%;
+      position:
+        absolute;
 
-      bottom: -1px;
+      left:
+        50%;
+
+      bottom:
+        -1px;
 
       transform:
         translateX(-50%);
 
-      opacity: 0;
+      opacity:
+        0;
 
-      pointer-events: none;
+      pointer-events:
+        none;
 
-      white-space: nowrap;
+      white-space:
+        nowrap;
 
-      font-size: 9px;
+      font-size:
+        9px;
 
-      color: var(--muted);
+      color:
+        var(--muted);
 
       transition:
         opacity .15s ease;
+
     }
+
+
 
     .bar-wrap:hover
     .bar-hint {
-      opacity: 1;
+
+      opacity:
+        1;
+
     }
+
 
 
     /* =====================================================
        ССЫЛКА АРХИВ
        ===================================================== */
 
+
     .archive-link-wrap {
-      display: flex;
 
-      justify-content: center;
+      display:
+        flex;
 
-      margin-top: 24px;
+      justify-content:
+        center;
+
+      margin-top:
+        24px;
+
     }
 
+
+
     .archive-link {
-      appearance: none;
+
+      appearance:
+        none;
 
       padding:
         8px
         14px;
 
-      border: 0;
+      border:
+        0;
 
-      background: transparent;
+      background:
+        transparent;
 
-      color: #cbd7ed;
+      color:
+        #cbd7ed;
 
-      cursor: pointer;
+      cursor:
+        pointer;
 
-      font-size: 14px;
+      font-size:
+        14px;
 
-      font-weight: 700;
+      font-weight:
+        700;
 
-      text-decoration: underline;
+      text-decoration:
+        underline;
 
       text-decoration-color:
         rgba(
@@ -460,28 +708,43 @@
           .45
         );
 
-      text-underline-offset: 4px;
+      text-underline-offset:
+        4px;
+
     }
 
+
+
     .archive-link:hover {
-      color: #fff;
+
+      color:
+        #ffffff;
+
     }
+
 
 
     /* =====================================================
        MODAL
        ===================================================== */
 
+
     .modal {
-      display: none;
 
-      position: fixed;
+      display:
+        none;
 
-      inset: 0;
+      position:
+        fixed;
 
-      z-index: 1000;
+      inset:
+        0;
 
-      padding: 18px;
+      z-index:
+        1000;
+
+      padding:
+        18px;
 
       background:
         rgba(
@@ -496,17 +759,28 @@
 
       -webkit-backdrop-filter:
         blur(10px);
+
     }
+
+
 
     .modal.visible {
-      display: flex;
 
-      align-items: center;
+      display:
+        flex;
 
-      justify-content: center;
+      align-items:
+        center;
+
+      justify-content:
+        center;
+
     }
 
+
+
     .modal-card {
+
       width:
         min(
           960px,
@@ -518,7 +792,8 @@
           100vh - 36px
         );
 
-      overflow-y: auto;
+      overflow-y:
+        auto;
 
       border:
         1px solid
@@ -529,7 +804,8 @@
           .13
         );
 
-      border-radius: 22px;
+      border-radius:
+        22px;
 
       background:
         linear-gradient(
@@ -556,23 +832,33 @@
           0,
           .42
         );
+
     }
 
+
+
     .modal-head {
-      position: sticky;
 
-      top: 0;
+      position:
+        sticky;
 
-      z-index: 3;
+      top:
+        0;
 
-      display: flex;
+      z-index:
+        3;
+
+      display:
+        flex;
 
       justify-content:
         space-between;
 
-      align-items: center;
+      align-items:
+        center;
 
-      gap: 14px;
+      gap:
+        14px;
 
       padding:
         17px
@@ -600,31 +886,48 @@
 
       -webkit-backdrop-filter:
         blur(12px);
+
     }
+
+
 
     .modal-title {
-      min-width: 0;
 
-      margin: 0;
+      min-width:
+        0;
 
-      overflow: hidden;
+      margin:
+        0;
 
-      white-space: nowrap;
+      overflow:
+        hidden;
 
-      text-overflow: ellipsis;
+      white-space:
+        nowrap;
 
-      font-size: 21px;
+      text-overflow:
+        ellipsis;
 
-      font-weight: 850;
+      font-size:
+        21px;
+
+      font-weight:
+        850;
+
     }
 
+
+
     .close-btn {
+
       flex:
         0 0 auto;
 
-      width: 36px;
+      width:
+        36px;
 
-      height: 36px;
+      height:
+        36px;
 
       border:
         1px solid
@@ -635,9 +938,11 @@
           .11
         );
 
-      border-radius: 50%;
+      border-radius:
+        50%;
 
-      color: var(--text);
+      color:
+        var(--text);
 
       background:
         rgba(
@@ -647,14 +952,21 @@
           .06
         );
 
-      cursor: pointer;
+      cursor:
+        pointer;
 
-      font-size: 20px;
+      font-size:
+        20px;
 
-      line-height: 1;
+      line-height:
+        1;
+
     }
 
+
+
     .close-btn:hover {
+
       background:
         rgba(
           255,
@@ -662,14 +974,24 @@
           255,
           .11
         );
+
     }
+
+
 
     .modal-body {
-      padding: 18px;
+
+      padding:
+        18px;
+
     }
 
+
+
     .panel {
-      padding: 15px;
+
+      padding:
+        15px;
 
       border:
         1px solid
@@ -680,7 +1002,8 @@
           .09
         );
 
-      border-radius: 17px;
+      border-radius:
+        17px;
 
       background:
         rgba(
@@ -689,49 +1012,83 @@
           255,
           .035
         );
+
     }
+
+
 
     .panel + .panel {
-      margin-top: 15px;
+
+      margin-top:
+        15px;
+
     }
 
+
+
     .section-title {
+
       margin:
         0
         0
         12px;
 
-      font-size: 18px;
+      font-size:
+        18px;
 
-      font-weight: 820;
+      font-weight:
+        820;
+
     }
+
+
 
     .subtle {
-      color: var(--muted);
 
-      font-size: 12px;
+      color:
+        var(--muted);
+
+      font-size:
+        12px;
+
     }
+
 
 
     /* =====================================================
        АРХИВ
        ===================================================== */
 
+
     .archive-years,
     .archive-months {
-      display: flex;
 
-      flex-wrap: wrap;
+      display:
+        flex;
 
-      gap: 7px;
+      flex-wrap:
+        wrap;
+
+      gap:
+        7px;
+
     }
+
+
 
     .archive-months {
-      margin-top: 10px;
+
+      margin-top:
+        10px;
+
     }
 
+
+
     .period-button {
-      appearance: none;
+
+      appearance:
+        none;
 
       padding:
         9px
@@ -746,9 +1103,11 @@
           .12
         );
 
-      border-radius: 11px;
+      border-radius:
+        11px;
 
-      color: var(--text);
+      color:
+        var(--text);
 
       background:
         rgba(
@@ -758,20 +1117,29 @@
           .06
         );
 
-      cursor: pointer;
+      cursor:
+        pointer;
+
     }
 
+
+
     .period-button:hover {
+
       background:
         rgba(
           255,
           255,
           255,
-          .1
+          .10
         );
+
     }
 
+
+
     .period-button.active {
+
       border-color:
         var(--blue);
 
@@ -782,48 +1150,73 @@
           245,
           .16
         );
+
     }
+
+
 
     .archive-ranking {
-      margin-top: 16px;
+
+      margin-top:
+        16px;
+
     }
 
+
+
     .archive-placeholder {
+
       padding:
         30px
         14px;
 
-      text-align: center;
+      text-align:
+        center;
 
-      color: var(--muted);
+      color:
+        var(--muted);
+
     }
+
 
 
     /* =====================================================
        ИСТОРИЯ
        ===================================================== */
 
-    .history-list {
-      display: grid;
 
-      gap: 7px;
+    .history-list {
+
+      display:
+        grid;
+
+      gap:
+        7px;
+
     }
 
+
+
     .history-row {
-      display: flex;
+
+      display:
+        flex;
 
       justify-content:
         space-between;
 
-      align-items: center;
+      align-items:
+        center;
 
-      gap: 14px;
+      gap:
+        14px;
 
       padding:
         9px
         11px;
 
-      border-radius: 11px;
+      border-radius:
+        11px;
 
       background:
         rgba(
@@ -832,49 +1225,81 @@
           255,
           .05
         );
+
     }
+
+
 
     .history-period {
-      color: #dbe4f7;
+
+      color:
+        #dbe4f7;
+
     }
+
+
 
     .history-percent {
-      font-weight: 850;
 
-      color: var(--blue);
+      font-weight:
+        850;
+
+      color:
+        var(--blue);
+
     }
+
+
 
     .history-percent.green {
-      color: var(--green);
+
+      color:
+        var(--green);
+
     }
+
 
 
     /* =====================================================
        СРАВНЕНИЕ
        ===================================================== */
 
+
     .compare-options {
-      display: flex;
 
-      flex-wrap: wrap;
+      display:
+        flex;
 
-      gap: 8px;
+      flex-wrap:
+        wrap;
 
-      margin-bottom: 14px;
+      gap:
+        8px;
+
+      margin-bottom:
+        14px;
+
     }
 
+
+
     .compare-option {
-      display: flex;
 
-      align-items: center;
+      display:
+        flex;
 
-      gap: 7px;
+      align-items:
+        center;
+
+      gap:
+        7px;
 
       padding:
         8px
         10px;
 
-      border-radius: 10px;
+      border-radius:
+        10px;
 
       background:
         rgba(
@@ -884,34 +1309,58 @@
           .05
         );
 
-      cursor: pointer;
+      cursor:
+        pointer;
+
     }
+
+
 
     .compare-option input {
-      cursor: pointer;
+
+      cursor:
+        pointer;
+
     }
+
+
 
     .chart-wrap {
-      width: 100%;
 
-      overflow-x: auto;
+      width:
+        100%;
+
+      overflow-x:
+        auto;
+
     }
+
+
 
     #compareChart {
-      min-width: 760px;
 
-      display: block;
+      min-width:
+        760px;
+
+      display:
+        block;
+
     }
+
 
 
     /* =====================================================
-       LOADER / EMPTY
+       LOADER
        ===================================================== */
 
-    .loader {
-      width: 32px;
 
-      height: 32px;
+    .loader {
+
+      width:
+        32px;
+
+      height:
+        32px;
 
       margin:
         35px
@@ -929,60 +1378,85 @@
       border-top-color:
         var(--blue);
 
-      border-radius: 50%;
+      border-radius:
+        50%;
 
       animation:
         spin .8s linear infinite;
+
     }
+
+
 
     @keyframes spin {
+
       to {
+
         transform:
           rotate(360deg);
+
       }
+
     }
 
+
+
     .empty {
+
       padding:
         28px
         14px;
 
-      text-align: center;
+      text-align:
+        center;
 
-      color: var(--muted);
+      color:
+        var(--muted);
+
     }
+
 
 
     /* =====================================================
        MOBILE
        ===================================================== */
 
+
     @media
     (max-width: 700px) {
 
+
       .page {
+
         padding:
           17px
           10px
           40px;
+
       }
 
-      .title {
-        font-size: 28px;
-      }
+
 
       .current-period {
-        font-size: 21px;
+
+        font-size:
+          23px;
+
       }
 
+
+
       .rank-card {
+
         grid-template-columns:
           34px
           1fr
           auto;
 
         grid-template-areas:
+
           "place name percent"
+
           ". bar bar";
 
         gap:
@@ -993,67 +1467,122 @@
           9px
           11px
           5px;
+
       }
+
+
 
       .place {
-        grid-area: place;
+
+        grid-area:
+          place;
+
       }
+
+
 
       .person-name {
-        grid-area: name;
+
+        grid-area:
+          name;
+
       }
+
+
 
       .percent {
-        grid-area: percent;
 
-        padding-left: 4px;
+        grid-area:
+          percent;
 
-        font-size: 18px;
+        padding-left:
+          4px;
+
+        font-size:
+          18px;
+
       }
 
+
+
       .bar-wrap {
-        grid-area: bar;
+
+        grid-area:
+          bar;
 
         padding:
           10px
           0
           12px;
+
       }
+
+
 
       .bar-hint {
-        display: none;
+
+        display:
+          none;
+
       }
+
+
 
       .modal {
-        padding: 8px;
+
+        padding:
+          8px;
+
       }
 
+
+
       .modal-card {
+
         max-height:
           calc(
             100vh - 16px
           );
 
-        border-radius: 17px;
+        border-radius:
+          17px;
+
       }
 
+
+
       .modal-head {
+
         padding:
           13px
           14px;
+
       }
+
+
 
       .modal-body {
-        padding: 13px;
+
+        padding:
+          13px;
+
       }
 
+
+
       .modal-title {
-        font-size: 18px;
+
+        font-size:
+          18px;
+
       }
+
     }
 
   </style>
+
 </head>
+
 
 
 <body>
@@ -1063,6 +1592,7 @@
        ГЛАВНАЯ
        ===================================================== -->
 
+
   <main class="page">
 
     <div class="container">
@@ -1070,57 +1600,54 @@
 
       <header class="header">
 
-        <h1 class="title">
-          🏆 Рейтинг команды
-        </h1>
 
         <div class="subtitle">
+
           Текущий месяц
+
         </div>
+
 
         <div
           class="current-period"
-          id="currentPeriod">
+          id="currentPeriod"
+        >
+
           —
+
         </div>
+
 
         <div
           class="status"
-          id="status">
-        </div>
+          id="status"
+        ></div>
+
 
       </header>
 
 
-      <!--
-        На главной только
-        текущий месяц.
-      -->
 
       <section
         class="ranking"
-        id="ranking">
-      </section>
+        id="ranking"
+      ></section>
 
 
-      <!--
-        Никакой статистики,
-        сравнения и месяцев
-        на главной нет.
-
-        Только Архив.
-      -->
 
       <div class="archive-link-wrap">
+
 
         <button
           class="archive-link"
           id="archiveBtn"
-          type="button">
+          type="button"
+        >
 
           Архив
 
         </button>
+
 
       </div>
 
@@ -1130,43 +1657,54 @@
   </main>
 
 
+
   <!-- =====================================================
        АРХИВ
        ===================================================== -->
 
+
   <div
     class="modal"
     id="archiveModal"
-    aria-hidden="true">
+    aria-hidden="true"
+  >
+
 
     <div
       class="modal-card"
       role="dialog"
       aria-modal="true"
-      aria-labelledby="archiveTitle">
+      aria-labelledby="archiveTitle"
+    >
 
 
       <div class="modal-head">
 
+
         <h2
           class="modal-title"
-          id="archiveTitle">
+          id="archiveTitle"
+        >
 
           Архив
 
         </h2>
 
+
         <button
           class="close-btn"
           id="archiveClose"
           type="button"
-          aria-label="Закрыть">
+          aria-label="Закрыть"
+        >
 
           ×
 
         </button>
 
+
       </div>
+
 
 
       <div class="modal-body">
@@ -1174,138 +1712,167 @@
 
         <div class="panel">
 
+
           <h3 class="section-title">
+
             Выберите месяц
+
           </h3>
+
 
           <div
             class="archive-years"
-            id="archiveYears">
-          </div>
+            id="archiveYears"
+          ></div>
+
 
           <div
             class="archive-months"
-            id="archiveMonths">
-          </div>
+            id="archiveMonths"
+          ></div>
+
 
         </div>
 
 
-        <!--
-          Здесь архивный рейтинг
-          НЕ загружается заранее.
-
-          Только после клика
-          по месяцу.
-        -->
 
         <div
           class="archive-ranking"
-          id="archiveRanking">
+          id="archiveRanking"
+        >
+
 
           <div class="archive-placeholder">
+
             Выберите архивный месяц
+
           </div>
+
 
         </div>
 
 
       </div>
 
+
     </div>
 
+
   </div>
+
 
 
   <!-- =====================================================
        СТАТИСТИКА ЧЕЛОВЕКА
        ===================================================== -->
 
+
   <div
     class="modal"
     id="personModal"
-    aria-hidden="true">
+    aria-hidden="true"
+  >
+
 
     <div
       class="modal-card"
       role="dialog"
       aria-modal="true"
-      aria-labelledby="personModalTitle">
+      aria-labelledby="personModalTitle"
+    >
 
 
       <div class="modal-head">
 
+
         <h2
           class="modal-title"
-          id="personModalTitle">
+          id="personModalTitle"
+        >
 
           Статистика участника
 
         </h2>
 
+
         <button
           class="close-btn"
           id="personClose"
           type="button"
-          aria-label="Закрыть">
+          aria-label="Закрыть"
+        >
 
           ×
 
         </button>
 
+
       </div>
+
 
 
       <div class="modal-body">
 
 
-        <!-- ИСТОРИЯ -->
-
         <div class="panel">
 
+
           <h3 class="section-title">
+
             История статистики
+
           </h3>
+
 
           <div
             class="history-list"
-            id="historyList">
-          </div>
+            id="historyList"
+          ></div>
+
 
         </div>
 
 
-        <!-- СРАВНЕНИЕ -->
 
         <div class="panel">
 
+
           <h3 class="section-title">
+
             Сравнение участников
+
           </h3>
+
 
           <div
             class="compare-options"
-            id="compareOptions">
-          </div>
+            id="compareOptions"
+          ></div>
+
 
           <div class="chart-wrap">
+
 
             <svg
               id="compareChart"
               width="100%"
               height="390"
               viewBox="0 0 900 390"
-              preserveAspectRatio="none">
-            </svg>
+              preserveAspectRatio="none"
+            ></svg>
+
 
           </div>
+
 
         </div>
 
 
       </div>
 
+
     </div>
+
 
   </div>
 
@@ -1313,43 +1880,73 @@
 
   <script>
 
+
     /* =====================================================
        API
        ===================================================== */
+
 
     const API_URL =
       "https://script.google.com/macros/s/AKfycbwYcG1OIZ_y2E3OZQw8oH0IuDMyk06lxL41oM6K1TtXN0Noxa5bV7kC_hsWOXTsTde_IA/exec";
 
 
+
     const MONTH_KEYS = [
+
       "ЯНВАРЬ",
+
       "ФЕВРАЛЬ",
+
       "МАРТ",
+
       "АПРЕЛЬ",
+
       "МАЙ",
+
       "ИЮНЬ",
+
       "ИЮЛЬ",
+
       "АВГУСТ",
+
       "СЕНТЯБРЬ",
+
       "ОКТЯБРЬ",
+
       "НОЯБРЬ",
+
       "ДЕКАБРЬ"
+
     ];
 
 
+
     const MONTH_NAMES = [
+
       "Январь",
+
       "Февраль",
+
       "Март",
+
       "Апрель",
+
       "Май",
+
       "Июнь",
+
       "Июль",
+
       "Август",
+
       "Сентябрь",
+
       "Октябрь",
+
       "Ноябрь",
+
       "Декабрь"
+
     ];
 
 
@@ -1358,54 +1955,37 @@
        STATE
        ===================================================== */
 
+
     const state = {
+
 
       currentPeriod:
         null,
+
 
       currentPeople:
         [],
 
 
-      /*
-        Список архива изначально
-        вообще не загружен.
-      */
-
       archivePeriods:
         null,
 
+
       archiveSelectedYear:
         null,
+
 
       archiveSelectedPeriod:
         null,
 
 
-      /*
-        Загруженные архивные
-        месяцы кешируем здесь.
-
-        Если снова нажать
-        тот же месяц —
-        второй запрос не нужен.
-      */
-
       archiveRankingCache:
         new Map(),
 
 
-      /*
-        Историю участников
-        НЕ загружаем при
-        входе на сайт.
-
-        Только после клика
-        по шкале человека.
-      */
-
       historyData:
         null,
+
 
       historyLoading:
         null,
@@ -1414,12 +1994,15 @@
       selectedPerson:
         null,
 
+
       selectedComparePeople:
         new Set(),
 
 
       mainRequestId:
         0
+
+
     };
 
 
@@ -1427,6 +2010,7 @@
     /* =====================================================
        DOM
        ===================================================== */
+
 
     const rankingEl =
       document.getElementById(
@@ -1520,12 +2104,14 @@
 
 
     /* =====================================================
-       API REQUEST
+       API
        ===================================================== */
+
 
     async function api(
       params
     ) {
+
 
       const url =
         new URL(
@@ -1536,20 +2122,20 @@
       Object.entries(
         params
       ).forEach(
+
         ([key, value]) => {
+
 
           url.searchParams.set(
             key,
             value
           );
 
+
         }
+
       );
 
-
-      /*
-        Защита от кеша браузера.
-      */
 
       url.searchParams.set(
         "_",
@@ -1559,11 +2145,16 @@
 
       const response =
         await fetch(
+
           url.toString(),
+
           {
+
             cache:
               "no-store"
+
           }
+
         );
 
 
@@ -1571,10 +2162,15 @@
         !response.ok
       ) {
 
+
         throw new Error(
+
           "HTTP " +
           response.status
+
         );
+
+
       }
 
 
@@ -1587,14 +2183,21 @@
         data.ok === false
       ) {
 
+
         throw new Error(
+
           data.error ||
           "Ошибка API"
+
         );
+
+
       }
 
 
       return data;
+
+
     }
 
 
@@ -1603,7 +2206,9 @@
        ТЕКУЩИЙ МЕСЯЦ
        ===================================================== */
 
+
     function getCurrentPeriod() {
+
 
       const now =
         new Date();
@@ -1619,17 +2224,21 @@
 
       return {
 
+
         key:
           MONTH_KEYS[
             monthIndex
           ] +
           year,
 
+
         month:
           monthIndex + 1,
 
+
         year:
           year,
+
 
         label:
           MONTH_NAMES[
@@ -1638,75 +2247,141 @@
           " " +
           year
 
+
       };
+
+
     }
 
 
 
     /* =====================================================
-       ГЛАВНАЯ СТРАНИЦА
-
-       ВАЖНО:
-
-       При загрузке сайта
-       вызывается ТОЛЬКО
-       mode=month.
-
-       mode=months НЕ вызывается.
-       mode=all НЕ вызывается.
+       ГЛАВНАЯ
        ===================================================== */
+
 
     async function loadCurrentMonth(
       silent = false
     ) {
 
+
       const period =
         getCurrentPeriod();
+
+
+      const monthChanged =
+        state.currentPeriod &&
+        state.currentPeriod.key !==
+          period.key;
+
+
+      /*
+        Если наступил новый месяц,
+        старый список Архива
+        сбрасывается.
+
+        Благодаря этому
+        предыдущий месяц
+        появится в Архиве.
+      */
+
+      if (
+        monthChanged
+      ) {
+
+
+        state.archivePeriods =
+          null;
+
+
+        state.archiveSelectedYear =
+          null;
+
+
+        state.archiveSelectedPeriod =
+          null;
+
+
+        state.archiveRankingCache
+          .clear();
+
+
+        state.historyData =
+          null;
+
+
+        state.historyLoading =
+          null;
+
+
+      }
+
 
 
       state.currentPeriod =
         period;
 
 
+
       currentPeriodEl.textContent =
         period.label;
+
 
 
       const requestId =
         ++state.mainRequestId;
 
 
+
       if (
         !silent
       ) {
+
 
         showLoader(
           rankingEl
         );
 
 
-        setStatus(
-          "Загрузка…"
-        );
       }
+
+
+
+      /*
+        Никакой надписи
+        "Данные обновлены"
+        не показываем.
+      */
+
+      setStatus(
+        ""
+      );
+
 
 
       try {
 
+
         /*
-          ТОЛЬКО текущий месяц.
+          При открытии сайта
+          загружается только
+          текущий месяц.
         */
 
         const data =
           await api({
 
+
             mode:
               "month",
+
 
             period:
               period.key
 
+
           });
+
 
 
         if (
@@ -1714,45 +2389,70 @@
           state.mainRequestId
         ) {
 
+
           return;
+
+
         }
+
 
 
         const people =
           sanitizePeople(
+
             getRankingArray(
               data
             )
+
           );
+
 
 
         state.currentPeople =
           people;
 
 
+
         renderRanking(
+
           rankingEl,
+
           people,
+
           true
+
         );
 
+
+
+        /*
+          После загрузки
+          ничего не пишем.
+        */
 
         setStatus(
-          "Данные обновлены"
+          ""
         );
 
 
-      } catch (
+      }
+
+      catch (
         error
       ) {
+
 
         if (
           requestId !==
           state.mainRequestId
         ) {
 
+
           return;
+
+
         }
+
 
 
         console.error(
@@ -1760,17 +2460,29 @@
         );
 
 
+
         setStatus(
+
           "Ошибка загрузки данных",
+
           true
+
         );
+
 
 
         showEmpty(
+
           rankingEl,
+
           "Не удалось получить данные текущего месяца"
+
         );
+
+
       }
+
+
     }
 
 
@@ -1778,81 +2490,106 @@
     /* =====================================================
        АРХИВ
 
-       mode=months вызывается
-       ТОЛЬКО после нажатия
-       на ссылку Архив.
+       При нажатии Архив
+       загружается ТОЛЬКО
+       список месяцев.
+
+       Статистика людей
+       не загружается.
        ===================================================== */
 
+
     archiveBtn.addEventListener(
+
       "click",
+
       async () => {
+
 
         openModal(
           archiveModal
         );
 
 
+
+        archiveRankingEl.innerHTML =
+          '<div class="archive-placeholder">Выберите архивный месяц</div>';
+
+
+
         /*
-          Если список архива
-          уже загрузили —
-          второй раз API
-          не вызываем.
+          Если список месяцев
+          уже получили —
+          используем кеш.
         */
 
         if (
           state.archivePeriods
         ) {
 
+
           renderArchiveControls();
 
+
           return;
+
+
         }
+
 
 
         archiveYearsEl.innerHTML =
           '<div class="loader"></div>';
 
 
+
         archiveMonthsEl.innerHTML =
           "";
 
 
-        archiveRankingEl.innerHTML =
-          '<div class="archive-placeholder">Выберите архивный месяц</div>';
-
 
         try {
 
+
           /*
-            Только сейчас
-            узнаём список месяцев.
+            ВАЖНО:
+
+            mode=months возвращает
+            только перечень периодов.
           */
 
           const data =
             await api({
 
+
               mode:
                 "months"
 
+
             });
+
 
 
           const source =
             Array.isArray(
               data.months
             )
+
               ? data.months
 
               : Array.isArray(
                   data.periods
                 )
+
                 ? data.periods
 
                 : [];
 
 
+
           const current =
             getCurrentPeriod();
+
 
 
           const currentSort =
@@ -1861,83 +2598,117 @@
             current.month;
 
 
+
           /*
-            Оставляем только
-            предыдущие месяцы.
+            В Архиве показываем
+            только предыдущие месяцы.
 
             Текущий месяц
-            и будущее
-            в Архив не попадают.
+            сюда не попадает.
           */
 
           state.archivePeriods =
             source
+
               .map(
                 normalizePeriodObject
               )
+
               .filter(
+
                 period =>
                   period &&
                   period.sort <
-                  currentSort
+                    currentSort
+
               )
+
               .sort(
+
                 (a, b) =>
                   a.sort -
                   b.sort
+
               );
+
 
 
           chooseArchiveStartYear();
 
 
+
+          /*
+            Здесь появляются
+            только ссылки месяцев.
+          */
+
           renderArchiveControls();
 
 
-        } catch (
+        }
+
+        catch (
           error
         ) {
+
 
           console.error(
             error
           );
 
 
+
           archiveYearsEl.innerHTML =
             "";
+
 
 
           archiveMonthsEl.innerHTML =
             "";
 
 
+
           showEmpty(
+
             archiveRankingEl,
-            "Не удалось загрузить архив"
+
+            "Не удалось загрузить список месяцев"
+
           );
+
+
         }
 
+
       }
+
     );
 
 
 
     function chooseArchiveStartYear() {
 
+
       const periods =
         state.archivePeriods ||
         [];
+
 
 
       if (
         periods.length === 0
       ) {
 
+
         state.archiveSelectedYear =
           null;
 
+
         return;
+
+
       }
+
 
 
       const latest =
@@ -1946,25 +2717,34 @@
         ];
 
 
+
       state.archiveSelectedYear =
         latest.year;
+
+
     }
 
 
 
     function renderArchiveControls() {
 
+
       renderArchiveYears();
 
+
       renderArchiveMonths();
+
+
     }
 
 
 
     function renderArchiveYears() {
 
+
       archiveYearsEl.innerHTML =
         "";
+
 
 
       const periods =
@@ -1972,34 +2752,52 @@
         [];
 
 
+
       const years =
         [
+
           ...new Set(
+
             periods.map(
+
               period =>
                 period.year
+
             )
+
           )
+
         ]
+
           .sort(
+
             (a, b) =>
               b - a
+
           );
+
 
 
       if (
         years.length === 0
       ) {
 
+
         archiveYearsEl.innerHTML =
           '<div class="subtle">Архивных месяцев пока нет</div>';
 
+
         return;
+
+
       }
 
 
+
       years.forEach(
+
         year => {
+
 
           const button =
             document.createElement(
@@ -2007,12 +2805,15 @@
             );
 
 
+
           button.type =
             "button";
 
 
+
           button.className =
             "period-button";
+
 
 
           button.textContent =
@@ -2021,89 +2822,139 @@
             );
 
 
+
           if (
             year ===
             state.archiveSelectedYear
           ) {
 
+
             button.classList.add(
               "active"
             );
+
+
           }
 
 
+
           button.addEventListener(
+
             "click",
+
             () => {
+
 
               state.archiveSelectedYear =
                 year;
+
 
 
               state.archiveSelectedPeriod =
                 null;
 
 
+
               renderArchiveControls();
+
 
 
               archiveRankingEl.innerHTML =
                 '<div class="archive-placeholder">Выберите архивный месяц</div>';
 
+
             }
+
           );
+
 
 
           archiveYearsEl.appendChild(
             button
           );
 
+
         }
+
       );
+
+
     }
 
 
 
     function renderArchiveMonths() {
 
+
       archiveMonthsEl.innerHTML =
         "";
+
 
 
       if (
         !state.archiveSelectedYear
       ) {
 
+
         return;
+
+
       }
 
 
-      /*
-        Только реально
-        существующие месяцы.
-
-        Никаких пустых кнопок.
-      */
 
       const periods =
         (
           state.archivePeriods ||
           []
         )
+
           .filter(
+
             period =>
               period.year ===
-              state.archiveSelectedYear
+                state.archiveSelectedYear
+
           )
+
           .sort(
+
             (a, b) =>
               a.month -
               b.month
+
           );
 
 
+
+      if (
+        periods.length === 0
+      ) {
+
+
+        archiveMonthsEl.innerHTML =
+          '<div class="subtle">Нет доступных месяцев</div>';
+
+
+        return;
+
+
+      }
+
+
+
+      /*
+        Здесь создаются
+        только кнопки месяцев.
+
+        Никакой статистики
+        ещё не загружается.
+      */
+
       periods.forEach(
+
         period => {
+
 
           const button =
             document.createElement(
@@ -2111,12 +2962,15 @@
             );
 
 
+
           button.type =
             "button";
 
 
+
           button.className =
             "period-button";
+
 
 
           button.textContent =
@@ -2125,144 +2979,201 @@
             ];
 
 
+
           if (
             period.key ===
             state.archiveSelectedPeriod
           ) {
 
+
             button.classList.add(
               "active"
             );
+
+
           }
 
 
+
           button.addEventListener(
+
             "click",
+
             () => {
+
 
               state.archiveSelectedPeriod =
                 period.key;
 
 
+
               renderArchiveMonths();
 
 
-              /*
-                ВАЖНО:
 
+              /*
                 Только сейчас,
-                после клика,
-                загружаем рейтинг
-                конкретного месяца.
+                после нажатия
+                на месяц,
+                загружается рейтинг.
               */
 
               loadArchiveMonth(
                 period
               );
 
+
             }
+
           );
+
 
 
           archiveMonthsEl.appendChild(
             button
           );
 
+
         }
+
       );
+
+
     }
 
 
 
     /* =====================================================
-       ЗАГРУЗКА АРХИВНОГО МЕСЯЦА
-
-       Один месяц =
-       один запрос после клика.
+       АРХИВНЫЙ МЕСЯЦ
        ===================================================== */
+
 
     async function loadArchiveMonth(
       period
     ) {
+
 
       showLoader(
         archiveRankingEl
       );
 
 
+
       /*
-        Уже открывали этот месяц?
-        Берём из памяти браузера.
+        Если уже открывали
+        этот месяц —
+        новый запрос не нужен.
       */
 
       if (
+
         state.archiveRankingCache
           .has(
             period.key
           )
+
       ) {
 
+
         renderArchiveMonthResult(
+
           period,
+
           state.archiveRankingCache
             .get(
               period.key
             )
+
         );
 
+
         return;
+
+
       }
+
 
 
       try {
 
+
+        /*
+          Запрос статистики
+          только выбранного месяца.
+        */
+
         const data =
           await api({
+
 
             mode:
               "month",
 
+
             period:
               period.key
+
 
           });
 
 
+
         const people =
           sanitizePeople(
+
             getRankingArray(
               data
             )
+
           );
+
 
 
         state.archiveRankingCache
           .set(
+
             period.key,
+
             people
+
           );
 
 
+
         renderArchiveMonthResult(
+
           period,
+
           people
+
         );
 
 
-      } catch (
+      }
+
+      catch (
         error
       ) {
+
 
         console.error(
           error
         );
 
 
+
         showEmpty(
+
           archiveRankingEl,
+
           "Не удалось загрузить этот месяц"
+
         );
+
+
       }
+
+
     }
 
 
@@ -2272,8 +3183,10 @@
       people
     ) {
 
+
       archiveRankingEl.innerHTML =
         "";
+
 
 
       const title =
@@ -2282,21 +3195,28 @@
         );
 
 
+
       title.className =
         "section-title";
 
 
+
       title.textContent =
+
         MONTH_NAMES[
           period.month - 1
         ] +
+
         " " +
+
         period.year;
+
 
 
       archiveRankingEl.appendChild(
         title
       );
+
 
 
       const ranking =
@@ -2305,8 +3225,10 @@
         );
 
 
+
       ranking.className =
         "ranking";
+
 
 
       archiveRankingEl.appendChild(
@@ -2314,49 +3236,49 @@
       );
 
 
-      /*
-        На шкалы людей
-        в архиве тоже можно нажать.
-      */
 
       renderRanking(
+
         ranking,
+
         people,
+
         true
+
       );
+
+
     }
 
 
 
     /* =====================================================
-       КЛИК ПО ШКАЛЕ ЧЕЛОВЕКА
-
-       Только здесь впервые
-       вызывается mode=all.
+       СТАТИСТИКА ЧЕЛОВЕКА
        ===================================================== */
+
 
     async function openPersonDetails(
       personName
     ) {
 
+
       state.selectedPerson =
         personName;
 
 
-      /*
-        При открытии сравнения
-        автоматически отмечаем
-        выбранного человека.
-      */
 
       state.selectedComparePeople =
         new Set([
+
           personName
+
         ]);
+
 
 
       personModalTitle.textContent =
         personName;
+
 
 
       openModal(
@@ -2364,27 +3286,33 @@
       );
 
 
+
       historyListEl.innerHTML =
         '<div class="loader"></div>';
+
 
 
       compareOptionsEl.innerHTML =
         "";
 
 
+
       compareChartEl.innerHTML =
         "";
 
 
+
       try {
 
+
         /*
-          Только после нажатия
-          по шкале человека
-          загружаем полную историю.
+          mode=all вызывается
+          только после нажатия
+          на шкалу человека.
         */
 
         await ensureHistoryData();
+
 
 
         renderPersonHistory(
@@ -2392,76 +3320,86 @@
         );
 
 
+
         renderCompareOptions();
+
 
 
         renderCompareChart();
 
 
-      } catch (
+      }
+
+      catch (
         error
       ) {
+
 
         console.error(
           error
         );
 
 
+
         historyListEl.innerHTML =
           '<div class="empty">Не удалось загрузить историю</div>';
 
 
+
         compareOptionsEl.innerHTML =
           '<div class="empty">Не удалось загрузить сравнение</div>';
+
+
       }
+
+
     }
 
 
 
-    /* =====================================================
-       ЗАГРУЗКА ПОЛНОЙ ИСТОРИИ
-       ===================================================== */
-
     async function ensureHistoryData() {
 
-      /*
-        Один раз загрузили —
-        дальше используем
-        данные из памяти.
-      */
 
       if (
         state.historyData
       ) {
 
+
         return;
+
+
       }
 
 
-      /*
-        Если запрос уже идёт,
-        не запускаем второй.
-      */
 
       if (
         state.historyLoading
       ) {
 
+
         return state.historyLoading;
+
+
       }
+
 
 
       state.historyLoading =
         (
+
           async () => {
+
 
             const data =
               await api({
 
+
                 mode:
                   "all"
 
+
               });
+
 
 
             state.historyData =
@@ -2469,59 +3407,64 @@
                 data
               );
 
+
           }
+
         )();
+
 
 
       try {
 
+
         await state.historyLoading;
 
-      } finally {
+
+      }
+
+      finally {
+
 
         state.historyLoading =
           null;
+
+
       }
+
+
     }
 
 
 
     /* =====================================================
-       НОРМАЛИЗАЦИЯ HISTORY
-
-       Поддерживаем новый
-       и старый формат API.
+       НОРМАЛИЗАЦИЯ ИСТОРИИ
        ===================================================== */
+
 
     function normalizeHistoryData(
       data
     ) {
 
+
       const result = {
+
 
         people:
           {},
 
+
         periods:
           []
 
+
       };
+
 
 
       const periodMap =
         new Map();
 
 
-      /*
-        Новый формат:
-
-        people: [
-          {
-            name: "...",
-            history: [...]
-          }
-        ]
-      */
 
       if (
         Array.isArray(
@@ -2529,28 +3472,41 @@
         )
       ) {
 
+
         data.people.forEach(
+
           person => {
+
 
             const name =
               String(
+
                 person.name ||
                 ""
+
               ).trim();
+
 
 
             if (
               !name
             ) {
 
+
               return;
+
+
             }
+
 
 
             const rows =
               normalizeHistoryRows(
+
                 person.history
+
               );
+
 
 
             result.people[
@@ -2559,60 +3515,80 @@
               rows;
 
 
+
             rows.forEach(
+
               row => {
 
+
                 periodMap.set(
+
                   row.period,
+
                   {
+
+
                     key:
                       row.period,
+
 
                     year:
                       row.year,
 
+
                     month:
                       row.month,
+
 
                     sort:
                       row.sort,
 
+
                     label:
                       row.label
+
+
                   }
+
                 );
 
+
               }
+
             );
 
+
           }
+
         );
+
+
       }
 
 
-      /*
-        Старый формат:
-
-        people: {
-          "Имя": [...]
-        }
-      */
 
       else if (
+
         data.people &&
+
         typeof data.people ===
           "object"
+
       ) {
+
 
         Object.entries(
           data.people
         ).forEach(
+
           ([name, rows]) => {
+
 
             const normalized =
               normalizeHistoryRows(
                 rows
               );
+
 
 
             result.people[
@@ -2621,42 +3597,57 @@
               normalized;
 
 
+
             normalized.forEach(
+
               row => {
 
+
                 periodMap.set(
+
                   row.period,
+
                   {
+
+
                     key:
                       row.period,
+
 
                     year:
                       row.year,
 
+
                     month:
                       row.month,
+
 
                     sort:
                       row.sort,
 
+
                     label:
                       row.label
+
+
                   }
+
                 );
 
+
               }
+
             );
 
+
           }
+
         );
+
+
       }
 
 
-      /*
-        На случай если API
-        дополнительно возвращает
-        flat history.
-      */
 
       if (
         Array.isArray(
@@ -2664,14 +3655,20 @@
         )
       ) {
 
+
         data.history.forEach(
+
           item => {
+
 
             const name =
               String(
+
                 item.name ||
                 ""
+
               ).trim();
+
 
 
             const row =
@@ -2680,13 +3677,18 @@
               );
 
 
+
             if (
               !name ||
               !row
             ) {
 
+
               return;
+
+
             }
+
 
 
             if (
@@ -2695,87 +3697,129 @@
               ]
             ) {
 
+
               result.people[
                 name
               ] =
                 [];
+
+
             }
+
 
 
             const exists =
               result.people[
                 name
               ].some(
+
                 old =>
                   old.period ===
                   row.period
+
               );
+
 
 
             if (
               !exists
             ) {
 
+
               result.people[
                 name
               ].push(
                 row
               );
+
+
             }
 
 
+
             periodMap.set(
+
               row.period,
+
               {
+
+
                 key:
                   row.period,
+
 
                 year:
                   row.year,
 
+
                 month:
                   row.month,
+
 
                 sort:
                   row.sort,
 
+
                 label:
                   row.label
+
+
               }
+
             );
 
+
           }
+
         );
+
+
       }
+
 
 
       Object.values(
         result.people
       ).forEach(
+
         rows => {
 
+
           rows.sort(
+
             (a, b) =>
               a.sort -
               b.sort
+
           );
 
+
         }
+
       );
+
 
 
       result.periods =
         [
+
           ...periodMap.values()
+
         ]
+
           .sort(
+
             (a, b) =>
               a.sort -
               b.sort
+
           );
 
 
+
       return result;
+
+
     }
 
 
@@ -2784,28 +3828,40 @@
       rows
     ) {
 
+
       if (
         !Array.isArray(
           rows
         )
       ) {
 
+
         return [];
+
+
       }
 
 
+
       return rows
+
         .map(
           normalizeHistoryRow
         )
+
         .filter(
           Boolean
         )
+
         .sort(
+
           (a, b) =>
             a.sort -
             b.sort
+
         );
+
+
     }
 
 
@@ -2814,12 +3870,17 @@
       row
     ) {
 
+
       if (
         !row
       ) {
 
+
         return null;
+
+
       }
+
 
 
       const year =
@@ -2828,10 +3889,12 @@
         );
 
 
+
       const month =
         Number(
           row.month
         );
+
 
 
       const percent =
@@ -2840,71 +3903,109 @@
         );
 
 
+
       if (
+
         !Number.isFinite(
           year
         ) ||
+
         !Number.isFinite(
           month
         ) ||
+
         month < 1 ||
+
         month > 12 ||
+
         !isSafePercent(
           percent
         )
+
       ) {
 
+
         return null;
+
+
       }
+
 
 
       const period =
         String(
+
           row.period ||
+
           (
+
             MONTH_KEYS[
               month - 1
             ] +
+
             year
+
           )
+
         );
+
 
 
       return {
 
+
         period:
           period,
+
 
         year:
           year,
 
+
         month:
           month,
 
+
         sort:
           Number(
+
             row.sort ||
+
             (
+
               year *
               100 +
+
               month
+
             )
+
           ),
+
 
         percent:
           percent,
 
+
         label:
           row.label ||
+
           (
+
             MONTH_NAMES[
               month - 1
             ] +
+
             " " +
+
             year
+
           )
 
+
       };
+
+
     }
 
 
@@ -2913,21 +4014,29 @@
        ИСТОРИЯ ЧЕЛОВЕКА
        ===================================================== */
 
+
     function renderPersonHistory(
       name
     ) {
+
 
       historyListEl.innerHTML =
         "";
 
 
+
       const rows =
+
         state.historyData &&
+
         state.historyData.people &&
+
         Array.isArray(
+
           state.historyData.people[
             name
           ]
+
         )
 
           ? state.historyData.people[
@@ -2937,30 +4046,39 @@
           : [];
 
 
+
       if (
         rows.length === 0
       ) {
 
+
         historyListEl.innerHTML =
           '<div class="empty">История отсутствует</div>';
 
+
         return;
+
+
       }
 
 
-      /*
-        Самые новые сверху.
-      */
 
       rows
+
         .slice()
+
         .sort(
+
           (a, b) =>
             b.sort -
             a.sort
+
         )
+
         .forEach(
+
           item => {
+
 
             const row =
               document.createElement(
@@ -2968,22 +4086,28 @@
               );
 
 
+
             row.className =
               "history-row";
+
 
 
             row.innerHTML = `
 
               <span class="history-period">
+
                 ${escapeHtml(item.label)}
+
               </span>
+
 
               <span
                 class="${
                   item.percent >= 90
                     ? "history-percent green"
                     : "history-percent"
-                }">
+                }"
+              >
 
                 ${formatPercent(item.percent)}
 
@@ -2992,43 +4116,63 @@
             `;
 
 
+
             historyListEl.appendChild(
               row
             );
 
+
           }
+
         );
+
+
     }
 
 
 
     /* =====================================================
-       ВЫБОР ЛЮДЕЙ ДЛЯ СРАВНЕНИЯ
+       СРАВНЕНИЕ
        ===================================================== */
 
+
     function renderCompareOptions() {
+
 
       compareOptionsEl.innerHTML =
         "";
 
 
+
       if (
+
         !state.historyData ||
+
         !state.historyData.people
+
       ) {
 
+
         return;
+
+
       }
+
 
 
       const names =
         Object.keys(
+
           state.historyData.people
+
         );
 
 
+
       names.forEach(
+
         name => {
+
 
           const label =
             document.createElement(
@@ -3036,8 +4180,10 @@
             );
 
 
+
           label.className =
             "compare-option";
+
 
 
           const checkbox =
@@ -3046,43 +4192,61 @@
             );
 
 
+
           checkbox.type =
             "checkbox";
 
 
+
           checkbox.checked =
+
             state.selectedComparePeople
               .has(
                 name
               );
 
 
+
           checkbox.addEventListener(
+
             "change",
+
             () => {
+
 
               if (
                 checkbox.checked
               ) {
+
 
                 state.selectedComparePeople
                   .add(
                     name
                   );
 
-              } else {
+
+              }
+
+              else {
+
 
                 state.selectedComparePeople
                   .delete(
                     name
                   );
+
+
               }
+
 
 
               renderCompareChart();
 
+
             }
+
           );
+
 
 
           const span =
@@ -3091,8 +4255,10 @@
             );
 
 
+
           span.textContent =
             name;
+
 
 
           label.appendChild(
@@ -3100,135 +4266,184 @@
           );
 
 
+
           label.appendChild(
             span
           );
+
 
 
           compareOptionsEl.appendChild(
             label
           );
 
+
         }
+
       );
+
+
     }
 
 
 
-    /* =====================================================
-       ГРАФИК СРАВНЕНИЯ
-       ===================================================== */
-
     function renderCompareChart() {
+
 
       const svg =
         compareChartEl;
+
 
 
       svg.innerHTML =
         "";
 
 
+
       if (
         !state.historyData
       ) {
 
+
         return;
+
+
       }
+
 
 
       const selected =
         [
+
           ...state.selectedComparePeople
+
         ];
+
 
 
       if (
         selected.length === 0
       ) {
 
+
         addSvgText(
+
           svg,
+
           450,
+
           195,
+
           "Выберите участников для сравнения",
+
           "#8e9bb7",
+
           "middle",
+
           15
+
         );
 
+
         return;
+
+
       }
 
 
+
       const periods =
+
         Array.isArray(
           state.historyData.periods
         )
+
           ? state.historyData.periods
+
           : [];
+
 
 
       if (
         periods.length === 0
       ) {
 
+
         addSvgText(
+
           svg,
+
           450,
+
           195,
+
           "Нет данных для сравнения",
+
           "#8e9bb7",
+
           "middle",
+
           15
+
         );
 
+
         return;
+
+
       }
+
 
 
       const width =
         900;
 
 
+
       const height =
         390;
+
 
 
       const left =
         55;
 
 
+
       const right =
         25;
+
 
 
       const top =
         60;
 
 
+
       const bottom =
         55;
 
 
+
       const chartWidth =
+
         width -
         left -
         right;
 
 
+
       const chartHeight =
+
         height -
         top -
         bottom;
 
 
-      /*
-        Шкала графика.
-      */
 
       const minY =
         60;
+
 
 
       const maxY =
@@ -3236,95 +4451,138 @@
 
 
 
-      /* =========================
-         ЛИНИИ ПО 5%
-         ========================= */
+      /*
+        Горизонтальные линии
+        через каждые 5%.
+      */
 
       for (
+
         let value = minY;
+
         value <= maxY;
+
         value += 5
+
       ) {
+
 
         const y =
           valueToY(
+
             value,
+
             minY,
+
             maxY,
+
             top,
+
             chartHeight
+
           );
 
 
+
         addSvgLine(
+
           svg,
+
           left,
+
           y,
+
           width - right,
+
           y,
+
           "rgba(255,255,255,.09)"
+
         );
+
 
 
         addSvgText(
+
           svg,
+
           46,
+
           y + 4,
+
           value + "%",
+
           "#8e9bb7",
+
           "end",
+
           11
+
         );
+
+
       }
 
 
 
-      /* =========================
-         ПОДПИСИ МЕСЯЦЕВ
-         ========================= */
-
       periods.forEach(
+
         (period, index) => {
 
-          /*
-            При большом количестве
-            месяцев подписываем
-            не каждый.
-          */
 
           if (
+
             periods.length > 16 &&
+
             index % 2 !== 0 &&
+
             index !==
               periods.length - 1
+
           ) {
 
+
             return;
+
+
           }
+
 
 
           const x =
             getChartX(
+
               index,
+
               periods.length,
+
               left,
+
               chartWidth
+
             );
 
 
+
           const monthName =
+
             MONTH_NAMES[
               period.month - 1
             ] ||
+
             "";
 
 
+
           const label =
+
             monthName.slice(
               0,
               3
             ) +
+
             " " +
+
             String(
               period.year
             ).slice(
@@ -3332,44 +4590,62 @@
             );
 
 
+
           addSvgText(
+
             svg,
+
             x,
+
             height - 18,
+
             label,
+
             "#8e9bb7",
+
             "middle",
+
             10
+
           );
 
+
         }
+
       );
 
 
 
-      /* =========================
-         ЛИНИИ ЛЮДЕЙ
-         ========================= */
-
       selected.forEach(
+
         (
+
           name,
+
           seriesIndex
+
         ) => {
 
+
           const rows =
+
             state.historyData.people[
               name
             ] ||
+
             [];
+
 
 
           const values =
             new Map();
 
 
+
           rows.forEach(
+
             row => {
+
 
               if (
                 isSafePercent(
@@ -3377,198 +4653,291 @@
                 )
               ) {
 
+
                 values.set(
+
                   row.period,
+
                   Number(
                     row.percent
                   )
+
                 );
+
+
               }
 
+
             }
+
           );
 
 
-          /*
-            Разные цвета
-            автоматически.
-          */
 
           const hue =
+
             (
+
               190 +
+
               seriesIndex *
               67
+
             ) %
+
             360;
 
 
+
           const color =
+
             `hsl(${hue} 78% 62%)`;
 
 
-          /*
-            Легенда сверху.
-          */
 
           const legendY =
+
             18 +
+
             seriesIndex *
             17;
 
 
+
           addSvgText(
+
             svg,
+
             left + 8,
+
             legendY,
+
             name,
+
             color,
+
             "start",
+
             10
+
           );
 
 
-          /*
-            Рисуем отдельные
-            сегменты.
-
-            Если данных за месяц нет,
-            линия прерывается.
-          */
 
           let path =
             "";
+
 
 
           let started =
             false;
 
 
+
           const circles =
             [];
 
 
+
           periods.forEach(
+
             (
+
               period,
+
               index
+
             ) => {
 
+
               const value =
+
                 values.get(
                   period.key
                 );
+
 
 
               if (
                 value === undefined
               ) {
 
+
                 started =
                   false;
 
+
                 return;
+
+
               }
+
 
 
               const x =
                 getChartX(
+
                   index,
+
                   periods.length,
+
                   left,
+
                   chartWidth
+
                 );
+
 
 
               const chartValue =
+
                 Math.max(
+
                   minY,
+
                   Math.min(
+
                     maxY,
+
                     value
+
                   )
+
                 );
+
 
 
               const y =
                 valueToY(
+
                   chartValue,
+
                   minY,
+
                   maxY,
+
                   top,
+
                   chartHeight
+
                 );
+
 
 
               if (
                 !started
               ) {
 
+
                 path +=
                   `M ${x} ${y} `;
+
 
 
                 started =
                   true;
 
-              } else {
+
+              }
+
+              else {
+
 
                 path +=
                   `L ${x} ${y} `;
+
+
               }
 
 
+
               circles.push({
+
                 x,
+
                 y,
+
                 value
+
               });
 
+
             }
+
           );
+
 
 
           const pathElement =
+
             document.createElementNS(
+
               "http://www.w3.org/2000/svg",
+
               "path"
+
             );
 
 
+
           pathElement.setAttribute(
+
             "d",
+
             path
+
           );
 
 
+
           pathElement.setAttribute(
+
             "fill",
+
             "none"
+
           );
 
 
+
           pathElement.setAttribute(
+
             "stroke",
+
             color
+
           );
 
 
+
           pathElement.setAttribute(
+
             "stroke-width",
+
             "2.5"
+
           );
 
 
+
           pathElement.setAttribute(
+
             "stroke-linecap",
+
             "round"
+
           );
+
 
 
           pathElement.setAttribute(
+
             "stroke-linejoin",
+
             "round"
+
           );
+
 
 
           svg.appendChild(
@@ -3576,53 +4945,86 @@
           );
 
 
+
           circles.forEach(
+
             point => {
 
+
               const circle =
+
                 document.createElementNS(
+
                   "http://www.w3.org/2000/svg",
+
                   "circle"
+
                 );
 
 
+
               circle.setAttribute(
+
                 "cx",
+
                 point.x
+
               );
 
 
+
               circle.setAttribute(
+
                 "cy",
+
                 point.y
+
               );
 
 
+
               circle.setAttribute(
+
                 "r",
+
                 "3.5"
+
               );
+
 
 
               circle.setAttribute(
+
                 "fill",
+
                 color
+
               );
+
 
 
               const title =
+
                 document.createElementNS(
+
                   "http://www.w3.org/2000/svg",
+
                   "title"
+
                 );
+
 
 
               title.textContent =
+
                 name +
+
                 ": " +
+
                 formatPercent(
                   point.value
                 );
+
 
 
               circle.appendChild(
@@ -3630,42 +5032,70 @@
               );
 
 
+
               svg.appendChild(
                 circle
               );
 
+
             }
+
           );
 
+
         }
+
       );
+
+
     }
 
 
 
     function valueToY(
+
       value,
+
       min,
+
       max,
+
       top,
+
       height
+
     ) {
 
+
       return (
+
         top +
+
         height *
+
         (
+
           1 -
+
           (
+
             value -
             min
+
           ) /
+
           (
+
             max -
             min
+
           )
+
         )
+
       );
+
+
     }
 
 
@@ -3674,9 +5104,11 @@
        РЕНДЕР РЕЙТИНГА
        ===================================================== */
 
+
     function getRankingArray(
       data
     ) {
+
 
       if (
         Array.isArray(
@@ -3684,8 +5116,12 @@
         )
       ) {
 
+
         return data.people;
+
+
       }
+
 
 
       if (
@@ -3694,11 +5130,17 @@
         )
       ) {
 
+
         return data.ranking;
+
+
       }
 
 
+
       return [];
+
+
     }
 
 
@@ -3707,81 +5149,123 @@
       people
     ) {
 
+
       if (
         !Array.isArray(
           people
         )
       ) {
 
+
         return [];
+
+
       }
 
 
+
       return people
+
         .map(
+
           item => {
+
 
             return {
 
+
               name:
                 String(
+
                   item.name ||
                   ""
+
                 ).trim(),
+
 
               percent:
                 Number(
                   item.percent
                 )
 
+
             };
 
+
           }
+
         )
+
         .filter(
+
           item =>
             item.name &&
             isSafePercent(
               item.percent
             )
+
         )
+
         .sort(
+
           (a, b) =>
             b.percent -
             a.percent
+
         );
+
+
     }
 
 
 
     function renderRanking(
+
       target,
+
       people,
+
       clickable = true
+
     ) {
+
 
       target.innerHTML =
         "";
+
 
 
       if (
         people.length === 0
       ) {
 
+
         showEmpty(
+
           target,
+
           "За этот месяц статистика не найдена"
+
         );
 
+
         return;
+
+
       }
 
 
+
       people.forEach(
+
         (
+
           person,
+
           index
+
         ) => {
+
 
           const card =
             document.createElement(
@@ -3789,38 +5273,52 @@
             );
 
 
+
           card.className =
             "rank-card";
+
 
 
           if (
             index === 0
           ) {
 
+
             card.classList.add(
               "first"
             );
+
+
           }
+
 
 
           if (
             index === 1
           ) {
 
+
             card.classList.add(
               "second"
             );
+
+
           }
+
 
 
           if (
             index === 2
           ) {
 
+
             card.classList.add(
               "third"
             );
+
+
           }
+
 
 
           const percent =
@@ -3829,7 +5327,9 @@
             );
 
 
+
           const percentClass =
+
             percent >= 90
 
               ? "percent green"
@@ -3837,7 +5337,9 @@
               : "percent";
 
 
+
           card.innerHTML = `
+
 
             <div class="place">
 
@@ -3846,54 +5348,73 @@
             </div>
 
 
+
             <div
               class="person-name"
-              title="${escapeHtml(person.name)}">
+              title="${escapeHtml(person.name)}"
+            >
 
               ${escapeHtml(person.name)}
 
             </div>
 
 
+
             <div
               class="bar-wrap"
+
               ${
                 clickable
+
                   ? 'tabindex="0" role="button"'
+
                   : ""
-              }>
+              }
+            >
+
 
               <div class="bar">
 
+
                 <div
                   class="bar-fill"
-                  style="width:${percent}%">
-                </div>
+                  style="width:${percent}%"
+                ></div>
+
 
               </div>
 
+
               ${
                 clickable
+
                   ? '<span class="bar-hint">нажмите для статистики</span>'
+
                   : ""
               }
+
 
             </div>
 
 
+
             <div
-              class="${percentClass}">
+              class="${percentClass}"
+            >
 
               ${formatPercent(percent)}
 
             </div>
 
+
           `;
+
 
 
           if (
             clickable
           ) {
+
 
             const scale =
               card.querySelector(
@@ -3901,67 +5422,100 @@
               );
 
 
+
             const open =
               () => {
+
 
                 openPersonDetails(
                   person.name
                 );
 
+
               };
 
 
+
             scale.addEventListener(
+
               "click",
+
               open
+
             );
 
 
+
             scale.addEventListener(
+
               "keydown",
+
               event => {
 
+
                 if (
+
                   event.key ===
                     "Enter" ||
+
                   event.key ===
                     " "
+
                 ) {
+
 
                   event.preventDefault();
 
+
                   open();
+
+
                 }
 
+
               }
+
             );
+
+
           }
+
 
 
           target.appendChild(
             card
           );
 
+
         }
+
       );
+
+
     }
 
 
 
     /* =====================================================
-       НОРМАЛИЗАЦИЯ ПЕРИОДА
+       ПЕРИОДЫ
        ===================================================== */
+
 
     function normalizePeriodObject(
       item
     ) {
 
+
       if (
         !item
       ) {
 
+
         return null;
+
+
       }
+
 
 
       const year =
@@ -3970,88 +5524,128 @@
         );
 
 
+
       const month =
         Number(
           item.month
         );
 
 
+
       if (
+
         !item.key ||
+
         !Number.isFinite(
           year
         ) ||
+
         !Number.isFinite(
           month
         ) ||
+
         month < 1 ||
+
         month > 12
+
       ) {
 
+
         return null;
+
+
       }
 
 
+
       return {
+
 
         key:
           String(
             item.key
           ),
 
+
         year:
           year,
+
 
         month:
           month,
 
+
         sort:
           Number(
+
             item.sort ||
+
             (
+
               year *
               100 +
+
               month
+
             )
+
           ),
+
 
         label:
           item.label ||
+
           (
+
             MONTH_NAMES[
               month - 1
             ] +
+
             " " +
+
             year
+
           )
 
+
       };
+
+
     }
 
 
 
     /* =====================================================
-       MODAL HELPERS
+       MODAL
        ===================================================== */
+
 
     function openModal(
       modal
     ) {
+
 
       modal.classList.add(
         "visible"
       );
 
 
+
       modal.setAttribute(
+
         "aria-hidden",
+
         "false"
+
       );
+
 
 
       document.body.classList.add(
         "modal-open"
       );
+
+
     }
 
 
@@ -4060,186 +5654,282 @@
       modal
     ) {
 
+
       modal.classList.remove(
         "visible"
       );
 
 
+
       modal.setAttribute(
+
         "aria-hidden",
+
         "true"
+
       );
 
 
+
       if (
+
         !document.querySelector(
           ".modal.visible"
         )
+
       ) {
+
 
         document.body.classList.remove(
           "modal-open"
         );
+
+
       }
+
+
     }
 
 
 
     archiveClose.addEventListener(
+
       "click",
+
       () => {
+
 
         closeModal(
           archiveModal
         );
 
+
       }
+
     );
 
 
 
     personClose.addEventListener(
+
       "click",
+
       () => {
+
 
         closeModal(
           personModal
         );
 
+
       }
+
     );
 
 
 
     archiveModal.addEventListener(
+
       "click",
+
       event => {
+
 
         if (
           event.target ===
           archiveModal
         ) {
 
+
           closeModal(
             archiveModal
           );
+
+
         }
 
+
       }
+
     );
 
 
 
     personModal.addEventListener(
+
       "click",
+
       event => {
+
 
         if (
           event.target ===
           personModal
         ) {
 
+
           closeModal(
             personModal
           );
+
+
         }
 
+
       }
+
     );
 
 
 
     document.addEventListener(
+
       "keydown",
+
       event => {
+
 
         if (
           event.key !==
           "Escape"
         ) {
 
+
           return;
+
+
         }
 
 
+
         if (
+
           personModal.classList.contains(
             "visible"
           )
+
         ) {
+
 
           closeModal(
             personModal
           );
 
+
           return;
+
+
         }
 
 
+
         if (
+
           archiveModal.classList.contains(
             "visible"
           )
+
         ) {
+
 
           closeModal(
             archiveModal
           );
+
+
         }
 
+
       }
+
     );
 
 
 
     /* =====================================================
-       SVG HELPERS
+       SVG
        ===================================================== */
 
+
     function getChartX(
+
       index,
+
       count,
+
       left,
+
       width
+
     ) {
+
 
       if (
         count <= 1
       ) {
 
+
         return (
+
           left +
+
           width / 2
+
         );
+
+
       }
 
 
+
       return (
+
         left +
+
         width *
+
         index /
+
         (
+
           count - 1
+
         )
+
       );
+
+
     }
 
 
 
     function addSvgLine(
+
       svg,
+
       x1,
+
       y1,
+
       x2,
+
       y2,
+
       stroke
+
     ) {
 
+
       const line =
+
         document.createElementNS(
+
           "http://www.w3.org/2000/svg",
+
           "line"
+
         );
+
 
 
       line.setAttribute(
@@ -4278,28 +5968,45 @@
       );
 
 
+
       svg.appendChild(
         line
       );
+
+
     }
 
 
 
     function addSvgText(
+
       svg,
+
       x,
+
       y,
+
       text,
+
       fill,
+
       anchor,
+
       size
+
     ) {
 
+
       const element =
+
         document.createElementNS(
+
           "http://www.w3.org/2000/svg",
+
           "text"
+
         );
+
 
 
       element.setAttribute(
@@ -4332,13 +6039,17 @@
       );
 
 
+
       element.textContent =
         text;
+
 
 
       svg.appendChild(
         element
       );
+
+
     }
 
 
@@ -4347,37 +6058,53 @@
        HELPERS
        ===================================================== */
 
+
     function getPlaceIcon(
       index
     ) {
+
 
       if (
         index === 0
       ) {
 
+
         return "🥇";
+
+
       }
+
 
 
       if (
         index === 1
       ) {
 
+
         return "🥈";
+
+
       }
+
 
 
       if (
         index === 2
       ) {
 
+
         return "🥉";
+
+
       }
+
 
 
       return String(
         index + 1
       );
+
+
     }
 
 
@@ -4386,8 +6113,11 @@
       target
     ) {
 
+
       target.innerHTML =
         '<div class="loader"></div>';
+
+
     }
 
 
@@ -4397,28 +6127,41 @@
       text
     ) {
 
+
       target.innerHTML =
         `<div class="empty">${escapeHtml(text)}</div>`;
+
+
     }
 
 
 
     function setStatus(
+
       text,
+
       error = false
+
     ) {
+
 
       statusEl.textContent =
         text ||
         "";
 
 
+
       statusEl.classList.toggle(
+
         "error",
+
         Boolean(
           error
         )
+
       );
+
+
     }
 
 
@@ -4427,19 +6170,27 @@
       value
     ) {
 
+
       const number =
         Number(
           value
         );
 
 
+
       return (
+
         Number.isFinite(
           number
         ) &&
+
         number >= 0 &&
+
         number <= 100
+
       );
+
+
     }
 
 
@@ -4448,10 +6199,12 @@
       value
     ) {
 
+
       const number =
         Number(
           value
         );
+
 
 
       if (
@@ -4460,17 +6213,29 @@
         )
       ) {
 
+
         return 0;
+
+
       }
 
 
+
       return Math.max(
+
         0,
+
         Math.min(
+
           100,
+
           number
+
         )
+
       );
+
+
     }
 
 
@@ -4479,10 +6244,12 @@
       value
     ) {
 
+
       const number =
         Number(
           value
         );
+
 
 
       if (
@@ -4491,21 +6258,34 @@
         )
       ) {
 
+
         return "—";
+
+
       }
 
 
+
       return (
+
         number
+
           .toFixed(
             1
           )
+
           .replace(
             ".",
             ","
-          ) +
+          )
+
+        +
+
         "%"
+
       );
+
+
     }
 
 
@@ -4514,104 +6294,319 @@
       value
     ) {
 
+
       return String(
+
         value ||
         ""
+
       )
+
         .replace(
           /&/g,
           "&amp;"
         )
+
         .replace(
           /</g,
           "&lt;"
         )
+
         .replace(
           />/g,
           "&gt;"
         )
+
         .replace(
           /"/g,
           "&quot;"
         )
+
         .replace(
           /'/g,
           "&#039;"
         );
+
+
     }
 
 
 
     /* =====================================================
        АВТООБНОВЛЕНИЕ
-
-       ВАЖНО:
-
-       Каждые 20 секунд
-       обновляется ТОЛЬКО
-       текущий месяц.
-
-       Архив НЕ обновляется.
-       History НЕ обновляется.
-       mode=all НЕ вызывается.
        ===================================================== */
 
+
+    let lastKnownPeriodKey =
+      getCurrentPeriod().key;
+
+
+
+    /*
+      Каждые 20 секунд
+      обновляется только
+      текущий месяц.
+
+      Архив не загружается.
+      История не загружается.
+    */
+
     setInterval(
-      () => {
+
+      async () => {
+
 
         if (
           document.hidden
         ) {
 
+
           return;
+
+
         }
+
+
+
+        const actualPeriod =
+          getCurrentPeriod();
+
+
+
+        /*
+          Если наступил
+          новый календарный месяц.
+        */
+
+        if (
+
+          actualPeriod.key !==
+          lastKnownPeriodKey
+
+        ) {
+
+
+          lastKnownPeriodKey =
+            actualPeriod.key;
+
+
+
+          state.archivePeriods =
+            null;
+
+
+
+          state.archiveSelectedYear =
+            null;
+
+
+
+          state.archiveSelectedPeriod =
+            null;
+
+
+
+          state.archiveRankingCache
+            .clear();
+
+
+
+          state.historyData =
+            null;
+
+
+
+          state.historyLoading =
+            null;
+
+
+
+          /*
+            Главная автоматически
+            переключается
+            на новый месяц.
+          */
+
+          await loadCurrentMonth(
+            false
+          );
+
+
+
+          /*
+            Если в момент смены
+            месяца был открыт Архив —
+            закрываем его.
+
+            При следующем открытии
+            список месяцев загрузится
+            заново и старый текущий
+            месяц появится там.
+          */
+
+          if (
+
+            archiveModal.classList
+              .contains(
+                "visible"
+              )
+
+          ) {
+
+
+            closeModal(
+              archiveModal
+            );
+
+
+          }
+
+
+
+          return;
+
+
+        }
+
 
 
         loadCurrentMonth(
           true
         );
 
+
       },
+
       20000
+
     );
 
 
 
-    /*
-      Вернулся на вкладку —
-      обновили только
-      текущий месяц.
-    */
+    /* =====================================================
+       ВОЗВРАТ НА ВКЛАДКУ
+       ===================================================== */
+
 
     document.addEventListener(
+
       "visibilitychange",
+
       () => {
 
+
         if (
-          !document.hidden
+          document.hidden
         ) {
 
-          loadCurrentMonth(
-            true
-          );
+
+          return;
+
+
         }
 
+
+
+        const actualPeriod =
+          getCurrentPeriod();
+
+
+
+        /*
+          Если пользователь
+          открыл сайт вчера,
+          а вернулся уже
+          в новом месяце.
+        */
+
+        if (
+
+          actualPeriod.key !==
+          lastKnownPeriodKey
+
+        ) {
+
+
+          lastKnownPeriodKey =
+            actualPeriod.key;
+
+
+
+          state.archivePeriods =
+            null;
+
+
+
+          state.archiveSelectedYear =
+            null;
+
+
+
+          state.archiveSelectedPeriod =
+            null;
+
+
+
+          state.archiveRankingCache
+            .clear();
+
+
+
+          state.historyData =
+            null;
+
+
+
+          state.historyLoading =
+            null;
+
+
+
+          loadCurrentMonth(
+            false
+          );
+
+
+
+          return;
+
+
+        }
+
+
+
+        loadCurrentMonth(
+          true
+        );
+
+
       }
+
     );
 
 
 
     /* =====================================================
        START
-
-       Единственный запрос
-       при первом входе:
-       mode=month текущего месяца.
        ===================================================== */
+
+
+    lastKnownPeriodKey =
+      getCurrentPeriod().key;
+
+
+
+    /*
+      При первом открытии сайта
+      единственный запрос —
+      статистика текущего месяца.
+    */
 
     loadCurrentMonth();
 
+
   </script>
+
 
 </body>
 
