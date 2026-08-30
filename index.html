@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Рейтинг команды</title>
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #0f172a;
+      color: #fff;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      padding: 40px 20px;
+    }
+
+    .wrap {
+      width: 100%;
+      max-width: 900px;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 42px;
+      margin: 0 0 10px;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #94a3b8;
+      margin-bottom: 30px;
+    }
+
+    .card {
+      display: grid;
+      grid-template-columns: 70px 1fr 120px;
+      align-items: center;
+      gap: 16px;
+      background: #1e293b;
+      border-radius: 18px;
+      padding: 22px;
+      margin-bottom: 14px;
+      box-shadow: 0 8px 25px rgba(0,0,0,.25);
+    }
+
+    .rank {
+      font-size: 30px;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    .name {
+      font-size: 24px;
+      font-weight: 700;
+    }
+
+    .percent {
+      font-size: 28px;
+      font-weight: 800;
+      text-align: right;
+    }
+
+    .bar {
+      grid-column: 2 / 4;
+      height: 10px;
+      background: #334155;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .fill {
+      height: 100%;
+      background: linear-gradient(90deg, #38bdf8, #22c55e);
+      border-radius: 999px;
+    }
+
+    .status {
+      text-align: center;
+      color: #94a3b8;
+      margin-top: 20px;
+      font-size: 14px;
+    }
+
+    .top1 { border: 1px solid #facc15; }
+    .top2 { border: 1px solid #cbd5e1; }
+    .top3 { border: 1px solid #fb923c; }
+
+    @media (max-width: 600px) {
+      h1 { font-size: 32px; }
+
+      .card {
+        grid-template-columns: 50px 1fr 90px;
+        padding: 16px;
+      }
+
+      .name { font-size: 18px; }
+      .percent { font-size: 22px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>🏆 Рейтинг команды</h1>
+    <div class="subtitle">Актуальные результаты</div>
+
+    <div id="ranking">Загрузка...</div>
+
+    <div class="status" id="status"></div>
+  </div>
+
+  <script>
+    const CSV_URL =
+      "https://docs.google.com/spreadsheets/d/e/2PACX-1vTGL-KACsRd8HUNn2iHLPk6cAgRTsMTcxFMbkL7BkdbHWc3DWaS2fHt53zVx-hQSHXszSzdXVAZO_vS/pub?gid=0&single=true&output=csv";
+
+    function parsePercent(value) {
+      if (!value) return 0;
+      return parseFloat(
+        value
+          .replace("%", "")
+          .replace(",", ".")
+          .replace(/\s/g, "")
+      ) || 0;
+    }
+
+    function medal(index) {
+      if (index === 0) return "🥇";
+      if (index === 1) return "🥈";
+      if (index === 2) return "🥉";
+      return index + 1;
+    }
+
+    async function loadRanking() {
+      try {
+        const response = await fetch(CSV_URL + "&t=" + Date.now());
+        const text = await response.text();
+
+        const rows = text
+          .trim()
+          .split(/\r?\n/)
+          .map(row => row.split(","));
+
+        /*
+          В твоей таблице:
+          D = место
+          E = имя
+          F = процент
+
+          В CSV это индексы:
+          3 = D
+          4 = E
+          5 = F
+        */
+
+        const people = rows
+          .slice(1)
+          .map(row => ({
+            name: (row[4] || "").replace(/"/g, "").trim(),
+            percentText: (row[5] || "").replace(/"/g, "").trim()
+          }))
+          .filter(person => person.name)
+          .map(person => ({
+            ...person,
+            percent: parsePercent(person.percentText)
+          }))
+          .sort((a, b) => b.percent - a.percent)
+          .slice(0, 5);
+
+        const ranking = document.getElementById("ranking");
+        ranking.innerHTML = "";
+
+        people.forEach((person, index) => {
+          const card = document.createElement("div");
+          card.className =
+            "card " +
+            (index === 0 ? "top1" : index === 1 ? "top2" : index === 2 ? "top3" : "");
+
+          card.innerHTML = `
+            <div class="rank">${medal(index)}</div>
+            <div class="name">${person.name}</div>
+            <div class="percent">${person.percent.toFixed(1).replace(".", ",")}%</div>
+            <div class="bar">
+              <div class="fill" style="width:${Math.min(person.percent, 100)}%"></div>
+            </div>
+          `;
+
+          ranking.appendChild(card);
+        });
+
+        document.getElementById("status").textContent =
+          "Обновлено: " + new Date().toLocaleTimeString("ru-RU");
+      } catch (error) {
+        document.getElementById("ranking").textContent =
+          "Не удалось загрузить данные.";
+      }
+    }
+
+    loadRanking();
+    setInterval(loadRanking, 60000);
+  </script>
+</body>
+</html>
