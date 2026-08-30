@@ -1707,6 +1707,68 @@
       }
     }
 
+  
+    /* =====================================================
+       V19 — TRUE VERTICAL CENTER FOR PLACE NUMBER
+       ===================================================== */
+
+    /*
+      Карточка становится точкой отсчёта, а номер места
+      позиционируется ровно на 50% её полной высоты.
+      Поэтому центр цифры совпадает с серединой между
+      верхней и нижней границей карточки независимо от
+      высоты имени, процента или шкалы.
+    */
+    .rank-card {
+      position: relative;
+    }
+
+    .rank-card .place,
+    .rank-card:first-child .place {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+
+      width: 30px;
+      height: 30px;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      transform: translateY(-50%);
+
+      margin: 0;
+      padding: 0;
+
+      font-size: 23px;
+      font-weight: 800;
+      line-height: 1;
+      letter-spacing: 0;
+    }
+
+    /*
+      Сохраняем место слева под абсолютный номер,
+      чтобы имя и шкала не заезжали на цифру.
+    */
+    .rank-card {
+      padding-left: 58px;
+    }
+
+    @media (max-width: 700px) {
+      .rank-card .place,
+      .rank-card:first-child .place {
+        left: 12px;
+        width: 30px;
+        height: 30px;
+        font-size: 23px;
+      }
+
+      .rank-card {
+        padding-left: 54px;
+      }
+    }
+
   </style>
 </head>
 
