@@ -1177,6 +1177,78 @@
       }
     }
 
+  
+    /* =====================================================
+       ARCHIVE V10 — CENTERED DETAIL
+       ===================================================== */
+
+    #archiveModal .modal-body {
+      box-sizing: border-box;
+    }
+
+    #archiveDetail {
+      width: 100%;
+      max-width: 100%;
+      margin: 0 auto;
+    }
+
+    #archiveRanking {
+      width: 100%;
+      max-width: 760px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    #archiveModal .archive-view-header {
+      margin-top: 18px;
+      margin-bottom: 22px;
+      padding-top: 4px;
+      text-align: center;
+    }
+
+    #archiveModal .archive-view-header .subtitle {
+      margin: 0;
+      text-align: center;
+    }
+
+    #archiveModal .archive-view-header .current-period {
+      margin-top: 10px;
+      text-align: center;
+    }
+
+    @media (max-width: 700px) {
+      #archiveModal .modal-body {
+        padding-left: 14px;
+        padding-right: 14px;
+      }
+
+      #archiveDetail {
+        width: 100%;
+      }
+
+      #archiveRanking {
+        width: 100%;
+        max-width: 100%;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      #archiveModal .archive-view-header {
+        margin-top: 26px;
+        margin-bottom: 24px;
+        padding-left: 8px;
+        padding-right: 8px;
+      }
+
+      #archiveModal .archive-view-header .subtitle {
+        font-size: 13px;
+      }
+
+      #archiveModal .archive-view-header .current-period {
+        margin-top: 11px;
+      }
+    }
+
   </style>
 </head>
 
@@ -1924,7 +1996,204 @@
 
     const RANKING_ANIMATION_MS = 3000;
     const RANKING_EASING =
-      "cubic-bezier(.16,.78,.18,1)";
+      "cubic-bezier(.22,.72,.18,1)";
+
+
+    function buildAdjacentSwapPlan(
+      currentNames,
+      targetNames
+    ) {
+
+      const working =
+        currentNames.slice();
+
+      const plan = [];
+
+
+      /*
+        Формируем последовательность настоящих соседних обгонов.
+        Если человек идёт с 6-го на 2-е место:
+        6↔5, затем 5↔4, затем 4↔3, затем 3↔2.
+      */
+
+      for (
+        let targetIndex = 0;
+        targetIndex < targetNames.length;
+        targetIndex++
+      ) {
+
+        const wantedName =
+          targetNames[targetIndex];
+
+        let currentIndex =
+          working.indexOf(wantedName);
+
+        if (currentIndex < 0) {
+          continue;
+        }
+
+
+        while (
+          currentIndex >
+          targetIndex
+        ) {
+
+          const upperIndex =
+            currentIndex - 1;
+
+          const displacedName =
+            working[upperIndex];
+
+          plan.push({
+            movingName: wantedName,
+            displacedName
+          });
+
+
+          working[upperIndex] =
+            wantedName;
+
+          working[currentIndex] =
+            displacedName;
+
+          currentIndex--;
+        }
+      }
+
+
+      return plan;
+    }
+
+
+    async function animateAdjacentRankingSwap(
+      moving,
+      displaced,
+      duration
+    ) {
+
+      if (
+        !moving ||
+        !displaced
+      ) {
+        return;
+      }
+
+
+      const movingFirst =
+        moving.getBoundingClientRect();
+
+      const displacedFirst =
+        displaced.getBoundingClientRect();
+
+
+      /*
+        DOM меняется на следующий соседний порядок.
+      */
+
+      rankingEl.insertBefore(
+        moving,
+        displaced
+      );
+
+
+      const movingLast =
+        moving.getBoundingClientRect();
+
+      const displacedLast =
+        displaced.getBoundingClientRect();
+
+
+      const movingDy =
+        movingFirst.top -
+        movingLast.top;
+
+      const displacedDy =
+        displacedFirst.top -
+        displacedLast.top;
+
+
+      /*
+        Обе карточки визуально остаются на старых местах.
+      */
+
+      moving.style.transition = "none";
+      displaced.style.transition = "none";
+
+      moving.style.transform =
+        `translate3d(0, ${movingDy}px, 0)`;
+
+      displaced.style.transform =
+        `translate3d(0, ${displacedDy}px, 0)`;
+
+      moving.style.willChange =
+        "transform";
+
+      displaced.style.willChange =
+        "transform";
+
+      moving.style.zIndex = "4";
+      displaced.style.zIndex = "3";
+
+
+      void rankingEl.offsetHeight;
+
+
+      /*
+        Затем одновременно меняются местами.
+        Это и создаёт эффект настоящего обгона:
+        один занимает место другого, второй — освободившееся место.
+      */
+
+      await new Promise(resolve => {
+
+        requestAnimationFrame(() => {
+
+          requestAnimationFrame(() => {
+
+            const transition =
+              `transform ${duration}ms ${RANKING_EASING}`;
+
+            moving.style.transition =
+              transition;
+
+            displaced.style.transition =
+              transition;
+
+            moving.style.transform =
+              "translate3d(0, 0, 0)";
+
+            displaced.style.transform =
+              "translate3d(0, 0, 0)";
+
+            setTimeout(
+              resolve,
+              duration + 8
+            );
+          });
+        });
+      });
+
+
+      moving.style.transition = "";
+      displaced.style.transition = "";
+
+      moving.style.transform = "";
+      displaced.style.transform = "";
+
+      moving.style.willChange = "";
+      displaced.style.willChange = "";
+
+      moving.style.zIndex = "";
+      displaced.style.zIndex = "";
+
+
+      /*
+        После каждого конкретного обгона сразу обновляем места,
+        чтобы визуальная последовательность была понятной.
+      */
+
+      refreshRankingPlaces();
+    }
 
 
     async function runRankingReorderQueue() {
@@ -1934,6 +2203,7 @@
       }
 
       state.rankingAnimationRunning = true;
+
 
       try {
 
@@ -1945,129 +2215,139 @@
           state.pendingRankingPeople =
             null;
 
+
           const targetNames =
             targetPeople.map(
               person => person.name
             );
 
 
-          /*
-            Фиксируем реальные старые позиции ВСЕХ карточек.
-          */
-
-          const cardsBefore =
+          const currentNames =
             Array.from(
               rankingEl.querySelectorAll(".rank-card")
+            ).map(
+              card =>
+                card.dataset.personName || ""
             );
 
-          const firstRects =
-            new Map();
 
-          cardsBefore.forEach(card => {
-            firstRects.set(
-              card,
-              card.getBoundingClientRect()
+          const swapPlan =
+            buildAdjacentSwapPlan(
+              currentNames,
+              targetNames
             );
-          });
+
+
+          if (!swapPlan.length) {
+
+            /*
+              Если места не изменились — всё равно даём шкале
+              и процентам закончить общий 3-секундный цикл.
+            */
+
+            await new Promise(resolve =>
+              setTimeout(
+                resolve,
+                RANKING_ANIMATION_MS
+              )
+            );
+
+            refreshRankingPlaces();
+
+            continue;
+          }
 
 
           /*
-            Сразу задаём итоговый DOM-порядок.
-            Визуально карточки пока останутся на старых местах
-            благодаря FLIP-преобразованию ниже.
+            ВЕСЬ путь до нового места занимает ровно 3 секунды.
+            Время делится между всеми соседними обгонами.
           */
 
-          targetNames.forEach(name => {
+          const stepDuration =
+            Math.max(
+              90,
+              Math.floor(
+                RANKING_ANIMATION_MS /
+                swapPlan.length
+              )
+            );
 
-            const card =
-              cardsBefore.find(
-                item =>
-                  item.dataset.personName === name
+
+          const startedAt =
+            performance.now();
+
+
+          for (
+            let i = 0;
+            i < swapPlan.length;
+            i++
+          ) {
+
+            const step =
+              swapPlan[i];
+
+
+            const cards =
+              Array.from(
+                rankingEl.querySelectorAll(".rank-card")
               );
 
-            if (card) {
-              rankingEl.appendChild(card);
-            }
-          });
+
+            const moving =
+              cards.find(
+                card =>
+                  card.dataset.personName ===
+                  step.movingName
+              );
 
 
-          const cardsAfter =
-            Array.from(
-              rankingEl.querySelectorAll(".rank-card")
+            const displaced =
+              cards.find(
+                card =>
+                  card.dataset.personName ===
+                  step.displacedName
+              );
+
+
+            /*
+              Последний шаг получает остаток времени,
+              чтобы суммарная длительность была максимально
+              близка к ровным 3000 мс.
+            */
+
+            const elapsed =
+              performance.now() -
+              startedAt;
+
+            const remainingSteps =
+              swapPlan.length - i;
+
+            const remainingTime =
+              Math.max(
+                90,
+                RANKING_ANIMATION_MS -
+                elapsed
+              );
+
+            const duration =
+              i === swapPlan.length - 1
+                ? remainingTime
+                : Math.max(
+                    90,
+                    Math.min(
+                      stepDuration,
+                      remainingTime /
+                      remainingSteps
+                    )
+                  );
+
+
+            await animateAdjacentRankingSwap(
+              moving,
+              displaced,
+              duration
             );
-
-
-          /*
-            Вычисляем смещение каждой карточки от старого места
-            к новому. Поэтому при обгоне обе карточки начинают
-            движение ОДНОВРЕМЕННО: одна вверх, другая вниз.
-          */
-
-          cardsAfter.forEach(card => {
-
-            const first =
-              firstRects.get(card);
-
-            const last =
-              card.getBoundingClientRect();
-
-            if (!first) {
-              return;
-            }
-
-            const dy =
-              first.top - last.top;
-
-            card.style.transition = "none";
-            card.style.transform =
-              `translate3d(0, ${dy}px, 0)`;
-
-            card.style.willChange =
-              "transform";
-          });
-
-
-          /*
-            Фиксируем исходный кадр.
-          */
-
-          void rankingEl.offsetHeight;
-
-
-          /*
-            Один непрерывный 3-секундный "обгон".
-            Никаких промежуточных остановок между местами.
-          */
-
-          await new Promise(resolve => {
-
-            requestAnimationFrame(() => {
-
-              requestAnimationFrame(() => {
-
-                cardsAfter.forEach(card => {
-
-                  card.style.transition =
-                    `transform ${RANKING_ANIMATION_MS}ms ${RANKING_EASING}`;
-
-                  card.style.transform =
-                    "translate3d(0, 0, 0)";
-                });
-
-                setTimeout(
-                  resolve,
-                  RANKING_ANIMATION_MS + 40
-                );
-              });
-            });
-          });
-
-
-          cardsAfter.forEach(card => {
-            card.style.transition = "";
-            card.style.transform = "";
-            card.style.willChange = "";
-          });
+          }
 
 
           refreshRankingPlaces();
@@ -2596,44 +2876,56 @@
 
 
     let archiveSwipeAnimating = false;
+    let archiveSwipeCurrentX = 0;
 
 
-    async function animateArchiveSwipe(direction) {
+    async function animateArchiveSwipe(
+      direction,
+      startX = 0
+    ) {
 
       if (archiveSwipeAnimating) {
         return;
       }
 
+
       const nextPeriod =
         getShiftedArchivePeriod(direction);
+
+
+      const width =
+        Math.max(
+          1,
+          archiveDetail.clientWidth
+        );
+
 
       if (!nextPeriod) {
 
         /*
-          На первом / последнем месяце — мягкий "отскок".
+          Граница архива — мягкий отскок с текущего положения.
         */
 
         archiveSwipeAnimating = true;
 
         archiveRankingEl.style.transition =
-          "transform 180ms cubic-bezier(.22,.8,.2,1)";
-
-        archiveRankingEl.style.transform =
-          `translate3d(${direction > 0 ? -18 : 18}px, 0, 0)`;
-
-        await new Promise(resolve =>
-          setTimeout(resolve, 90)
-        );
+          "transform 320ms cubic-bezier(.2,.8,.18,1), opacity 260ms ease";
 
         archiveRankingEl.style.transform =
           "translate3d(0, 0, 0)";
 
+        archiveRankingEl.style.opacity =
+          "1";
+
+
         await new Promise(resolve =>
-          setTimeout(resolve, 190)
+          setTimeout(resolve, 330)
         );
+
 
         archiveRankingEl.style.transition = "";
         archiveSwipeAnimating = false;
+        archiveSwipeCurrentX = 0;
 
         return;
       }
@@ -2641,54 +2933,38 @@
 
       archiveSwipeAnimating = true;
 
-      const outX =
-        direction > 0 ? -108 : 108;
-
-      const inX =
-        direction > 0 ? 108 : -108;
-
 
       /*
-        Текущий месяц уезжает в сторону.
+        Направление строго соответствует пальцу:
+        свайп влево -> текущий месяц улетает влево,
+        свайп вправо -> текущий месяц улетает вправо.
       */
 
-      archiveRankingEl.style.transition =
-        "transform 230ms cubic-bezier(.32,.72,.2,1), opacity 190ms ease";
-
-      archiveRankingEl.style.transform =
-        `translate3d(${outX}%, 0, 0)`;
-
-      archiveRankingEl.style.opacity =
-        "0.12";
+      const exitX =
+        direction > 0
+          ? -width * 1.14
+          : width * 1.14;
 
 
-      await new Promise(resolve =>
-        setTimeout(resolve, 225)
-      );
+      const enterX =
+        direction > 0
+          ? width * 1.04
+          : -width * 1.04;
 
 
       /*
-        Загружаем соседний месяц за пределами экрана.
+        ВАЖНО:
+        не возвращаем карточки в центр после отпускания пальца.
+        Продолжаем движение ровно с той точки, до которой
+        пользователь уже дотянул содержимое.
       */
 
       archiveRankingEl.style.transition =
         "none";
 
       archiveRankingEl.style.transform =
-        `translate3d(${inX}%, 0, 0)`;
+        `translate3d(${startX}px, 0, 0)`;
 
-      archiveRankingEl.style.opacity =
-        "0.10";
-
-
-      await enterArchiveMonth(
-        nextPeriod
-      );
-
-
-      /*
-        Новый месяц плавно заезжает с противоположной стороны.
-      */
 
       void archiveRankingEl.offsetHeight;
 
@@ -2697,10 +2973,55 @@
 
         requestAnimationFrame(() => {
 
+          archiveRankingEl.style.transition =
+            "transform 420ms cubic-bezier(.18,.82,.2,1), opacity 380ms ease";
+
+          archiveRankingEl.style.transform =
+            `translate3d(${exitX}px, 0, 0)`;
+
+          archiveRankingEl.style.opacity =
+            "0";
+
+          setTimeout(resolve, 430);
+        });
+      });
+
+
+      /*
+        Новый месяц появляется строго с противоположной стороны,
+        уже за пределами окна.
+      */
+
+      archiveRankingEl.style.transition =
+        "none";
+
+      archiveRankingEl.style.transform =
+        `translate3d(${enterX}px, 0, 0)`;
+
+      archiveRankingEl.style.opacity =
+        "0";
+
+
+      await enterArchiveMonth(
+        nextPeriod
+      );
+
+
+      void archiveRankingEl.offsetHeight;
+
+
+      /*
+        И плавно заезжает в центр.
+      */
+
+      await new Promise(resolve => {
+
+        requestAnimationFrame(() => {
+
           requestAnimationFrame(() => {
 
             archiveRankingEl.style.transition =
-              "transform 300ms cubic-bezier(.18,.82,.2,1), opacity 230ms ease";
+              "transform 460ms cubic-bezier(.16,.82,.18,1), opacity 360ms ease";
 
             archiveRankingEl.style.transform =
               "translate3d(0, 0, 0)";
@@ -2708,7 +3029,7 @@
             archiveRankingEl.style.opacity =
               "1";
 
-            setTimeout(resolve, 310);
+            setTimeout(resolve, 470);
           });
         });
       });
@@ -2718,6 +3039,7 @@
       archiveRankingEl.style.transform = "";
       archiveRankingEl.style.opacity = "";
 
+      archiveSwipeCurrentX = 0;
       archiveSwipeAnimating = false;
     }
 
@@ -4695,6 +5017,9 @@
           );
 
 
+        archiveSwipeCurrentX =
+          resisted;
+
         archiveRankingEl.style.transform =
           `translate3d(${resisted}px, 0, 0)`;
 
@@ -4760,35 +5085,33 @@
           archiveRankingEl.style.opacity =
             "1";
 
+          archiveSwipeCurrentX = 0;
+
           return;
         }
 
 
         /*
-          Сначала возвращаем элемент к логической точке,
-          затем выполняем полноценный анимированный переход.
-          Это убирает рывок после отпускания пальца.
+          Никакого возврата в центр:
+          после отпускания текущая информация продолжает
+          лететь в ту же сторону прямо из положения пальца.
         */
 
-        archiveRankingEl.style.transition =
-          "transform 90ms linear, opacity 90ms linear";
-
-        archiveRankingEl.style.transform =
-          "translate3d(0, 0, 0)";
-
-        archiveRankingEl.style.opacity =
-          "1";
-
-
-        await new Promise(resolve =>
-          setTimeout(resolve, 92)
-        );
+        const startX =
+          archiveSwipeCurrentX ||
+          dx * 0.82;
 
 
         if (dx < 0) {
-          await animateArchiveSwipe(1);
+          await animateArchiveSwipe(
+            1,
+            startX
+          );
         } else {
-          await animateArchiveSwipe(-1);
+          await animateArchiveSwipe(
+            -1,
+            startX
+          );
         }
       },
       { passive: true }
@@ -4807,6 +5130,8 @@
 
         archiveRankingEl.style.opacity =
           "1";
+
+        archiveSwipeCurrentX = 0;
       },
       { passive: true }
     );
