@@ -412,7 +412,76 @@
       }
 
     }
+/* ==========================
+   КОМПАКТНЫЙ РЕЖИМ
+   ВСЁ ПОМЕЩАЕТСЯ НА ЭКРАН
+========================== */
 
+body {
+  height: 100vh;
+  min-height: 100vh;
+  padding: 18px 16px;
+  overflow: hidden;
+}
+
+.wrap {
+  max-width: 820px;
+  height: 100%;
+}
+
+h1 {
+  font-size: clamp(26px, 4vh, 38px);
+}
+
+.subtitle {
+  margin-top: 5px;
+  margin-bottom: 12px;
+  font-size: 14px;
+}
+
+.card {
+  grid-template-columns: 55px 1fr 105px;
+
+  gap: 12px;
+
+  padding: 12px 18px;
+
+  margin-bottom: 7px;
+
+  border-radius: 14px;
+}
+
+.rank {
+  font-size: 25px;
+}
+
+.name {
+  font-size: 20px;
+}
+
+.percent {
+  font-size: 24px;
+  min-width: 95px;
+}
+
+.bar-wrapper {
+  padding-top: 1px;
+}
+
+.bar {
+  height: 10px;
+}
+
+.scale-labels {
+  height: 12px;
+  margin-top: 2px;
+  font-size: 8px;
+}
+
+.status {
+  margin-top: 7px;
+  font-size: 11px;
+}
   </style>
 </head>
 
