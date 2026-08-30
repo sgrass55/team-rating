@@ -160,7 +160,7 @@
         );
 
       transition:
-        transform 0.65s cubic-bezier(.2,.8,.2,1),
+        transform 3s cubic-bezier(.16,.78,.18,1),
         border-color 0.3s ease,
         box-shadow 0.3s ease,
         opacity 0.3s ease;
@@ -326,7 +326,7 @@
         );
 
       transition:
-        width 0.65s cubic-bezier(.2,.8,.2,1);
+        width 3s cubic-bezier(.16,.78,.18,1);
     }
 
     .bar-hint {
@@ -1922,6 +1922,11 @@
     }
 
 
+    const RANKING_ANIMATION_MS = 3000;
+    const RANKING_EASING =
+      "cubic-bezier(.16,.78,.18,1)";
+
+
     async function runRankingReorderQueue() {
 
       if (state.rankingAnimationRunning) {
@@ -1931,6 +1936,7 @@
       state.rankingAnimationRunning = true;
 
       try {
+
         while (state.pendingRankingPeople) {
 
           const targetPeople =
@@ -1940,221 +1946,141 @@
             null;
 
           const targetNames =
-            targetPeople.map(person => person.name);
+            targetPeople.map(
+              person => person.name
+            );
+
 
           /*
-            Двигаем карточку не сразу через несколько мест,
-            а соседними обменами. Например с 5-го на 2-е:
-            5→4, затем 4→3, затем 3→2. Так каждый следующий
-            блок действительно освобождает/замещает место
-            предыдущего.
+            Фиксируем реальные старые позиции ВСЕХ карточек.
           */
-          for (
-            let targetIndex = 0;
-            targetIndex < targetNames.length;
-            targetIndex++
-          ) {
-            const targetName =
-              targetNames[targetIndex];
 
-            let cards =
-              Array.from(
-                rankingEl.querySelectorAll(".rank-card")
+          const cardsBefore =
+            Array.from(
+              rankingEl.querySelectorAll(".rank-card")
+            );
+
+          const firstRects =
+            new Map();
+
+          cardsBefore.forEach(card => {
+            firstRects.set(
+              card,
+              card.getBoundingClientRect()
+            );
+          });
+
+
+          /*
+            Сразу задаём итоговый DOM-порядок.
+            Визуально карточки пока останутся на старых местах
+            благодаря FLIP-преобразованию ниже.
+          */
+
+          targetNames.forEach(name => {
+
+            const card =
+              cardsBefore.find(
+                item =>
+                  item.dataset.personName === name
               );
 
-            let currentIndex =
-              cards.findIndex(
-                card =>
-                  card.dataset.personName === targetName
-              );
+            if (card) {
+              rankingEl.appendChild(card);
+            }
+          });
 
-            if (currentIndex < 0) {
-              continue;
+
+          const cardsAfter =
+            Array.from(
+              rankingEl.querySelectorAll(".rank-card")
+            );
+
+
+          /*
+            Вычисляем смещение каждой карточки от старого места
+            к новому. Поэтому при обгоне обе карточки начинают
+            движение ОДНОВРЕМЕННО: одна вверх, другая вниз.
+          */
+
+          cardsAfter.forEach(card => {
+
+            const first =
+              firstRects.get(card);
+
+            const last =
+              card.getBoundingClientRect();
+
+            if (!first) {
+              return;
             }
 
-            while (currentIndex > targetIndex) {
-              cards =
-                Array.from(
-                  rankingEl.querySelectorAll(".rank-card")
+            const dy =
+              first.top - last.top;
+
+            card.style.transition = "none";
+            card.style.transform =
+              `translate3d(0, ${dy}px, 0)`;
+
+            card.style.willChange =
+              "transform";
+          });
+
+
+          /*
+            Фиксируем исходный кадр.
+          */
+
+          void rankingEl.offsetHeight;
+
+
+          /*
+            Один непрерывный 3-секундный "обгон".
+            Никаких промежуточных остановок между местами.
+          */
+
+          await new Promise(resolve => {
+
+            requestAnimationFrame(() => {
+
+              requestAnimationFrame(() => {
+
+                cardsAfter.forEach(card => {
+
+                  card.style.transition =
+                    `transform ${RANKING_ANIMATION_MS}ms ${RANKING_EASING}`;
+
+                  card.style.transform =
+                    "translate3d(0, 0, 0)";
+                });
+
+                setTimeout(
+                  resolve,
+                  RANKING_ANIMATION_MS + 40
                 );
+              });
+            });
+          });
 
-              const moving =
-                cards[currentIndex];
 
-              const displaced =
-                cards[currentIndex - 1];
+          cardsAfter.forEach(card => {
+            card.style.transition = "";
+            card.style.transform = "";
+            card.style.willChange = "";
+          });
 
-              if (!moving || !displaced) {
-                break;
-              }
-
-              await animateAdjacentRankingSwap(
-                moving,
-                displaced
-              );
-
-              refreshRankingPlaces();
-              currentIndex--;
-            }
-          }
 
           refreshRankingPlaces();
         }
 
       } finally {
+
         state.rankingAnimationRunning = false;
 
         if (state.pendingRankingPeople) {
           runRankingReorderQueue();
         }
       }
-    }
-
-
-    async function animateAdjacentRankingSwap(
-      moving,
-      displaced
-    ) {
-
-      /*
-        Плавный "обгон":
-        - движущаяся карточка как будто догоняет соседнюю,
-          проходит на её место и мягко останавливается;
-        - вытесненная карточка одновременно занимает
-          освободившееся место без рывка;
-        - обе карточки двигаются в одном временном интервале.
-      */
-
-      const movingFirst =
-        moving.getBoundingClientRect();
-
-      const displacedFirst =
-        displaced.getBoundingClientRect();
-
-
-      /*
-        Сначала меняем порядок в DOM,
-        затем FLIP-анимацией визуально оставляем
-        обе карточки на прежних позициях.
-      */
-
-      rankingEl.insertBefore(
-        moving,
-        displaced
-      );
-
-
-      const movingLast =
-        moving.getBoundingClientRect();
-
-      const displacedLast =
-        displaced.getBoundingClientRect();
-
-
-      const movingDeltaY =
-        movingFirst.top -
-        movingLast.top;
-
-      const displacedDeltaY =
-        displacedFirst.top -
-        displacedLast.top;
-
-
-      /*
-        Начальная точка — старые позиции.
-      */
-
-      moving.style.transition = "none";
-      displaced.style.transition = "none";
-
-      moving.style.transform =
-        `translate3d(0, ${movingDeltaY}px, 0) scale(1)`;
-
-      displaced.style.transform =
-        `translate3d(0, ${displacedDeltaY}px, 0) scale(1)`;
-
-      moving.style.willChange =
-        "transform";
-
-      displaced.style.willChange =
-        "transform";
-
-      moving.style.zIndex = "4";
-      displaced.style.zIndex = "2";
-
-
-      /*
-        Фиксируем начальное состояние.
-      */
-
-      void rankingEl.offsetHeight;
-
-
-      /*
-        Первый короткий этап:
-        обгоняющая карточка чуть "подбирается" к соседней.
-        Вытесняемая уже начинает уходить на новое место.
-      */
-
-      await new Promise(resolve => {
-
-        requestAnimationFrame(() => {
-
-          requestAnimationFrame(() => {
-
-            moving.style.transition =
-              "transform 180ms cubic-bezier(.24,.7,.3,1)";
-
-            displaced.style.transition =
-              "transform 180ms cubic-bezier(.24,.7,.3,1)";
-
-            moving.style.transform =
-              `translate3d(0, ${movingDeltaY * 0.38}px, 0) scale(1.012)`;
-
-            displaced.style.transform =
-              `translate3d(0, ${displacedDeltaY * 0.62}px, 0) scale(.996)`;
-
-            setTimeout(resolve, 180);
-          });
-        });
-      });
-
-
-      /*
-        Второй этап:
-        карточка "перегоняет" соседнюю и встаёт на её место.
-        Вытесненная одновременно мягко доезжает вниз.
-      */
-
-      await new Promise(resolve => {
-
-        moving.style.transition =
-          "transform 360ms cubic-bezier(.18,.84,.2,1)";
-
-        displaced.style.transition =
-          "transform 360ms cubic-bezier(.18,.84,.2,1)";
-
-        moving.style.transform =
-          "translate3d(0, 0, 0) scale(1)";
-
-        displaced.style.transform =
-          "translate3d(0, 0, 0) scale(1)";
-
-        setTimeout(resolve, 370);
-      });
-
-
-      moving.style.transition = "";
-      displaced.style.transition = "";
-
-      moving.style.transform = "";
-      displaced.style.transform = "";
-
-      moving.style.willChange = "";
-      displaced.style.willChange = "";
-
-      moving.style.zIndex = "";
-      displaced.style.zIndex = "";
     }
 
 
@@ -2319,6 +2245,15 @@
       ) {
 
         if (fillEl) {
+
+          /*
+            Шкала движется синхронно с числом и карточкой:
+            ровно 3 секунды.
+          */
+
+          fillEl.style.transition =
+            `width ${RANKING_ANIMATION_MS}ms ${RANKING_EASING}`;
+
           fillEl.style.width =
             newPercent + "%";
         }
@@ -2367,64 +2302,43 @@
         return;
       }
 
+      const startValue =
+        Number(from);
+
+      const endValue =
+        Number(to);
+
+      if (
+        !Number.isFinite(startValue) ||
+        !Number.isFinite(endValue)
+      ) {
+        element.textContent =
+          formatPercent(endValue);
+        return;
+      }
+
+
       const animationId =
         String(Date.now()) + Math.random();
 
       element.dataset.animationId =
         animationId;
 
-      /*
-        Меняем число строго по 0,01:
-        90,00 → 89,99 → 89,98 → ... → 87,34
-
-        Для больших изменений можем проходить несколько сотых
-        за один кадр, чтобы анимация не растягивалась надолго,
-        но отображаемое значение всегда остаётся с двумя знаками.
-      */
-      const startInt =
-        Math.round(Number(from) * 100);
-
-      const endInt =
-        Math.round(Number(to) * 100);
-
-      if (startInt === endInt) {
-        element.textContent =
-          formatPercent(to);
-        return;
-      }
-
-      const direction =
-        endInt > startInt ? 1 : -1;
-
-      const distance =
-        Math.abs(endInt - startInt);
-
-      let currentInt =
-        startInt;
 
       /*
-        Маленькие изменения идут буквально по одной сотой.
-        Большие ускоряем, чтобы интерфейс оставался живым.
+        Число меняется ровно столько же,
+        сколько перемещается карточка и заполняется шкала:
+        3000 мс.
+
+        На каждом кадре значение округляется до сотых,
+        поэтому визуально видны 91,42 → 91,43 → 91,44...
       */
-      let stepInt = 1;
-      let stepMs = 22;
 
-      if (distance > 100) {
-        stepInt = 2;
-        stepMs = 18;
-      }
+      const startedAt =
+        performance.now();
 
-      if (distance > 300) {
-        stepInt = 4;
-        stepMs = 16;
-      }
 
-      if (distance > 700) {
-        stepInt = 8;
-        stepMs = 14;
-      }
-
-      function step() {
+      function frame(now) {
 
         if (
           element.dataset.animationId !==
@@ -2433,44 +2347,68 @@
           return;
         }
 
-        currentInt +=
-          direction * stepInt;
 
-        if (
-          (direction > 0 && currentInt >= endInt) ||
-          (direction < 0 && currentInt <= endInt)
-        ) {
-          currentInt =
-            endInt;
-        }
+        const rawProgress =
+          Math.min(
+            1,
+            Math.max(
+              0,
+              (now - startedAt) /
+              RANKING_ANIMATION_MS
+            )
+          );
+
+
+        /*
+          То же ощущение ускорения/мягкого торможения,
+          что и у движения карточек.
+          Используем smoothstep — плавно без рывка на старте
+          и без резкой остановки в конце.
+        */
+
+        const eased =
+          rawProgress *
+          rawProgress *
+          (3 - 2 * rawProgress);
+
 
         const currentValue =
-          currentInt / 100;
+          Math.round(
+            (
+              startValue +
+              (endValue - startValue) * eased
+            ) * 100
+          ) / 100;
+
 
         element.textContent =
           formatPercent(currentValue);
+
 
         element.classList.toggle(
           "green",
           currentValue >= 90
         );
 
-        if (currentInt === endInt) {
-          return;
-        }
 
-        setTimeout(step, stepMs);
+        if (rawProgress < 1) {
+          requestAnimationFrame(frame);
+        } else {
+          element.textContent =
+            formatPercent(endValue);
+
+          element.classList.toggle(
+            "green",
+            endValue >= 90
+          );
+        }
       }
 
+
       element.textContent =
-        formatPercent(startInt / 100);
+        formatPercent(startValue);
 
-      element.classList.toggle(
-        "green",
-        startInt / 100 >= 90
-      );
-
-      setTimeout(step, stepMs);
+      requestAnimationFrame(frame);
     }
 
 
