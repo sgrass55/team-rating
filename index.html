@@ -1,604 +1,953 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
 
   <title>Рейтинг команды</title>
 
-  <style>
-    * {
-      box-sizing: border-box;
-    }
+<style>
 
-    body {
-      margin: 0;
-      min-height: 100vh;
-
-      font-family: Arial, sans-serif;
-
-      background: #0f172a;
-      color: white;
-
-      display: flex;
-      justify-content: center;
-
-      padding: 36px 18px;
-    }
-
-    .wrap {
-      width: 100%;
-      max-width: 900px;
-    }
-
-    h1 {
-      margin: 0;
-
-      text-align: center;
-
-      font-size: 42px;
-    }
-
-    .subtitle {
-      margin-top: 10px;
-      margin-bottom: 28px;
-
-      text-align: center;
-
-      color: #94a3b8;
-
-      font-size: 16px;
-    }
-
-
-    /* ==========================
-       КАРТОЧКА
-    ========================== */
-
-    .card {
-      display: grid;
-
-      grid-template-columns:
-        70px
-        1fr
-        120px;
-
-      gap: 16px;
-
-      align-items: center;
-
-      padding: 22px;
-
-      margin-bottom: 14px;
-
-      border-radius: 18px;
-
-      background: #1e293b;
-
-      border: 1px solid transparent;
-
-      box-shadow:
-        0 8px 24px
-        rgba(0,0,0,.22);
-
-      transition:
-        transform .85s cubic-bezier(.22,.61,.36,1),
-        border-color .45s ease,
-        box-shadow .45s ease,
-        background .45s ease;
-    }
-
-
-    .top1 {
-      border-color: #facc15;
-    }
-
-    .top2 {
-      border-color: #cbd5e1;
-    }
-
-    .top3 {
-      border-color: #fb923c;
-    }
-
-
-    /* ==========================
-       МЕСТО
-    ========================== */
-
-    .rank {
-      font-size: 30px;
-
-      font-weight: 700;
-
-      text-align: center;
-    }
-
-
-    /* ==========================
-       ИМЯ
-    ========================== */
-
-    .name {
-      font-size: 24px;
-
-      font-weight: 700;
-    }
-
-
-    /* ==========================
-       ПРОЦЕНТ
-    ========================== */
-
-    .percent {
-      font-size: 29px;
-
-      font-weight: 800;
-
-      text-align: right;
-
-      min-width: 110px;
-
-      font-variant-numeric:
-        tabular-nums;
-
-      transition:
-        text-shadow .25s ease;
-    }
-
-
-    /* ==========================
-       ШКАЛА
-    ========================== */
-
-    .bar-wrapper {
-      grid-column: 2 / 4;
-
-      position: relative;
-
-      padding-top: 5px;
-    }
-
-
-    .bar {
-      position: relative;
-
-      height: 15px;
-
-      width: 100%;
-
-      background: #334155;
-
-      border-radius: 999px;
-
-      overflow: hidden;
-
-      box-shadow:
-        inset 0 2px 5px
-        rgba(0,0,0,.3);
-    }
-
-
-    /*
-      ЦВЕТНАЯ ЗАПОЛНЕННАЯ ЧАСТЬ
-    */
-
-    .fill {
-      position: absolute;
-
-      left: 0;
-      top: 0;
-
-      height: 100%;
-
-      width: 0;
-
-      border-radius: 999px;
-
-      background:
-        linear-gradient(
-          90deg,
-    #38bdf8,
-    #22c55e
-        );
-
-      box-shadow:
-        0 0 14px
-        rgba(255,255,255,.12);
-    }
-
-
-    /*
-      ЗАСЕЧКИ КАЖДЫЕ 5%
-    */
-
-    .ticks {
-      position: absolute;
-
-      inset: 0;
-
-      z-index: 10;
-
-      pointer-events: none;
-
-      background-image:
-        repeating-linear-gradient(
-          to right,
-
-          transparent 0,
-          transparent calc(5% - 1px),
-
-          rgba(255,255,255,.35)
-          calc(5% - 1px),
-
-          rgba(255,255,255,.35)
-          5%
-        );
-    }
-
-
-    /*
-      Более заметные деления
-      каждые 10%
-    */
-
-    .ticks-strong {
-      position: absolute;
-
-      inset: 0;
-
-      z-index: 11;
-
-      pointer-events: none;
-
-      background-image:
-        repeating-linear-gradient(
-          to right,
-
-          transparent 0,
-          transparent calc(10% - 1px),
-
-          rgba(255,255,255,.5)
-          calc(10% - 1px),
-
-          rgba(255,255,255,.5)
-          10%
-        );
-    }
-
-
-    /* ==========================
-       ПОДПИСИ ПОД ШКАЛОЙ
-    ========================== */
-
-    .scale-labels {
-      position: relative;
-
-      height: 18px;
-
-      margin-top: 5px;
-
-      color: #64748b;
-
-      font-size: 10px;
-
-      font-weight: 600;
-    }
-
-
-    .scale-label {
-      position: absolute;
-
-      transform:
-        translateX(-50%);
-    }
-
-
-    .scale-label:first-child {
-      transform: none;
-    }
-
-
-    .scale-label:last-child {
-      transform:
-        translateX(-100%);
-    }
-
-
-    /* ==========================
-       СТАТУС
-    ========================== */
-
-    .status {
-      margin-top: 18px;
-
-      text-align: center;
-
-      color: #94a3b8;
-
-      font-size: 14px;
-    }
-
-
-    /* ==========================
-       ПОДЪЁМ / ПАДЕНИЕ
-    ========================== */
-
-    .pulse-up {
-      animation:
-        pulseUp .9s ease;
-    }
-
-
-    .pulse-down {
-      animation:
-        pulseDown .9s ease;
-    }
-
-
-    @keyframes pulseUp {
-
-      0% {
-        box-shadow:
-          0 8px 24px
-          rgba(0,0,0,.22);
-      }
-
-      50% {
-        box-shadow:
-          0 0 32px
-          rgba(34,197,94,.45);
-      }
-
-      100% {
-        box-shadow:
-          0 8px 24px
-          rgba(0,0,0,.22);
-      }
-
-    }
-
-
-    @keyframes pulseDown {
-
-      0% {
-        box-shadow:
-          0 8px 24px
-          rgba(0,0,0,.22);
-      }
-
-      50% {
-        box-shadow:
-          0 0 32px
-          rgba(239,68,68,.4);
-      }
-
-      100% {
-        box-shadow:
-          0 8px 24px
-          rgba(0,0,0,.22);
-      }
-
-    }
-
-
-    @media (max-width: 600px) {
-
-      h1 {
-        font-size: 30px;
-      }
-
-      .card {
-        grid-template-columns:
-          50px
-          1fr
-          90px;
-
-        padding: 16px;
-      }
-
-      .name {
-        font-size: 18px;
-      }
-
-      .percent {
-        font-size: 22px;
-
-        min-width: 80px;
-      }
-
-      .scale-labels {
-        font-size: 8px;
-      }
-
-    }
-/* ==========================
-   КОМПАКТНЫЙ РЕЖИМ
-   ВСЁ ПОМЕЩАЕТСЯ НА ЭКРАН
-========================== */
-
-body {
-  height: 100vh;
-  min-height: 100vh;
-  padding: 18px 16px;
-  overflow: hidden;
+* {
+  box-sizing: border-box;
 }
 
-.wrap {
-  max-width: 820px;
-  height: 100%;
+body {
+  margin: 0;
+  padding: 22px 14px 40px;
+
+  min-height: 100vh;
+
+  background:
+    radial-gradient(
+      circle at top,
+      #172554,
+      #07111f 55%
+    );
+
+  color: #fff;
+
+  font-family:
+    Inter,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+}
+
+.container {
+  width: 100%;
+  max-width: 850px;
+  margin: 0 auto;
 }
 
 h1 {
-  font-size: clamp(26px, 4vh, 38px);
+  margin: 0;
+
+  text-align: center;
+
+  font-size: 34px;
 }
 
 .subtitle {
   margin-top: 5px;
-  margin-bottom: 12px;
+
+  text-align: center;
+
+  color: #94a3b8;
+
   font-size: 14px;
 }
 
+
+/* =============================
+   НАВИГАЦИЯ
+============================= */
+
+.top-nav {
+  display: flex;
+
+  justify-content: space-between;
+  align-items: center;
+
+  margin: 18px 0 12px;
+
+  gap: 10px;
+}
+
+.back-button,
+.compare-button {
+
+  border: 1px solid rgba(255,255,255,.12);
+
+  background: rgba(255,255,255,.07);
+
+  color: white;
+
+  min-height: 42px;
+
+  padding: 9px 14px;
+
+  border-radius: 12px;
+
+  cursor: pointer;
+
+  font-size: 13px;
+}
+
+.back-button:hover,
+.compare-button:hover {
+
+  background:
+    rgba(255,255,255,.12);
+}
+
+
+/* =============================
+   ЗАГОЛОВОК МЕСЯЦА
+============================= */
+
+.period-title {
+
+  margin: 14px 0 13px;
+
+  text-align: center;
+
+  font-size: 23px;
+
+  font-weight: 800;
+}
+
+
+/* =============================
+   КАРТОЧКИ
+============================= */
+
+.cards {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 8px;
+}
+
 .card {
-  grid-template-columns: 55px 1fr 105px;
+
+  display: grid;
+
+  grid-template-columns:
+    55px
+    minmax(0,1fr)
+    100px;
 
   gap: 12px;
 
-  padding: 12px 18px;
+  align-items: center;
 
-  margin-bottom: 7px;
+  padding: 13px 17px;
 
-  border-radius: 14px;
+  border-radius: 16px;
+
+  background:
+    rgba(15,23,42,.78);
+
+  border:
+    1px solid rgba(255,255,255,.08);
+
+  cursor: pointer;
+
+  transition:
+    transform .18s ease,
+    background .18s ease;
+}
+
+.card:hover {
+
+  transform: translateY(-1px);
+
+  background:
+    rgba(30,41,59,.9);
+}
+
+.card.rank-1 {
+  border-color:
+    rgba(250,204,21,.65);
+}
+
+.card.rank-2 {
+  border-color:
+    rgba(203,213,225,.5);
+}
+
+.card.rank-3 {
+  border-color:
+    rgba(180,83,9,.65);
 }
 
 .rank {
+
   font-size: 25px;
+
+  font-weight: 800;
 }
 
 .name {
-  font-size: 20px;
+
+  overflow: hidden;
+
+  font-size: 19px;
+
+  font-weight: 700;
+
+  text-overflow: ellipsis;
 }
 
 .percent {
-  font-size: 24px;
-  min-width: 95px;
+
+  min-width: 90px;
+
+  text-align: right;
+
+  font-size: 23px;
+
+  font-weight: 900;
+
+  font-variant-numeric:
+    tabular-nums;
 }
 
+
+/* =============================
+   ШКАЛА
+============================= */
+
 .bar-wrapper {
-  padding-top: 1px;
+
+  grid-column: 2 / 3;
+
+  margin-top: 7px;
 }
 
 .bar {
+
+  position: relative;
+
+  width: 100%;
   height: 10px;
+
+  overflow: hidden;
+
+  border-radius: 100px;
+
+  background:
+    rgba(255,255,255,.08);
 }
 
-.scale-labels {
-  height: 12px;
-  margin-top: 2px;
-  font-size: 8px;
+.fill {
+
+  position: absolute;
+
+  z-index: 1;
+
+  top: 0;
+  left: 0;
+  bottom: 0;
+
+  border-radius: 100px;
+
+  background:
+    linear-gradient(
+      90deg,
+      #38bdf8,
+      #22c55e
+    );
+
+  transition:
+    width .7s ease;
 }
 
-.status {
-  margin-top: 7px;
+
+/* ЗАСЕЧКИ 5% */
+
+.ticks {
+
+  position: absolute;
+
+  z-index: 2;
+
+  inset: 0;
+
+  pointer-events: none;
+
+  background-image:
+    repeating-linear-gradient(
+      to right,
+      transparent 0,
+      transparent calc(5% - 1px),
+      rgba(255,255,255,.25)
+        calc(5% - 1px),
+      rgba(255,255,255,.25)
+        5%
+    );
+}
+
+
+/* ЗАСЕЧКИ 10% */
+
+.ticks-strong {
+
+  position: absolute;
+
+  z-index: 3;
+
+  inset: 0;
+
+  pointer-events: none;
+
+  background-image:
+    repeating-linear-gradient(
+      to right,
+      transparent 0,
+      transparent calc(10% - 1px),
+      rgba(255,255,255,.55)
+        calc(10% - 1px),
+      rgba(255,255,255,.55)
+        10%
+    );
+}
+
+
+/* =============================
+   ВЫБОР ГОДА
+============================= */
+
+.period-selector {
+
+  margin-top: 22px;
+
+  padding-top: 16px;
+
+  border-top:
+    1px solid rgba(255,255,255,.08);
+}
+
+.selector-title {
+
+  margin-bottom: 10px;
+
+  text-align: center;
+
+  color: #94a3b8;
+
+  font-size: 13px;
+}
+
+.years,
+.months {
+
+  display: flex;
+
+  justify-content: center;
+
+  flex-wrap: wrap;
+
+  gap: 7px;
+}
+
+.months {
+  margin-top: 9px;
+}
+
+.year-button,
+.month-button {
+
+  border:
+    1px solid rgba(255,255,255,.12);
+
+  background:
+    rgba(255,255,255,.06);
+
+  color: #fff;
+
+  min-height: 40px;
+
+  padding: 8px 13px;
+
+  border-radius: 11px;
+
+  cursor: pointer;
+}
+
+.year-button.active,
+.month-button.active {
+
+  border-color:
+    #38bdf8;
+
+  background:
+    rgba(56,189,248,.17);
+}
+
+
+/* =============================
+   ИСТОРИЯ УЧАСТНИКА
+============================= */
+
+.person-header {
+
+  margin: 18px 0;
+
+  text-align: center;
+}
+
+.person-name {
+
+  font-size: 27px;
+
+  font-weight: 900;
+}
+
+.history-list {
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 7px;
+
+  margin-top: 18px;
+}
+
+.history-row {
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 10px;
+
+  padding: 11px 14px;
+
+  border-radius: 12px;
+
+  background:
+    rgba(255,255,255,.05);
+}
+
+.history-period {
+
+  color: #cbd5e1;
+}
+
+.history-percent {
+
+  font-weight: 900;
+
+  font-size: 18px;
+}
+
+
+/* >= 90 */
+
+.good-value {
+
+  color: #22c55e !important;
+}
+
+
+/* =============================
+   ГРАФИК
+============================= */
+
+.chart-box {
+
+  width: 100%;
+
+  overflow-x: auto;
+
+  margin-top: 18px;
+
+  padding: 15px;
+
+  border-radius: 16px;
+
+  background:
+    rgba(15,23,42,.72);
+
+  border:
+    1px solid rgba(255,255,255,.07);
+}
+
+.chart {
+
+  display: block;
+
+  width: 100%;
+
+  min-width: 620px;
+
+  height: 300px;
+}
+
+.grid-line {
+
+  stroke:
+    rgba(255,255,255,.1);
+
+  stroke-width: 1;
+}
+
+.axis-label {
+
+  fill: #94a3b8;
+
   font-size: 11px;
 }
+
+.chart-line {
+
+  fill: none;
+
+  stroke-width: 3;
+
+  stroke-linejoin: round;
+
+  stroke-linecap: round;
+}
+
+.chart-dot {
+
+  stroke: #07111f;
+
+  stroke-width: 2;
+}
+
+
+/* =============================
+   СРАВНЕНИЕ
+============================= */
+
+.compare-panel {
+
+  margin-top: 18px;
+
+  padding: 16px;
+
+  border-radius: 16px;
+
+  background:
+    rgba(15,23,42,.75);
+
+  border:
+    1px solid rgba(255,255,255,.08);
+}
+
+.compare-title {
+
+  margin-bottom: 14px;
+
+  font-size: 18px;
+
+  font-weight: 800;
+}
+
+.people-options {
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(2,minmax(0,1fr));
+
+  gap: 8px;
+}
+
+.person-check {
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 9px;
+
+  min-height: 44px;
+
+  padding: 9px 11px;
+
+  border-radius: 11px;
+
+  background:
+    rgba(255,255,255,.05);
+
+  cursor: pointer;
+}
+
+.person-check input {
+
+  width: 18px;
+  height: 18px;
+}
+
+.show-comparison {
+
+  width: 100%;
+
+  min-height: 44px;
+
+  margin-top: 13px;
+
+  border: 0;
+
+  border-radius: 12px;
+
+  background: #2563eb;
+
+  color: white;
+
+  cursor: pointer;
+
+  font-size: 14px;
+
+  font-weight: 800;
+}
+
+
+/* ЛЕГЕНДА */
+
+.legend {
+
+  display: flex;
+
+  flex-wrap: wrap;
+
+  gap: 12px;
+
+  margin-top: 12px;
+}
+
+.legend-item {
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 7px;
+
+  font-size: 12px;
+}
+
+.legend-color {
+
+  width: 12px;
+  height: 12px;
+
+  border-radius: 50%;
+}
+
+
+/* =============================
+   СЛУЖЕБНОЕ
+============================= */
+
+.status {
+
+  margin-top: 10px;
+
+  text-align: center;
+
+  color: #64748b;
+
+  font-size: 11px;
+}
+
+.empty {
+
+  padding: 30px;
+
+  text-align: center;
+
+  color: #94a3b8;
+}
+
+.hidden {
+  display: none !important;
+}
+
+
+/* =============================
+   МОБИЛЬНАЯ ВЕРСИЯ
+============================= */
+
 @media (max-width: 600px) {
 
   body {
-    height: auto;
-    min-height: 100vh;
-    padding: 14px 10px;
-    overflow-y: auto;
-  }
 
-  .wrap {
-    width: 100%;
-    max-width: 100%;
-    height: auto;
+    padding:
+      14px
+      9px
+      30px;
   }
 
   h1 {
-    font-size: 26px;
-    line-height: 1.1;
+
+    font-size: 27px;
   }
 
   .subtitle {
-    margin-top: 4px;
-    margin-bottom: 12px;
-    font-size: 13px;
+
+    font-size: 12px;
+  }
+
+  .period-title {
+
+    font-size: 20px;
+
+    margin:
+      11px
+      0;
   }
 
   .card {
-    grid-template-columns: 42px 1fr 78px;
-    gap: 8px;
 
-    padding: 11px 10px;
-    margin-bottom: 8px;
+    grid-template-columns:
+      40px
+      minmax(0,1fr)
+      75px;
 
-    border-radius: 14px;
+    gap: 7px;
+
+    padding:
+      11px
+      10px;
   }
 
   .rank {
-    font-size: 22px;
+
+    font-size: 21px;
   }
 
   .name {
-    font-size: 17px;
-    line-height: 1.15;
-    overflow-wrap: anywhere;
+
+    font-size: 16px;
   }
 
   .percent {
-    font-size: 20px;
-    min-width: 72px;
-    text-align: right;
+
+    min-width: 70px;
+
+    font-size: 19px;
   }
 
   .bar-wrapper {
-    grid-column: 2 / 4;
-    padding-top: 0;
+
+    grid-column:
+      2 / 4;
   }
 
   .bar {
+
     height: 9px;
   }
 
-  .scale-labels {
-    height: 11px;
-    margin-top: 2px;
-    font-size: 7px;
+  .people-options {
+
+    grid-template-columns: 1fr;
   }
 
-  .status {
-    margin-top: 8px;
-    font-size: 10px;
+  .top-nav {
+
+    align-items: stretch;
   }
 
-  .ticks {
-    background-image:
-      repeating-linear-gradient(
-        to right,
-        transparent 0,
-        transparent calc(5% - 1px),
-        rgba(255,255,255,.28) calc(5% - 1px),
-        rgba(255,255,255,.28) 5%
-      );
+  .back-button,
+  .compare-button {
+
+    flex: 1;
   }
 
-  .ticks-strong {
-    background-image:
-      repeating-linear-gradient(
-        to right,
-        transparent 0,
-        transparent calc(10% - 1px),
-        rgba(255,255,255,.45) calc(10% - 1px),
-        rgba(255,255,255,.45) 10%
-      );
+  .year-button,
+  .month-button {
+
+    font-size: 12px;
   }
-} 
-  </style>
+
+  .chart {
+
+    min-width: 560px;
+
+    height: 270px;
+  }
+
+  .history-row {
+
+    padding:
+      10px
+      11px;
+  }
+}
+
+</style>
 </head>
 
 
 <body>
 
-<div class="wrap">
+<div class="container">
 
-  <h1>
-    🏆 Рейтинг команды
-  </h1>
+  <h1>🏆 Рейтинг команды</h1>
 
   <div class="subtitle">
     Актуальные результаты
   </div>
 
-  <div id="ranking">
-    Загрузка...
-  </div>
+
+  <!-- ГЛАВНАЯ -->
+
+  <section id="ranking-view">
+
+    <div
+      id="period-title"
+      class="period-title"
+    >
+      Загрузка...
+    </div>
+
+    <div
+      id="cards"
+      class="cards"
+    ></div>
+
+
+    <div class="period-selector">
+
+      <div class="selector-title">
+        Выберите период
+      </div>
+
+      <div
+        id="years"
+        class="years"
+      ></div>
+
+      <div
+        id="months"
+        class="months"
+      ></div>
+
+    </div>
+
+  </section>
+
+
+  <!-- ЧЕЛОВЕК -->
+
+  <section
+    id="person-view"
+    class="hidden"
+  >
+
+    <div class="top-nav">
+
+      <button
+        id="person-back"
+        class="back-button"
+      >
+        ← К рейтингу
+      </button>
+
+      <button
+        id="person-compare"
+        class="compare-button"
+      >
+        Сравнить
+      </button>
+
+    </div>
+
+    <div class="person-header">
+
+      <div
+        id="person-name"
+        class="person-name"
+      ></div>
+
+    </div>
+
+    <div
+      id="person-chart"
+      class="chart-box"
+    ></div>
+
+    <div
+      id="history"
+      class="history-list"
+    ></div>
+
+  </section>
+
+
+  <!-- СРАВНЕНИЕ -->
+
+  <section
+    id="compare-view"
+    class="hidden"
+  >
+
+    <div class="top-nav">
+
+      <button
+        id="compare-back"
+        class="back-button"
+      >
+        ← Назад
+      </button>
+
+    </div>
+
+    <div class="compare-panel">
+
+      <div class="compare-title">
+        Сравнение участников
+      </div>
+
+      <div
+        id="people-options"
+        class="people-options"
+      ></div>
+
+      <button
+        id="show-comparison"
+        class="show-comparison"
+      >
+        Показать сравнение
+      </button>
+
+    </div>
+
+    <div
+      id="compare-chart"
+      class="chart-box hidden"
+    ></div>
+
+    <div
+      id="compare-legend"
+      class="legend"
+    ></div>
+
+  </section>
+
 
   <div
+    id="status"
     class="status"
-    id="status">
+  >
+    Загрузка данных...
   </div>
 
 </div>
@@ -610,1139 +959,1457 @@ const API_URL =
 "https://script.google.com/macros/s/AKfycbwYcG1OIZ_y2E3OZQw8oH0IuDMyk06lxL41oM6K1TtXN0Noxa5bV7kC_hsWOXTsTde_IA/exec";
 
 
-let isLoading = false;
+const MONTH_NAMES = [
+  "ЯНВАРЬ",
+  "ФЕВРАЛЬ",
+  "МАРТ",
+  "АПРЕЛЬ",
+  "МАЙ",
+  "ИЮНЬ",
+  "ИЮЛЬ",
+  "АВГУСТ",
+  "СЕНТЯБРЬ",
+  "ОКТЯБРЬ",
+  "НОЯБРЬ",
+  "ДЕКАБРЬ"
+];
 
-let displayedData = "";
 
-let candidateData = "";
+const SHORT_MONTHS = [
+  "Янв",
+  "Фев",
+  "Мар",
+  "Апр",
+  "Май",
+  "Июн",
+  "Июл",
+  "Авг",
+  "Сен",
+  "Окт",
+  "Ноя",
+  "Дек"
+];
 
-let candidateCount = 0;
 
-let currentPeople = [];
+let availablePeriods = [];
+
+let selectedYear = null;
+
+let selectedPeriod = null;
+
+let allStatistics = null;
+
+let openedPerson = null;
+
+let loadingRanking = false;
 
 
-/* =============================
-   МЕДАЛИ
-============================= */
+/* =========================
+   СТАРТ
+========================= */
 
-function medal(index) {
+async function init() {
 
-  if (index === 0) return "🥇";
+  try {
 
-  if (index === 1) return "🥈";
+    const data =
+      await apiRequest(
+        "?mode=months"
+      );
 
-  if (index === 2) return "🥉";
+    availablePeriods =
+      data.months || [];
 
-  return index + 1;
+    if (!availablePeriods.length) {
 
+      document.getElementById(
+        "cards"
+      ).innerHTML =
+        '<div class="empty">Нет доступных месяцев</div>';
+
+      return;
+    }
+
+    renderYears();
+
+    selectInitialPeriod();
+
+  } catch (error) {
+
+    showError(error);
+  }
 }
 
 
-/* =============================
-   ФОРМАТ ПРОЦЕНТА
-============================= */
+/* =========================
+   API
+========================= */
+
+async function apiRequest(query) {
+
+  const separator =
+    query.includes("?")
+      ? "&"
+      : "?";
+
+  const response =
+    await fetch(
+      API_URL +
+      query +
+      separator +
+      "_=" +
+      Date.now()
+    );
+
+  if (!response.ok) {
+
+    throw new Error(
+      "Ошибка загрузки"
+    );
+  }
+
+  return response.json();
+}
+
+
+/* =========================
+   ТЕКУЩИЙ МЕСЯЦ
+========================= */
+
+function getCurrentPeriodKey() {
+
+  const now = new Date();
+
+  return (
+    MONTH_NAMES[now.getMonth()] +
+    now.getFullYear()
+  );
+}
+
+
+function selectInitialPeriod() {
+
+  const current =
+    getCurrentPeriodKey();
+
+  const found =
+    availablePeriods.find(
+      p => p.key === current
+    );
+
+  if (found) {
+
+    selectedYear = found.year;
+
+    renderYears();
+
+    renderMonths();
+
+    loadPeriod(found.key);
+
+    return;
+  }
+
+
+  /* Если текущего месяца нет,
+     открываем самый последний */
+
+  const latest =
+    availablePeriods[
+      availablePeriods.length - 1
+    ];
+
+  selectedYear =
+    latest.year;
+
+  renderYears();
+
+  renderMonths();
+
+  loadPeriod(latest.key);
+}
+
+
+/* =========================
+   ГОДЫ
+========================= */
+
+function renderYears() {
+
+  const root =
+    document.getElementById(
+      "years"
+    );
+
+  const years =
+    [
+      ...new Set(
+        availablePeriods.map(
+          p => p.year
+        )
+      )
+    ].sort((a,b) => b-a);
+
+  root.innerHTML = "";
+
+  years.forEach(year => {
+
+    const button =
+      document.createElement(
+        "button"
+      );
+
+    button.className =
+      "year-button";
+
+    button.textContent = year;
+
+    if (year === selectedYear) {
+
+      button.classList.add(
+        "active"
+      );
+    }
+
+    button.addEventListener(
+      "click",
+      () => {
+
+        selectedYear = year;
+
+        renderYears();
+
+        renderMonths();
+
+      }
+    );
+
+    root.appendChild(button);
+  });
+}
+
+
+/* =========================
+   МЕСЯЦЫ
+========================= */
+
+function renderMonths() {
+
+  const root =
+    document.getElementById(
+      "months"
+    );
+
+  root.innerHTML = "";
+
+  const periods =
+    availablePeriods.filter(
+      p =>
+        p.year === selectedYear
+    );
+
+  periods.forEach(period => {
+
+    const button =
+      document.createElement(
+        "button"
+      );
+
+    button.className =
+      "month-button";
+
+    button.textContent =
+      MONTH_NAMES[
+        period.month - 1
+      ].charAt(0) +
+      MONTH_NAMES[
+        period.month - 1
+      ]
+        .slice(1)
+        .toLowerCase();
+
+    if (
+      period.key ===
+      selectedPeriod
+    ) {
+
+      button.classList.add(
+        "active"
+      );
+    }
+
+    button.addEventListener(
+      "click",
+      () => {
+
+        loadPeriod(period.key);
+
+      }
+    );
+
+    root.appendChild(button);
+  });
+}
+
+
+/* =========================
+   РЕЙТИНГ
+========================= */
+
+async function loadPeriod(periodKey) {
+
+  if (loadingRanking) {
+    return;
+  }
+
+  loadingRanking = true;
+
+  selectedPeriod =
+    periodKey;
+
+  const period =
+    availablePeriods.find(
+      p => p.key === periodKey
+    );
+
+  if (period) {
+
+    selectedYear =
+      period.year;
+
+    document.getElementById(
+      "period-title"
+    ).textContent =
+      period.label;
+  }
+
+  renderYears();
+
+  renderMonths();
+
+  try {
+
+    const data =
+      await apiRequest(
+        "?mode=month&period=" +
+        encodeURIComponent(
+          periodKey
+        )
+      );
+
+    renderRanking(
+      data.people || []
+    );
+
+    document.getElementById(
+      "status"
+    ).textContent =
+      "Данные обновлены";
+
+  } catch (error) {
+
+    showError(error);
+
+  } finally {
+
+    loadingRanking = false;
+  }
+}
+
+
+function renderRanking(people) {
+
+  const root =
+    document.getElementById(
+      "cards"
+    );
+
+  root.innerHTML = "";
+
+  if (!people.length) {
+
+    root.innerHTML =
+      '<div class="empty">Нет данных за этот месяц</div>';
+
+    return;
+  }
+
+  people.forEach(
+    (person,index) => {
+
+      const card =
+        document.createElement(
+          "div"
+        );
+
+      card.className =
+        "card rank-" +
+        (index + 1);
+
+      let rank =
+        index + 1;
+
+      if (rank === 1) {
+        rank = "🥇";
+      }
+
+      if (rank === 2) {
+        rank = "🥈";
+      }
+
+      if (rank === 3) {
+        rank = "🥉";
+      }
+
+
+      const percentClass =
+        person.percent >= 90
+          ? "good-value"
+          : "";
+
+
+      card.innerHTML = `
+
+        <div class="rank">
+          ${rank}
+        </div>
+
+        <div>
+
+          <div class="name">
+            ${escapeHtml(person.name)}
+          </div>
+
+          <div class="bar-wrapper">
+
+            <div class="bar">
+
+              <div
+                class="fill"
+                style="
+                  width:
+                  ${clampPercent(person.percent)}%
+                "
+              ></div>
+
+              <div class="ticks"></div>
+
+              <div class="ticks-strong"></div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+        <div
+          class="
+            percent
+            ${percentClass}
+          "
+          style="
+            color:
+            ${getPercentColor(person.percent)}
+          "
+        >
+          ${formatPercent(person.percent)}
+        </div>
+      `;
+
+
+      card.addEventListener(
+        "click",
+        () => {
+
+          openPerson(
+            person.name
+          );
+
+        }
+      );
+
+
+      root.appendChild(card);
+
+    }
+  );
+}
+
+
+/* =========================
+   ВСЯ СТАТИСТИКА
+========================= */
+
+async function loadAllStatistics() {
+
+  if (allStatistics) {
+
+    return allStatistics;
+  }
+
+  document.getElementById(
+    "status"
+  ).textContent =
+    "Загрузка истории...";
+
+  allStatistics =
+    await apiRequest(
+      "?mode=all"
+    );
+
+  document.getElementById(
+    "status"
+  ).textContent =
+    "История загружена";
+
+  return allStatistics;
+}
+
+
+/* =========================
+   КАРТОЧКА ЧЕЛОВЕКА
+========================= */
+
+async function openPerson(name) {
+
+  openedPerson = name;
+
+  showView(
+    "person-view"
+  );
+
+  document.getElementById(
+    "person-name"
+  ).textContent =
+    name;
+
+  try {
+
+    const data =
+      await loadAllStatistics();
+
+    const history =
+      data.people[name] || [];
+
+    renderPersonHistory(
+      history
+    );
+
+    renderSingleChart(
+      history,
+      name
+    );
+
+  } catch (error) {
+
+    showError(error);
+  }
+}
+
+
+function renderPersonHistory(history) {
+
+  const root =
+    document.getElementById(
+      "history"
+    );
+
+  root.innerHTML = "";
+
+
+  const sorted =
+    history
+      .slice()
+      .sort(
+        (a,b) =>
+          b.sort - a.sort
+      );
+
+
+  sorted.forEach(item => {
+
+    const row =
+      document.createElement(
+        "div"
+      );
+
+    row.className =
+      "history-row";
+
+    const good =
+      item.percent >= 90
+        ? "good-value"
+        : "";
+
+
+    row.innerHTML = `
+
+      <div class="history-period">
+        ${escapeHtml(item.label)}
+      </div>
+
+      <div
+        class="
+          history-percent
+          ${good}
+        "
+      >
+        ${formatPercent(item.percent)}
+      </div>
+
+    `;
+
+    root.appendChild(row);
+
+  });
+}
+
+
+/* =========================
+   ГРАФИК ОДНОГО ЧЕЛОВЕКА
+========================= */
+
+function renderSingleChart(
+  history,
+  name
+) {
+
+  const series = [{
+    name: name,
+    values:
+      history
+        .slice()
+        .sort(
+          (a,b) =>
+            a.sort - b.sort
+        )
+  }];
+
+  renderChart(
+    document.getElementById(
+      "person-chart"
+    ),
+    series
+  );
+}
+
+
+/* =========================
+   СРАВНЕНИЕ
+========================= */
+
+async function openCompare() {
+
+  showView(
+    "compare-view"
+  );
+
+  try {
+
+    const data =
+      await loadAllStatistics();
+
+    renderCompareOptions(
+      data
+    );
+
+  } catch (error) {
+
+    showError(error);
+  }
+}
+
+
+function renderCompareOptions(data) {
+
+  const root =
+    document.getElementById(
+      "people-options"
+    );
+
+  root.innerHTML = "";
+
+
+  const names =
+    Object.keys(
+      data.people
+    );
+
+
+  names.forEach(name => {
+
+    const label =
+      document.createElement(
+        "label"
+      );
+
+    label.className =
+      "person-check";
+
+
+    const checked =
+      name === openedPerson
+        ? "checked"
+        : "";
+
+
+    label.innerHTML = `
+
+      <input
+        type="checkbox"
+        value="${escapeAttribute(name)}"
+        ${checked}
+      >
+
+      <span>
+        ${escapeHtml(name)}
+      </span>
+
+    `;
+
+    root.appendChild(label);
+
+  });
+}
+
+
+function showComparison() {
+
+  if (!allStatistics) {
+    return;
+  }
+
+
+  const checked =
+    Array.from(
+      document.querySelectorAll(
+        "#people-options input:checked"
+      )
+    );
+
+
+  if (!checked.length) {
+
+    alert(
+      "Выберите хотя бы одного участника"
+    );
+
+    return;
+  }
+
+
+  const names =
+    checked.map(
+      input => input.value
+    );
+
+
+  const series =
+    names.map(name => ({
+
+      name: name,
+
+      values:
+        (
+          allStatistics.people[name]
+          || []
+        )
+          .slice()
+          .sort(
+            (a,b) =>
+              a.sort - b.sort
+          )
+
+    }));
+
+
+  const box =
+    document.getElementById(
+      "compare-chart"
+    );
+
+  box.classList.remove(
+    "hidden"
+  );
+
+
+  renderChart(
+    box,
+    series
+  );
+
+  renderLegend(
+    names
+  );
+}
+
+
+/* =========================
+   ГРАФИК
+========================= */
+
+const SERIES_COLORS = [
+  "#38bdf8",
+  "#f59e0b",
+  "#a78bfa",
+  "#fb7185",
+  "#2dd4bf",
+  "#f97316",
+  "#84cc16",
+  "#e879f9"
+];
+
+
+function renderChart(
+  root,
+  series
+) {
+
+  if (!series.length) {
+
+    root.innerHTML =
+      '<div class="empty">Нет данных</div>';
+
+    return;
+  }
+
+
+  const allPeriods =
+    new Map();
+
+
+  series.forEach(s => {
+
+    s.values.forEach(v => {
+
+      allPeriods.set(
+        v.sort,
+        v
+      );
+
+    });
+
+  });
+
+
+  const periods =
+    Array.from(
+      allPeriods.values()
+    )
+      .sort(
+        (a,b) =>
+          a.sort - b.sort
+      );
+
+
+  if (!periods.length) {
+
+    root.innerHTML =
+      '<div class="empty">Нет данных</div>';
+
+    return;
+  }
+
+
+  const width = Math.max(
+    620,
+    periods.length * 90
+  );
+
+  const height = 300;
+
+  const left = 45;
+  const right = 20;
+  const top = 20;
+  const bottom = 55;
+
+  const chartWidth =
+    width - left - right;
+
+  const chartHeight =
+    height - top - bottom;
+
+
+  /*
+    Показываем диапазон 70–100,
+    чтобы различия были заметнее.
+  */
+
+  const minY = 70;
+  const maxY = 100;
+
+
+  const x = index => {
+
+    if (periods.length === 1) {
+      return (
+        left +
+        chartWidth / 2
+      );
+    }
+
+    return (
+      left +
+      index *
+      chartWidth /
+      (periods.length - 1)
+    );
+  };
+
+
+  const y = value => {
+
+    const safe =
+      Math.max(
+        minY,
+        Math.min(
+          maxY,
+          value
+        )
+      );
+
+    return (
+      top +
+      chartHeight -
+      (
+        (safe - minY) /
+        (maxY - minY)
+      ) *
+      chartHeight
+    );
+  };
+
+
+  let svg = `
+
+    <svg
+      class="chart"
+      viewBox="0 0 ${width} ${height}"
+      style="width:${width}px"
+    >
+  `;
+
+
+  [70,75,80,85,90,95,100]
+    .forEach(value => {
+
+      const yy = y(value);
+
+      svg += `
+
+        <line
+          class="grid-line"
+          x1="${left}"
+          y1="${yy}"
+          x2="${width-right}"
+          y2="${yy}"
+        />
+
+        <text
+          class="axis-label"
+          x="5"
+          y="${yy + 4}"
+        >
+          ${value}%
+        </text>
+
+      `;
+
+    });
+
+
+  periods.forEach(
+    (period,index) => {
+
+      svg += `
+
+        <text
+          class="axis-label"
+          text-anchor="middle"
+          x="${x(index)}"
+          y="${height - 22}"
+        >
+          ${
+            SHORT_MONTHS[
+              period.month - 1
+            ]
+          }
+          ${String(period.year).slice(-2)}
+        </text>
+
+      `;
+
+    }
+  );
+
+
+  series.forEach(
+    (s,seriesIndex) => {
+
+      const color =
+        SERIES_COLORS[
+          seriesIndex %
+          SERIES_COLORS.length
+        ];
+
+
+      const valuesByPeriod =
+        new Map(
+          s.values.map(
+            item => [
+              item.sort,
+              item
+            ]
+          )
+        );
+
+
+      let path = "";
+
+      let started = false;
+
+
+      periods.forEach(
+        (period,index) => {
+
+          const item =
+            valuesByPeriod.get(
+              period.sort
+            );
+
+          if (!item) {
+
+            started = false;
+
+            return;
+          }
+
+
+          const px =
+            x(index);
+
+          const py =
+            y(item.percent);
+
+
+          if (!started) {
+
+            path +=
+              `M ${px} ${py}`;
+
+            started = true;
+
+          } else {
+
+            path +=
+              ` L ${px} ${py}`;
+
+          }
+
+        }
+      );
+
+
+      svg += `
+
+        <path
+          d="${path}"
+          class="chart-line"
+          stroke="${color}"
+        />
+
+      `;
+
+
+      periods.forEach(
+        (period,index) => {
+
+          const item =
+            valuesByPeriod.get(
+              period.sort
+            );
+
+          if (!item) return;
+
+
+          const dotColor =
+            item.percent >= 90
+              ? "#22c55e"
+              : color;
+
+
+          svg += `
+
+            <circle
+              class="chart-dot"
+              cx="${x(index)}"
+              cy="${y(item.percent)}"
+              r="5"
+              fill="${dotColor}"
+            >
+
+              <title>
+                ${escapeHtml(s.name)}
+                —
+                ${escapeHtml(period.label)}
+                —
+                ${formatPercent(item.percent)}
+              </title>
+
+            </circle>
+
+          `;
+
+        }
+      );
+
+    }
+  );
+
+
+  svg += "</svg>";
+
+  root.innerHTML = svg;
+}
+
+
+/* =========================
+   ЛЕГЕНДА
+========================= */
+
+function renderLegend(names) {
+
+  const root =
+    document.getElementById(
+      "compare-legend"
+    );
+
+  root.innerHTML = "";
+
+  names.forEach(
+    (name,index) => {
+
+      const item =
+        document.createElement(
+          "div"
+        );
+
+      item.className =
+        "legend-item";
+
+      item.innerHTML = `
+
+        <span
+          class="legend-color"
+          style="
+            background:
+            ${
+              SERIES_COLORS[
+                index %
+                SERIES_COLORS.length
+              ]
+            }
+          "
+        ></span>
+
+        <span>
+          ${escapeHtml(name)}
+        </span>
+
+      `;
+
+      root.appendChild(item);
+
+    }
+  );
+}
+
+
+/* =========================
+   ПЕРЕКЛЮЧЕНИЕ ЭКРАНОВ
+========================= */
+
+function showView(id) {
+
+  [
+    "ranking-view",
+    "person-view",
+    "compare-view"
+  ].forEach(view => {
+
+    document
+      .getElementById(view)
+      .classList.add(
+        "hidden"
+      );
+
+  });
+
+
+  document
+    .getElementById(id)
+    .classList.remove(
+      "hidden"
+    );
+
+
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth"
+  });
+}
+
+
+/* =========================
+   ЦВЕТ ПРОЦЕНТА
+========================= */
+
+function getPercentColor(value) {
+
+  if (value >= 90) {
+
+    return "#22c55e";
+  }
+
+  if (value <= 80) {
+
+    return "#ef4444";
+  }
+
+  if (value <= 85) {
+
+    return mixColor(
+      "#ef4444",
+      "#facc15",
+      (value - 80) / 5
+    );
+  }
+
+  return mixColor(
+    "#facc15",
+    "#84cc16",
+    (value - 85) / 5
+  );
+}
+
+
+function mixColor(a,b,t) {
+
+  const A =
+    parseInt(
+      a.slice(1),
+      16
+    );
+
+  const B =
+    parseInt(
+      b.slice(1),
+      16
+    );
+
+
+  const ar = A >> 16;
+
+  const ag =
+    (A >> 8) & 255;
+
+  const ab =
+    A & 255;
+
+
+  const br = B >> 16;
+
+  const bg =
+    (B >> 8) & 255;
+
+  const bb =
+    B & 255;
+
+
+  const r =
+    Math.round(
+      ar +
+      (br-ar)*t
+    );
+
+  const g =
+    Math.round(
+      ag +
+      (bg-ag)*t
+    );
+
+  const bl =
+    Math.round(
+      ab +
+      (bb-ab)*t
+    );
+
+
+  return (
+    "#" +
+    (
+      (1<<24) +
+      (r<<16) +
+      (g<<8) +
+      bl
+    )
+      .toString(16)
+      .slice(1)
+  );
+}
+
+
+/* =========================
+   УТИЛИТЫ
+========================= */
 
 function formatPercent(value) {
 
   return (
     Number(value)
       .toFixed(1)
-      .replace(".", ",")
-    +
+      .replace(".",",")
+      +
     "%"
   );
-
 }
 
 
-/* =============================
-   СМЕШИВАНИЕ ЦВЕТОВ
-============================= */
+function clampPercent(value) {
 
-function mixColor(
-  color1,
-  color2,
-  amount
-) {
-
-  const c1 = {
-    r: parseInt(
-      color1.substring(1,3),
-      16
-    ),
-
-    g: parseInt(
-      color1.substring(3,5),
-      16
-    ),
-
-    b: parseInt(
-      color1.substring(5,7),
-      16
+  return Math.max(
+    0,
+    Math.min(
+      100,
+      Number(value) || 0
     )
-  };
-
-
-  const c2 = {
-
-    r: parseInt(
-      color2.substring(1,3),
-      16
-    ),
-
-    g: parseInt(
-      color2.substring(3,5),
-      16
-    ),
-
-    b: parseInt(
-      color2.substring(5,7),
-      16
-    )
-
-  };
-
-
-  const r =
-    Math.round(
-      c1.r +
-      (c2.r - c1.r) *
-      amount
-    );
-
-
-  const g =
-    Math.round(
-      c1.g +
-      (c2.g - c1.g) *
-      amount
-    );
-
-
-  const b =
-    Math.round(
-      c1.b +
-      (c2.b - c1.b) *
-      amount
-    );
-
-
-  return `rgb(${r},${g},${b})`;
-
-}
-
-
-/* =============================
-   ЦВЕТ ПРОЦЕНТА
-
-   80 = красный
-   85 = жёлтый
-   90 = зелёный
-
-   между ними плавный переход
-============================= */
-
-function getPercentColor(value) {
-
-  value =
-    Number(value);
-
-
-  /*
-    ниже 80 —
-    тёмно-красный → красный
-  */
-
-  if (value <= 80) {
-
-    const amount =
-      Math.max(
-        0,
-        Math.min(
-          1,
-          value / 80
-        )
-      );
-
-    return mixColor(
-      "#7f1d1d",
-      "#ef4444",
-      amount
-    );
-
-  }
-
-
-  /*
-    80 → 85
-
-    красный →
-    оранжевый →
-    жёлтый
-  */
-
-  if (value < 85) {
-
-    const amount =
-      (value - 80) / 5;
-
-    return mixColor(
-      "#ef4444",
-      "#facc15",
-      amount
-    );
-
-  }
-
-
-  /*
-    85 → 90
-
-    жёлтый →
-    салатовый →
-    зелёный
-  */
-
-  if (value < 90) {
-
-    const amount =
-      (value - 85) / 5;
-
-    return mixColor(
-      "#facc15",
-      "#22c55e",
-      amount
-    );
-
-  }
-
-
-  /*
-    90+
-    зелёный
-  */
-
-  return "#22c55e";
-
-}
-
-
-/* =============================
-   СОЗДАНИЕ ПОДПИСЕЙ ШКАЛЫ
-============================= */
-
-function scaleLabels() {
-
-  let html = "";
-
-  for (
-    let i = 0;
-    i <= 100;
-    i += 10
-  ) {
-
-    html += `
-
-      <span
-        class="scale-label"
-        style="left:${i}%">
-        ${i}
-      </span>
-
-    `;
-
-  }
-
-  return html;
-
-}
-
-
-/* =============================
-   АНИМАЦИЯ ПРОЦЕНТА
-============================= */
-
-function animateValue(
-  percentElement,
-  fillElement,
-  from,
-  to,
-  duration = 1800
-) {
-
-  const start =
-    performance.now();
-
-
-  function frame(now) {
-
-    const progress =
-      Math.min(
-        (now - start) /
-        duration,
-        1
-      );
-
-
-    /*
-      Плавное замедление
-      к концу
-    */
-
-    const eased =
-      1 -
-      Math.pow(
-        1 - progress,
-        3
-      );
-
-
-    const value =
-      from +
-      (to - from) *
-      eased;
-
-
-    /*
-      Анимация цифры
-    */
-
-    percentElement.textContent =
-      formatPercent(value);
-
-
-    /*
-      Плавный цвет цифры
-    */
-
-    const color =
-      getPercentColor(value);
-
-
-    percentElement.style.color =
-      color;
-
-
-    percentElement.style.textShadow =
-      `0 0 14px ${color}55`;
-
-
-    /*
-      Анимация длины шкалы
-    */
-
-    fillElement.style.width =
-      Math.max(
-        0,
-        Math.min(
-          value,
-          100
-        )
-      ) + "%";
-
-
-    if (progress < 1) {
-
-      requestAnimationFrame(
-        frame
-      );
-
-    }
-
-  }
-
-
-  requestAnimationFrame(
-    frame
   );
-
 }
 
 
-/* =============================
-   СОЗДАНИЕ КАРТОЧКИ
-============================= */
+function escapeHtml(value) {
 
-function createCard(
-  person,
-  index
-) {
-
-  const card =
-    document.createElement(
-      "div"
-    );
-
-
-  card.dataset.name =
-    person.name;
-
-
-  card.className =
-    "card " +
-    (
-      index === 0
-        ? "top1"
-
-        : index === 1
-        ? "top2"
-
-        : index === 2
-        ? "top3"
-
-        : ""
-    );
-
-
-  const percentColor =
-    getPercentColor(
-      person.percent
-    );
-
-
-  card.innerHTML = `
-
-    <div class="rank">
-
-      ${medal(index)}
-
-    </div>
-
-
-    <div class="name">
-
-      ${person.name}
-
-    </div>
-
-
-    <div
-      class="percent"
-      style="
-        color:${percentColor};
-      "
-    >
-
-      ${formatPercent(
-        person.percent
-      )}
-
-    </div>
-
-
-    <div class="bar-wrapper">
-
-      <div class="bar">
-
-
-        <div
-          class="fill"
-          style="
-            width:
-            ${Math.min(
-              person.percent,
-              100
-            )}%
-          "
-        >
-        </div>
-
-
-        <div class="ticks">
-        </div>
-
-
-        <div class="ticks-strong">
-        </div>
-
-
-      </div>
-
-
-      <div class="scale-labels">
-
-        ${scaleLabels()}
-
-      </div>
-
-
-    </div>
-
-  `;
-
-
-  return card;
-
+  return String(value)
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
 }
 
 
-/* =============================
-   ПЕРВАЯ ОТРИСОВКА
-============================= */
+function escapeAttribute(value) {
 
-function firstRender(
-  people
-) {
-
-  const ranking =
-    document.getElementById(
-      "ranking"
-    );
+  return escapeHtml(value);
+}
 
 
-  ranking.innerHTML = "";
+function showError(error) {
+
+  console.error(error);
+
+  document.getElementById(
+    "status"
+  ).textContent =
+    "Ошибка загрузки данных";
+}
 
 
-  people.forEach(
-    (person,index) => {
+/* =========================
+   КНОПКИ
+========================= */
 
-      ranking.appendChild(
-
-        createCard(
-          person,
-          index
-        )
-
-      );
-
-    }
-  );
-
-
-  currentPeople =
-    JSON.parse(
-      JSON.stringify(
-        people
+document
+  .getElementById(
+    "person-back"
+  )
+  .addEventListener(
+    "click",
+    () =>
+      showView(
+        "ranking-view"
       )
-    );
+  );
 
 
-  updateStatus();
+document
+  .getElementById(
+    "compare-back"
+  )
+  .addEventListener(
+    "click",
+    () => {
 
-}
+      if (openedPerson) {
 
-
-/* =============================
-   СТАТУС
-============================= */
-
-function updateStatus() {
-
-  document
-    .getElementById(
-      "status"
-    )
-    .textContent =
-
-      "Обновлено: " +
-
-      new Date()
-        .toLocaleTimeString(
-          "ru-RU"
+        showView(
+          "person-view"
         );
 
-}
+      } else {
 
-
-/* =============================
-   ОБНОВЛЕНИЕ РЕЙТИНГА
-============================= */
-
-function updateRanking(
-  newPeople
-) {
-
-  const ranking =
-    document.getElementById(
-      "ranking"
-    );
-
-
-  /*
-    Старые позиции карточек
-  */
-
-  const oldRects = {};
-
-
-  ranking
-    .querySelectorAll(
-      ".card"
-    )
-    .forEach(card => {
-
-      oldRects[
-        card.dataset.name
-      ] =
-        card
-          .getBoundingClientRect();
-
-    });
-
-
-  /*
-    Находим существующие
-    карточки
-  */
-
-  const cards = {};
-
-
-  ranking
-    .querySelectorAll(
-      ".card"
-    )
-    .forEach(card => {
-
-      cards[
-        card.dataset.name
-      ] =
-        card;
-
-    });
-
-
-  /*
-    Обновляем карточки
-  */
-
-  newPeople.forEach(
-    (person,index) => {
-
-      let card =
-        cards[
-          person.name
-        ];
-
-
-      if (!card) {
-
-        card =
-          createCard(
-            person,
-            index
-          );
-
+        showView(
+          "ranking-view"
+        );
       }
-
-
-      const oldPerson =
-        currentPeople.find(
-          p =>
-            p.name ===
-            person.name
-        );
-
-
-      const oldValue =
-        oldPerson
-          ? Number(
-              oldPerson.percent
-            )
-          : Number(
-              person.percent
-            );
-
-
-      const newValue =
-        Number(
-          person.percent
-        );
-
-
-      const percentElement =
-        card.querySelector(
-          ".percent"
-        );
-
-
-      const fillElement =
-        card.querySelector(
-          ".fill"
-        );
-
-
-      /*
-        Анимируем одновременно:
-
-        число
-        цвет
-        длину шкалы
-      */
-
-      animateValue(
-
-        percentElement,
-
-        fillElement,
-
-        oldValue,
-
-        newValue,
-
-        1800
-
-      );
-
-
-      /*
-        Новое место
-      */
-
-      card
-        .querySelector(
-          ".rank"
-        )
-        .textContent =
-          medal(index);
-
-
-      /*
-        Оформление топ-3
-      */
-
-      card.className =
-        "card " +
-        (
-          index === 0
-            ? "top1"
-
-            : index === 1
-            ? "top2"
-
-            : index === 2
-            ? "top3"
-
-            : ""
-        );
-
-
-      /*
-        Старое место
-      */
-
-      const oldIndex =
-        currentPeople
-          .findIndex(
-            p =>
-              p.name ===
-              person.name
-          );
-
-
-      /*
-        Поднялся
-      */
-
-      if (
-        oldIndex !== -1 &&
-        index < oldIndex
-      ) {
-
-        card.classList.add(
-          "pulse-up"
-        );
-
-      }
-
-
-      /*
-        Опустился
-      */
-
-      if (
-        oldIndex !== -1 &&
-        index > oldIndex
-      ) {
-
-        card.classList.add(
-          "pulse-down"
-        );
-
-      }
-
-
-      /*
-        Новый порядок
-      */
-
-      ranking.appendChild(
-        card
-      );
 
     }
   );
 
 
-  /*
-    Новые позиции
-  */
-
-  const newRects = {};
-
-
-  ranking
-    .querySelectorAll(
-      ".card"
-    )
-    .forEach(card => {
-
-      newRects[
-        card.dataset.name
-      ] =
-        card
-          .getBoundingClientRect();
-
-    });
+document
+  .getElementById(
+    "person-compare"
+  )
+  .addEventListener(
+    "click",
+    openCompare
+  );
 
 
-  /*
-    Плавное перемещение
-    карточек
-  */
-
-  ranking
-    .querySelectorAll(
-      ".card"
-    )
-    .forEach(card => {
-
-      const name =
-        card.dataset.name;
+document
+  .getElementById(
+    "show-comparison"
+  )
+  .addEventListener(
+    "click",
+    showComparison
+  );
 
 
-      const oldRect =
-        oldRects[name];
+/* =========================
+   АВТООБНОВЛЕНИЕ РЕЙТИНГА
+========================= */
 
+setInterval(() => {
 
-      const newRect =
-        newRects[name];
-
-
-      if (
-        !oldRect ||
-        !newRect
-      ) {
-
-        return;
-
-      }
-
-
-      const deltaY =
-        oldRect.top -
-        newRect.top;
-
-
-      if (
-        Math.abs(
-          deltaY
-        ) > 1
-      ) {
-
-        card.style.transition =
-          "none";
-
-
-        card.style.transform =
-          `translateY(${deltaY}px)`;
-
-
-        requestAnimationFrame(
-          () => {
-
-            requestAnimationFrame(
-              () => {
-
-                card.style.transition =
-                  "transform .85s cubic-bezier(.22,.61,.36,1), border-color .45s ease, box-shadow .45s ease, background .45s ease";
-
-
-                card.style.transform =
-                  "translateY(0)";
-
-              }
-            );
-
-          }
-        );
-
-      }
-
-    });
-
-
-  currentPeople =
-    JSON.parse(
-      JSON.stringify(
-        newPeople
+  const rankingVisible =
+    !document
+      .getElementById(
+        "ranking-view"
       )
-    );
+      .classList
+      .contains(
+        "hidden"
+      );
 
-
-  updateStatus();
-
-}
-
-
-/* =============================
-   ЗАГРУЗКА API
-============================= */
-
-async function loadRanking() {
 
   if (
-    isLoading
+    rankingVisible &&
+    selectedPeriod
   ) {
 
-    return;
-
-  }
-
-
-  isLoading = true;
-
-
-  try {
-
-    const response =
-      await fetch(
-
-        API_URL +
-        "?t=" +
-        Date.now(),
-
-        {
-          cache:
-            "no-store"
-        }
-
-      );
-
-
-    if (
-      !response.ok
-    ) {
-
-      throw new Error(
-        "Ошибка API"
-      );
-
-    }
-
-
-    const data =
-      await response.json();
-
-
-    if (
-      !data ||
-      !Array.isArray(
-        data.people
-      )
-    ) {
-
-      throw new Error(
-        "Некорректные данные"
-      );
-
-    }
-
-
-    const people =
-      data.people
-
-        .map(
-          person => ({
-
-            name:
-              String(
-                person.name || ""
-              ).trim(),
-
-            percent:
-              Number(
-                person.percent || 0
-              )
-
-          })
-        )
-
-
-        .filter(
-          person =>
-            person.name &&
-            person.percent > 0
-        )
-
-
-        .sort(
-          (a,b) =>
-            b.percent -
-            a.percent
-        )
-
-
-        .slice(
-          0,
-          5
-        );
-
-
-    /*
-      Принимаем только полный
-      список из 5 человек
-    */
-
-    if (
-      people.length !== 5
-    ) {
-
-      return;
-
-    }
-
-
-    const fingerprint =
-      JSON.stringify(
-        people
-      );
-
-
-    /*
-      Первый запуск
-    */
-
-    if (
-      !displayedData
-    ) {
-
-      displayedData =
-        fingerprint;
-
-
-      firstRender(
-        people
-      );
-
-
-      return;
-
-    }
-
-
-    /*
-      Ничего не изменилось
-    */
-
-    if (
-      fingerprint ===
-      displayedData
-    ) {
-
-      candidateData = "";
-
-      candidateCount = 0;
-
-      return;
-
-    }
-
-
-    /*
-      Подтверждаем новые данные
-    */
-
-    if (
-      fingerprint ===
-      candidateData
-    ) {
-
-      candidateCount++;
-
-    }
-
-    else {
-
-      candidateData =
-        fingerprint;
-
-      candidateCount = 1;
-
-    }
-
-
-    /*
-      Два одинаковых
-      ответа подряд
-    */
-
-    if (
-      candidateCount >= 2
-    ) {
-
-      displayedData =
-        fingerprint;
-
-
-      candidateData = "";
-
-
-      candidateCount = 0;
-
-
-      updateRanking(
-        people
-      );
-
-    }
-
-  }
-
-
-  catch(error) {
-
-    console.log(
-      "Ошибка:",
-      error
+    loadPeriod(
+      selectedPeriod
     );
-
-
-    document
-      .getElementById(
-        "status"
-      )
-      .textContent =
-        "Ошибка получения данных";
-
   }
 
-
-  finally {
-
-    isLoading = false;
-
-  }
-
-}
+}, 5000);
 
 
-/* =============================
-   ЗАПУСК
-============================= */
+/* СТАРТ */
 
-loadRanking();
-
-
-/*
-  Проверка новых данных
-  каждые 2 секунды
-*/
-
-setInterval(
-  loadRanking,
-  2000
-);
+init();
 
 </script>
 
