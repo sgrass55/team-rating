@@ -1,15 +1,14 @@
 <!DOCTYPE html>
 <html lang="ru">
-
 <head>
-  <meta charset="UTF-8">
+<meta charset="UTF-8">
 
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0"
+>
 
-  <title>Рейтинг команды</title>
+<title>Рейтинг команды</title>
 
 <style>
 
@@ -19,9 +18,8 @@
 
 body {
   margin: 0;
-  padding: 22px 14px 40px;
-
   min-height: 100vh;
+  padding: 18px 12px 35px;
 
   background:
     radial-gradient(
@@ -30,10 +28,9 @@ body {
       #07111f 55%
     );
 
-  color: #fff;
+  color: white;
 
   font-family:
-    Inter,
     -apple-system,
     BlinkMacSystemFont,
     "Segoe UI",
@@ -42,116 +39,51 @@ body {
 
 .container {
   width: 100%;
-  max-width: 850px;
-  margin: 0 auto;
+  max-width: 820px;
+  margin: auto;
 }
 
 h1 {
   margin: 0;
-
   text-align: center;
-
-  font-size: 34px;
+  font-size: 32px;
 }
 
 .subtitle {
-  margin-top: 5px;
-
+  margin-top: 4px;
   text-align: center;
-
   color: #94a3b8;
-
-  font-size: 14px;
-}
-
-
-/* =============================
-   НАВИГАЦИЯ
-============================= */
-
-.top-nav {
-  display: flex;
-
-  justify-content: space-between;
-  align-items: center;
-
-  margin: 18px 0 12px;
-
-  gap: 10px;
-}
-
-.back-button,
-.compare-button {
-
-  border: 1px solid rgba(255,255,255,.12);
-
-  background: rgba(255,255,255,.07);
-
-  color: white;
-
-  min-height: 42px;
-
-  padding: 9px 14px;
-
-  border-radius: 12px;
-
-  cursor: pointer;
-
   font-size: 13px;
 }
 
-.back-button:hover,
-.compare-button:hover {
-
-  background:
-    rgba(255,255,255,.12);
-}
-
-
-/* =============================
-   ЗАГОЛОВОК МЕСЯЦА
-============================= */
-
 .period-title {
-
-  margin: 14px 0 13px;
-
+  margin: 14px 0 12px;
   text-align: center;
-
-  font-size: 23px;
-
-  font-weight: 800;
+  font-size: 22px;
+  font-weight: 900;
 }
 
 
-/* =============================
-   КАРТОЧКИ
-============================= */
+/* КАРТОЧКИ */
 
 .cards {
   display: flex;
-
   flex-direction: column;
-
-  gap: 8px;
+  gap: 7px;
 }
 
 .card {
-
   display: grid;
 
   grid-template-columns:
-    55px
+    50px
     minmax(0,1fr)
-    100px;
+    95px;
 
-  gap: 12px;
-
+  gap: 10px;
   align-items: center;
 
-  padding: 13px 17px;
-
-  border-radius: 16px;
+  padding: 12px 15px;
 
   background:
     rgba(15,23,42,.78);
@@ -159,106 +91,70 @@ h1 {
   border:
     1px solid rgba(255,255,255,.08);
 
+  border-radius: 15px;
+
   cursor: pointer;
 
   transition:
-    transform .18s ease,
-    background .18s ease;
+    transform .2s ease,
+    background .2s ease;
 }
 
 .card:hover {
-
   transform: translateY(-1px);
-
-  background:
-    rgba(30,41,59,.9);
+  background: rgba(30,41,59,.92);
 }
 
 .card.rank-1 {
-  border-color:
-    rgba(250,204,21,.65);
+  border-color: rgba(250,204,21,.7);
 }
 
 .card.rank-2 {
-  border-color:
-    rgba(203,213,225,.5);
+  border-color: rgba(203,213,225,.55);
 }
 
 .card.rank-3 {
-  border-color:
-    rgba(180,83,9,.65);
+  border-color: rgba(180,83,9,.7);
 }
 
 .rank {
-
-  font-size: 25px;
-
-  font-weight: 800;
+  font-size: 24px;
+  font-weight: 900;
 }
 
 .name {
-
-  overflow: hidden;
-
-  font-size: 19px;
-
-  font-weight: 700;
-
-  text-overflow: ellipsis;
+  font-size: 18px;
+  font-weight: 750;
 }
 
 .percent {
-
-  min-width: 90px;
-
   text-align: right;
-
-  font-size: 23px;
-
+  font-size: 22px;
   font-weight: 900;
-
-  font-variant-numeric:
-    tabular-nums;
+  font-variant-numeric: tabular-nums;
 }
 
 
-/* =============================
-   ШКАЛА
-============================= */
+/* ШКАЛА */
 
 .bar-wrapper {
-
-  grid-column: 2 / 3;
-
   margin-top: 7px;
 }
 
 .bar {
-
   position: relative;
-
-  width: 100%;
   height: 10px;
-
   overflow: hidden;
-
-  border-radius: 100px;
 
   background:
     rgba(255,255,255,.08);
+
+  border-radius: 50px;
 }
 
 .fill {
-
   position: absolute;
-
-  z-index: 1;
-
-  top: 0;
-  left: 0;
-  bottom: 0;
-
-  border-radius: 100px;
+  inset: 0 auto 0 0;
 
   background:
     linear-gradient(
@@ -267,22 +163,14 @@ h1 {
       #22c55e
     );
 
-  transition:
-    width .7s ease;
+  border-radius: 50px;
+
+  transition: width .7s ease;
 }
 
-
-/* ЗАСЕЧКИ 5% */
-
 .ticks {
-
   position: absolute;
-
-  z-index: 2;
-
   inset: 0;
-
-  pointer-events: none;
 
   background-image:
     repeating-linear-gradient(
@@ -291,387 +179,287 @@ h1 {
       transparent calc(5% - 1px),
       rgba(255,255,255,.25)
         calc(5% - 1px),
-      rgba(255,255,255,.25)
-        5%
+      rgba(255,255,255,.25) 5%
     );
-}
-
-
-/* ЗАСЕЧКИ 10% */
-
-.ticks-strong {
-
-  position: absolute;
-
-  z-index: 3;
-
-  inset: 0;
 
   pointer-events: none;
+}
+
+.ticks-strong {
+  position: absolute;
+  inset: 0;
 
   background-image:
     repeating-linear-gradient(
       to right,
       transparent 0,
       transparent calc(10% - 1px),
-      rgba(255,255,255,.55)
+      rgba(255,255,255,.5)
         calc(10% - 1px),
-      rgba(255,255,255,.55)
-        10%
+      rgba(255,255,255,.5) 10%
     );
+
+  pointer-events: none;
 }
 
 
-/* =============================
-   ВЫБОР ГОДА
-============================= */
+/* ≥ 90 */
+
+.good {
+  color: #22c55e !important;
+}
+
+
+/* ПЕРИОД */
 
 .period-selector {
-
-  margin-top: 22px;
-
-  padding-top: 16px;
+  margin-top: 18px;
+  padding-top: 14px;
 
   border-top:
     1px solid rgba(255,255,255,.08);
 }
 
 .selector-title {
-
-  margin-bottom: 10px;
-
+  margin-bottom: 9px;
   text-align: center;
-
   color: #94a3b8;
-
-  font-size: 13px;
+  font-size: 12px;
 }
 
 .years,
 .months {
-
   display: flex;
-
-  justify-content: center;
-
   flex-wrap: wrap;
-
+  justify-content: center;
   gap: 7px;
 }
 
 .months {
-  margin-top: 9px;
+  margin-top: 8px;
 }
 
-.year-button,
-.month-button {
+.year-btn,
+.month-btn,
+.action-btn {
 
-  border:
-    1px solid rgba(255,255,255,.12);
+  min-height: 40px;
+  padding: 8px 13px;
+
+  color: white;
 
   background:
     rgba(255,255,255,.06);
 
-  color: #fff;
-
-  min-height: 40px;
-
-  padding: 8px 13px;
+  border:
+    1px solid rgba(255,255,255,.12);
 
   border-radius: 11px;
 
   cursor: pointer;
 }
 
-.year-button.active,
-.month-button.active {
+.year-btn.active,
+.month-btn.active {
 
-  border-color:
-    #38bdf8;
+  border-color: #38bdf8;
 
   background:
-    rgba(56,189,248,.17);
+    rgba(56,189,248,.18);
 }
 
 
-/* =============================
-   ИСТОРИЯ УЧАСТНИКА
-============================= */
+/* НАВИГАЦИЯ */
 
-.person-header {
+.nav {
+  display: flex;
+  gap: 8px;
+  justify-content: space-between;
 
-  margin: 18px 0;
+  margin: 16px 0;
+}
 
+.action-btn {
+  flex: 1;
+}
+
+
+/* ИСТОРИЯ */
+
+.person-title {
   text-align: center;
-}
-
-.person-name {
-
-  font-size: 27px;
-
+  font-size: 26px;
   font-weight: 900;
 }
 
-.history-list {
+.history {
+  margin-top: 15px;
 
   display: flex;
-
   flex-direction: column;
-
-  gap: 7px;
-
-  margin-top: 18px;
+  gap: 6px;
 }
 
 .history-row {
-
   display: flex;
-
+  justify-content: space-between;
   align-items: center;
 
-  justify-content: space-between;
-
-  gap: 10px;
-
-  padding: 11px 14px;
-
-  border-radius: 12px;
+  padding: 10px 13px;
 
   background:
     rgba(255,255,255,.05);
+
+  border-radius: 11px;
 }
 
-.history-period {
-
-  color: #cbd5e1;
-}
-
-.history-percent {
-
+.history-value {
   font-weight: 900;
-
-  font-size: 18px;
+  font-size: 17px;
 }
 
 
-/* >= 90 */
+/* СРАВНЕНИЕ */
 
-.good-value {
-
-  color: #22c55e !important;
-}
-
-
-/* =============================
-   ГРАФИК
-============================= */
-
-.chart-box {
-
-  width: 100%;
-
-  overflow-x: auto;
-
-  margin-top: 18px;
-
+.compare-box {
   padding: 15px;
-
-  border-radius: 16px;
-
-  background:
-    rgba(15,23,42,.72);
-
-  border:
-    1px solid rgba(255,255,255,.07);
-}
-
-.chart {
-
-  display: block;
-
-  width: 100%;
-
-  min-width: 620px;
-
-  height: 300px;
-}
-
-.grid-line {
-
-  stroke:
-    rgba(255,255,255,.1);
-
-  stroke-width: 1;
-}
-
-.axis-label {
-
-  fill: #94a3b8;
-
-  font-size: 11px;
-}
-
-.chart-line {
-
-  fill: none;
-
-  stroke-width: 3;
-
-  stroke-linejoin: round;
-
-  stroke-linecap: round;
-}
-
-.chart-dot {
-
-  stroke: #07111f;
-
-  stroke-width: 2;
-}
-
-
-/* =============================
-   СРАВНЕНИЕ
-============================= */
-
-.compare-panel {
-
-  margin-top: 18px;
-
-  padding: 16px;
-
-  border-radius: 16px;
 
   background:
     rgba(15,23,42,.75);
 
   border:
     1px solid rgba(255,255,255,.08);
+
+  border-radius: 15px;
 }
 
-.compare-title {
-
-  margin-bottom: 14px;
-
-  font-size: 18px;
-
-  font-weight: 800;
+.compare-box h2 {
+  margin-top: 0;
+  font-size: 20px;
 }
 
-.people-options {
-
+.options {
   display: grid;
 
   grid-template-columns:
     repeat(2,minmax(0,1fr));
 
-  gap: 8px;
+  gap: 7px;
 }
 
-.person-check {
-
+.option {
   display: flex;
-
   align-items: center;
+  gap: 8px;
 
-  gap: 9px;
-
-  min-height: 44px;
-
-  padding: 9px 11px;
-
-  border-radius: 11px;
+  min-height: 42px;
+  padding: 9px 10px;
 
   background:
     rgba(255,255,255,.05);
 
-  cursor: pointer;
+  border-radius: 10px;
 }
 
-.person-check input {
-
+.option input {
   width: 18px;
   height: 18px;
 }
 
-.show-comparison {
-
+.compare-run {
   width: 100%;
 
-  min-height: 44px;
-
-  margin-top: 13px;
-
-  border: 0;
-
-  border-radius: 12px;
+  margin-top: 12px;
 
   background: #2563eb;
 
-  color: white;
-
-  cursor: pointer;
-
-  font-size: 14px;
+  border: 0;
 
   font-weight: 800;
 }
 
 
-/* ЛЕГЕНДА */
+/* ГРАФИК */
+
+.chart-box {
+  margin-top: 15px;
+  padding: 12px;
+
+  overflow-x: auto;
+
+  background:
+    rgba(15,23,42,.72);
+
+  border:
+    1px solid rgba(255,255,255,.07);
+
+  border-radius: 15px;
+}
+
+.chart {
+  display: block;
+  height: 300px;
+}
+
+.grid-line {
+  stroke: rgba(255,255,255,.1);
+}
+
+.axis-label {
+  fill: #94a3b8;
+  font-size: 11px;
+}
+
+.chart-line {
+  fill: none;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.chart-dot {
+  stroke: #07111f;
+  stroke-width: 2;
+}
 
 .legend {
-
   display: flex;
-
   flex-wrap: wrap;
+  gap: 10px;
 
-  gap: 12px;
-
-  margin-top: 12px;
+  margin-top: 10px;
 }
 
 .legend-item {
-
   display: flex;
-
   align-items: center;
-
-  gap: 7px;
+  gap: 6px;
 
   font-size: 12px;
 }
 
-.legend-color {
-
-  width: 12px;
-  height: 12px;
-
+.legend-dot {
+  width: 11px;
+  height: 11px;
   border-radius: 50%;
 }
 
 
-/* =============================
-   СЛУЖЕБНОЕ
-============================= */
+/* СЛУЖЕБНОЕ */
 
 .status {
-
-  margin-top: 10px;
+  margin-top: 9px;
 
   text-align: center;
 
   color: #64748b;
 
-  font-size: 11px;
+  font-size: 10px;
 }
 
 .empty {
-
-  padding: 30px;
-
+  padding: 25px;
   text-align: center;
-
   color: #94a3b8;
 }
 
@@ -680,115 +468,66 @@ h1 {
 }
 
 
-/* =============================
-   МОБИЛЬНАЯ ВЕРСИЯ
-============================= */
+/* МОБИЛЬНЫЙ */
 
 @media (max-width: 600px) {
 
   body {
-
-    padding:
-      14px
-      9px
-      30px;
+    padding: 12px 8px 28px;
   }
 
   h1 {
-
-    font-size: 27px;
-  }
-
-  .subtitle {
-
-    font-size: 12px;
+    font-size: 26px;
   }
 
   .period-title {
-
-    font-size: 20px;
-
-    margin:
-      11px
-      0;
+    font-size: 19px;
+    margin: 10px 0;
   }
 
   .card {
-
     grid-template-columns:
-      40px
+      38px
       minmax(0,1fr)
-      75px;
+      72px;
 
-    gap: 7px;
+    gap: 6px;
 
-    padding:
-      11px
-      10px;
+    padding: 10px 9px;
   }
 
   .rank {
-
-    font-size: 21px;
+    font-size: 20px;
   }
 
   .name {
-
-    font-size: 16px;
+    font-size: 15px;
   }
 
   .percent {
-
-    min-width: 70px;
-
-    font-size: 19px;
-  }
-
-  .bar-wrapper {
-
-    grid-column:
-      2 / 4;
+    font-size: 18px;
   }
 
   .bar {
-
     height: 9px;
   }
 
-  .people-options {
-
+  .options {
     grid-template-columns: 1fr;
   }
 
-  .top-nav {
-
-    align-items: stretch;
+  .person-title {
+    font-size: 22px;
   }
 
-  .back-button,
-  .compare-button {
-
-    flex: 1;
-  }
-
-  .year-button,
-  .month-button {
-
+  .year-btn,
+  .month-btn {
     font-size: 12px;
+    padding: 7px 10px;
   }
 
   .chart {
-
-    min-width: 560px;
-
     height: 270px;
-  }
-
-  .history-row {
-
-    padding:
-      10px
-      11px;
   }
 }
 
@@ -809,7 +548,7 @@ h1 {
 
   <!-- ГЛАВНАЯ -->
 
-  <section id="ranking-view">
+  <section id="main-view">
 
     <div
       id="period-title"
@@ -823,11 +562,10 @@ h1 {
       class="cards"
     ></div>
 
-
     <div class="period-selector">
 
       <div class="selector-title">
-        Выберите период
+        Выберите год и месяц
       </div>
 
       <div
@@ -852,32 +590,28 @@ h1 {
     class="hidden"
   >
 
-    <div class="top-nav">
+    <div class="nav">
 
       <button
-        id="person-back"
-        class="back-button"
+        class="action-btn"
+        onclick="showMain()"
       >
         ← К рейтингу
       </button>
 
       <button
-        id="person-compare"
-        class="compare-button"
+        class="action-btn"
+        onclick="openCompare()"
       >
         Сравнить
       </button>
 
     </div>
 
-    <div class="person-header">
-
-      <div
-        id="person-name"
-        class="person-name"
-      ></div>
-
-    </div>
+    <div
+      id="person-title"
+      class="person-title"
+    ></div>
 
     <div
       id="person-chart"
@@ -886,7 +620,7 @@ h1 {
 
     <div
       id="history"
-      class="history-list"
+      class="history"
     ></div>
 
   </section>
@@ -899,31 +633,31 @@ h1 {
     class="hidden"
   >
 
-    <div class="top-nav">
+    <div class="nav">
 
       <button
-        id="compare-back"
-        class="back-button"
+        class="action-btn"
+        onclick="backFromCompare()"
       >
         ← Назад
       </button>
 
     </div>
 
-    <div class="compare-panel">
+    <div class="compare-box">
 
-      <div class="compare-title">
+      <h2>
         Сравнение участников
-      </div>
+      </h2>
 
       <div
-        id="people-options"
-        class="people-options"
+        id="options"
+        class="options"
       ></div>
 
       <button
-        id="show-comparison"
-        class="show-comparison"
+        class="action-btn compare-run"
+        onclick="runComparison()"
       >
         Показать сравнение
       </button>
@@ -936,7 +670,7 @@ h1 {
     ></div>
 
     <div
-      id="compare-legend"
+      id="legend"
       class="legend"
     ></div>
 
@@ -947,7 +681,7 @@ h1 {
     id="status"
     class="status"
   >
-    Загрузка данных...
+    Загрузка...
   </div>
 
 </div>
@@ -955,11 +689,13 @@ h1 {
 
 <script>
 
+/* API */
+
 const API_URL =
 "https://script.google.com/macros/s/AKfycbwYcG1OIZ_y2E3OZQw8oH0IuDMyk06lxL41oM6K1TtXN0Noxa5bV7kC_hsWOXTsTde_IA/exec";
 
 
-const MONTH_NAMES = [
+const MONTHS = [
   "ЯНВАРЬ",
   "ФЕВРАЛЬ",
   "МАРТ",
@@ -974,95 +710,45 @@ const MONTH_NAMES = [
   "ДЕКАБРЬ"
 ];
 
-
 const SHORT_MONTHS = [
-  "Янв",
-  "Фев",
-  "Мар",
-  "Апр",
-  "Май",
-  "Июн",
-  "Июл",
-  "Авг",
-  "Сен",
-  "Окт",
-  "Ноя",
-  "Дек"
+  "Янв","Фев","Мар","Апр",
+  "Май","Июн","Июл","Авг",
+  "Сен","Окт","Ноя","Дек"
+];
+
+const COLORS = [
+  "#38bdf8",
+  "#f59e0b",
+  "#a78bfa",
+  "#fb7185",
+  "#2dd4bf",
+  "#f97316"
 ];
 
 
-let availablePeriods = [];
-
+let periods = [];
 let selectedYear = null;
-
 let selectedPeriod = null;
 
-let allStatistics = null;
+let allData = null;
+let currentPerson = null;
 
-let openedPerson = null;
-
-let loadingRanking = false;
-
-
-/* =========================
-   СТАРТ
-========================= */
-
-async function init() {
-
-  try {
-
-    const data =
-      await apiRequest(
-        "?mode=months"
-      );
-
-    availablePeriods =
-      data.months || [];
-
-    if (!availablePeriods.length) {
-
-      document.getElementById(
-        "cards"
-      ).innerHTML =
-        '<div class="empty">Нет доступных месяцев</div>';
-
-      return;
-    }
-
-    renderYears();
-
-    selectInitialPeriod();
-
-  } catch (error) {
-
-    showError(error);
-  }
-}
+let loading = false;
 
 
-/* =========================
-   API
-========================= */
+/* API */
 
-async function apiRequest(query) {
-
-  const separator =
-    query.includes("?")
-      ? "&"
-      : "?";
+async function api(query) {
 
   const response =
     await fetch(
       API_URL +
       query +
-      separator +
-      "_=" +
+      "&_=" +
       Date.now()
     );
 
   if (!response.ok) {
-
     throw new Error(
       "Ошибка загрузки"
     );
@@ -1072,16 +758,63 @@ async function apiRequest(query) {
 }
 
 
-/* =========================
-   ТЕКУЩИЙ МЕСЯЦ
-========================= */
+/* СТАРТ */
 
-function getCurrentPeriodKey() {
+async function init() {
+
+  try {
+
+    await refreshPeriods();
+
+    if (!periods.length) {
+      document.getElementById(
+        "cards"
+      ).innerHTML =
+        '<div class="empty">Нет данных</div>';
+
+      return;
+    }
+
+    selectInitialPeriod();
+
+  } catch (error) {
+
+    errorStatus(error);
+  }
+}
+
+
+/* ОБНОВЛЕНИЕ СПИСКА МЕСЯЦЕВ */
+
+async function refreshPeriods() {
+
+  const data =
+    await api("?mode=months");
+
+  const newPeriods =
+    data.months || [];
+
+  const changed =
+    JSON.stringify(newPeriods) !==
+    JSON.stringify(periods);
+
+  periods = newPeriods;
+
+  if (changed) {
+    renderYears();
+    renderMonths();
+  }
+}
+
+
+/* ТЕКУЩИЙ МЕСЯЦ */
+
+function currentPeriodKey() {
 
   const now = new Date();
 
   return (
-    MONTH_NAMES[now.getMonth()] +
+    MONTHS[now.getMonth()] +
     now.getFullYear()
   );
 }
@@ -1090,49 +823,30 @@ function getCurrentPeriodKey() {
 function selectInitialPeriod() {
 
   const current =
-    getCurrentPeriodKey();
+    currentPeriodKey();
 
   const found =
-    availablePeriods.find(
+    periods.find(
       p => p.key === current
     );
 
-  if (found) {
-
-    selectedYear = found.year;
-
-    renderYears();
-
-    renderMonths();
-
-    loadPeriod(found.key);
-
-    return;
-  }
-
-
-  /* Если текущего месяца нет,
-     открываем самый последний */
-
-  const latest =
-    availablePeriods[
-      availablePeriods.length - 1
+  const target =
+    found ||
+    periods[
+      periods.length - 1
     ];
 
   selectedYear =
-    latest.year;
+    target.year;
 
   renderYears();
-
   renderMonths();
 
-  loadPeriod(latest.key);
+  loadPeriod(target.key);
 }
 
 
-/* =========================
-   ГОДЫ
-========================= */
+/* ГОДЫ */
 
 function renderYears() {
 
@@ -1141,16 +855,15 @@ function renderYears() {
       "years"
     );
 
-  const years =
-    [
-      ...new Set(
-        availablePeriods.map(
-          p => p.year
-        )
-      )
-    ].sort((a,b) => b-a);
-
   root.innerHTML = "";
+
+  const years =
+    [...new Set(
+      periods.map(
+        p => p.year
+      )
+    )]
+    .sort((a,b) => b-a);
 
   years.forEach(year => {
 
@@ -1160,38 +873,33 @@ function renderYears() {
       );
 
     button.className =
-      "year-button";
+      "year-btn";
 
-    button.textContent = year;
+    button.textContent =
+      year;
 
-    if (year === selectedYear) {
-
+    if (
+      year === selectedYear
+    ) {
       button.classList.add(
         "active"
       );
     }
 
-    button.addEventListener(
-      "click",
-      () => {
+    button.onclick = () => {
 
-        selectedYear = year;
+      selectedYear = year;
 
-        renderYears();
-
-        renderMonths();
-
-      }
-    );
+      renderYears();
+      renderMonths();
+    };
 
     root.appendChild(button);
   });
 }
 
 
-/* =========================
-   МЕСЯЦЫ
-========================= */
+/* МЕСЯЦЫ */
 
 function renderMonths() {
 
@@ -1202,117 +910,103 @@ function renderMonths() {
 
   root.innerHTML = "";
 
-  const periods =
-    availablePeriods.filter(
+  periods
+    .filter(
       p =>
         p.year === selectedYear
-    );
+    )
+    .forEach(period => {
 
-  periods.forEach(period => {
+      const button =
+        document.createElement(
+          "button"
+        );
 
-    const button =
-      document.createElement(
-        "button"
-      );
+      button.className =
+        "month-btn";
 
-    button.className =
-      "month-button";
+      const month =
+        MONTHS[
+          period.month - 1
+        ];
 
-    button.textContent =
-      MONTH_NAMES[
-        period.month - 1
-      ].charAt(0) +
-      MONTH_NAMES[
-        period.month - 1
-      ]
-        .slice(1)
-        .toLowerCase();
+      button.textContent =
+        month.charAt(0) +
+        month
+          .slice(1)
+          .toLowerCase();
 
-    if (
-      period.key ===
-      selectedPeriod
-    ) {
-
-      button.classList.add(
-        "active"
-      );
-    }
-
-    button.addEventListener(
-      "click",
-      () => {
-
-        loadPeriod(period.key);
-
+      if (
+        period.key ===
+        selectedPeriod
+      ) {
+        button.classList.add(
+          "active"
+        );
       }
-    );
 
-    root.appendChild(button);
-  });
+      button.onclick = () =>
+        loadPeriod(
+          period.key
+        );
+
+      root.appendChild(button);
+    });
 }
 
 
-/* =========================
-   РЕЙТИНГ
-========================= */
+/* РЕЙТИНГ */
 
-async function loadPeriod(periodKey) {
+async function loadPeriod(key) {
 
-  if (loadingRanking) {
-    return;
-  }
+  if (loading) return;
 
-  loadingRanking = true;
+  loading = true;
 
-  selectedPeriod =
-    periodKey;
+  selectedPeriod = key;
 
-  const period =
-    availablePeriods.find(
-      p => p.key === periodKey
+  const info =
+    periods.find(
+      p => p.key === key
     );
 
-  if (period) {
+  if (info) {
 
     selectedYear =
-      period.year;
+      info.year;
 
     document.getElementById(
       "period-title"
     ).textContent =
-      period.label;
+      info.label;
   }
 
   renderYears();
-
   renderMonths();
 
   try {
 
     const data =
-      await apiRequest(
+      await api(
         "?mode=month&period=" +
-        encodeURIComponent(
-          periodKey
-        )
+        encodeURIComponent(key)
       );
 
     renderRanking(
       data.people || []
     );
 
-    document.getElementById(
-      "status"
-    ).textContent =
-      "Данные обновлены";
+    status(
+      "Данные обновлены"
+    );
 
   } catch (error) {
 
-    showError(error);
+    errorStatus(error);
 
   } finally {
 
-    loadingRanking = false;
+    loading = false;
   }
 }
 
@@ -1349,24 +1043,14 @@ function renderRanking(people) {
       let rank =
         index + 1;
 
-      if (rank === 1) {
-        rank = "🥇";
-      }
+      if (rank === 1) rank = "🥇";
+      if (rank === 2) rank = "🥈";
+      if (rank === 3) rank = "🥉";
 
-      if (rank === 2) {
-        rank = "🥈";
-      }
-
-      if (rank === 3) {
-        rank = "🥉";
-      }
-
-
-      const percentClass =
+      const good =
         person.percent >= 90
-          ? "good-value"
+          ? "good"
           : "";
-
 
       card.innerHTML = `
 
@@ -1387,8 +1071,7 @@ function renderRanking(people) {
               <div
                 class="fill"
                 style="
-                  width:
-                  ${clampPercent(person.percent)}%
+                  width:${clamp(person.percent)}%
                 "
               ></div>
 
@@ -1403,111 +1086,100 @@ function renderRanking(people) {
         </div>
 
         <div
-          class="
-            percent
-            ${percentClass}
-          "
+          class="percent ${good}"
           style="
-            color:
-            ${getPercentColor(person.percent)}
+            color:${percentColor(person.percent)}
           "
         >
           ${formatPercent(person.percent)}
         </div>
       `;
 
-
-      card.addEventListener(
-        "click",
-        () => {
-
-          openPerson(
-            person.name
-          );
-
-        }
-      );
-
+      card.onclick = () =>
+        openPerson(
+          person.name
+        );
 
       root.appendChild(card);
-
-    }
-  );
+    });
 }
 
 
-/* =========================
-   ВСЯ СТАТИСТИКА
-========================= */
+/* ВСЯ ИСТОРИЯ */
 
-async function loadAllStatistics() {
+async function getAllData(
+  force = false
+) {
 
-  if (allStatistics) {
-
-    return allStatistics;
+  if (
+    allData &&
+    !force
+  ) {
+    return allData;
   }
 
-  document.getElementById(
-    "status"
-  ).textContent =
-    "Загрузка истории...";
+  status(
+    "Загрузка истории..."
+  );
 
-  allStatistics =
-    await apiRequest(
+  allData =
+    await api(
       "?mode=all"
     );
 
-  document.getElementById(
-    "status"
-  ).textContent =
-    "История загружена";
+  status(
+    "История загружена"
+  );
 
-  return allStatistics;
+  return allData;
 }
 
 
-/* =========================
-   КАРТОЧКА ЧЕЛОВЕКА
-========================= */
+/* ЧЕЛОВЕК */
 
 async function openPerson(name) {
 
-  openedPerson = name;
+  currentPerson = name;
 
   showView(
     "person-view"
   );
 
   document.getElementById(
-    "person-name"
+    "person-title"
   ).textContent =
     name;
 
   try {
 
     const data =
-      await loadAllStatistics();
+      await getAllData();
 
     const history =
       data.people[name] || [];
 
-    renderPersonHistory(
+    renderHistory(
       history
     );
 
-    renderSingleChart(
-      history,
-      name
+    renderChart(
+      document.getElementById(
+        "person-chart"
+      ),
+      [{
+        name: name,
+        values: history
+      }]
     );
 
   } catch (error) {
 
-    showError(error);
+    errorStatus(error);
   }
 }
 
 
-function renderPersonHistory(history) {
+function renderHistory(history) {
 
   const root =
     document.getElementById(
@@ -1516,87 +1188,48 @@ function renderPersonHistory(history) {
 
   root.innerHTML = "";
 
+  history
+    .slice()
+    .sort(
+      (a,b) =>
+        b.sort - a.sort
+    )
+    .forEach(item => {
 
-  const sorted =
-    history
-      .slice()
-      .sort(
-        (a,b) =>
-          b.sort - a.sort
-      );
+      const row =
+        document.createElement(
+          "div"
+        );
 
+      row.className =
+        "history-row";
 
-  sorted.forEach(item => {
+      row.innerHTML = `
 
-    const row =
-      document.createElement(
-        "div"
-      );
+        <span>
+          ${escapeHtml(item.label)}
+        </span>
 
-    row.className =
-      "history-row";
+        <span
+          class="
+            history-value
+            ${
+              item.percent >= 90
+                ? "good"
+                : ""
+            }
+          "
+        >
+          ${formatPercent(item.percent)}
+        </span>
+      `;
 
-    const good =
-      item.percent >= 90
-        ? "good-value"
-        : "";
-
-
-    row.innerHTML = `
-
-      <div class="history-period">
-        ${escapeHtml(item.label)}
-      </div>
-
-      <div
-        class="
-          history-percent
-          ${good}
-        "
-      >
-        ${formatPercent(item.percent)}
-      </div>
-
-    `;
-
-    root.appendChild(row);
-
-  });
+      root.appendChild(row);
+    });
 }
 
 
-/* =========================
-   ГРАФИК ОДНОГО ЧЕЛОВЕКА
-========================= */
-
-function renderSingleChart(
-  history,
-  name
-) {
-
-  const series = [{
-    name: name,
-    values:
-      history
-        .slice()
-        .sort(
-          (a,b) =>
-            a.sort - b.sort
-        )
-  }];
-
-  renderChart(
-    document.getElementById(
-      "person-chart"
-    ),
-    series
-  );
-}
-
-
-/* =========================
-   СРАВНЕНИЕ
-========================= */
+/* СРАВНЕНИЕ */
 
 async function openCompare() {
 
@@ -1607,202 +1240,129 @@ async function openCompare() {
   try {
 
     const data =
-      await loadAllStatistics();
+      await getAllData();
 
-    renderCompareOptions(
-      data
-    );
+    const root =
+      document.getElementById(
+        "options"
+      );
+
+    root.innerHTML = "";
+
+    Object.keys(
+      data.people
+    )
+    .forEach(name => {
+
+      const label =
+        document.createElement(
+          "label"
+        );
+
+      label.className =
+        "option";
+
+      label.innerHTML = `
+
+        <input
+          type="checkbox"
+          value="${escapeHtml(name)}"
+          ${
+            name === currentPerson
+              ? "checked"
+              : ""
+          }
+        >
+
+        <span>
+          ${escapeHtml(name)}
+        </span>
+      `;
+
+      root.appendChild(label);
+    });
 
   } catch (error) {
 
-    showError(error);
+    errorStatus(error);
   }
 }
 
 
-function renderCompareOptions(data) {
+function runComparison() {
 
-  const root =
-    document.getElementById(
-      "people-options"
-    );
-
-  root.innerHTML = "";
-
-
-  const names =
-    Object.keys(
-      data.people
-    );
-
-
-  names.forEach(name => {
-
-    const label =
-      document.createElement(
-        "label"
-      );
-
-    label.className =
-      "person-check";
-
-
-    const checked =
-      name === openedPerson
-        ? "checked"
-        : "";
-
-
-    label.innerHTML = `
-
-      <input
-        type="checkbox"
-        value="${escapeAttribute(name)}"
-        ${checked}
-      >
-
-      <span>
-        ${escapeHtml(name)}
-      </span>
-
-    `;
-
-    root.appendChild(label);
-
-  });
-}
-
-
-function showComparison() {
-
-  if (!allStatistics) {
-    return;
-  }
-
-
-  const checked =
+  const selected =
     Array.from(
       document.querySelectorAll(
-        "#people-options input:checked"
+        "#options input:checked"
       )
+    )
+    .map(input =>
+      input.value
     );
 
-
-  if (!checked.length) {
+  if (!selected.length) {
 
     alert(
-      "Выберите хотя бы одного участника"
+      "Выберите участников"
     );
 
     return;
   }
 
-
-  const names =
-    checked.map(
-      input => input.value
-    );
-
-
   const series =
-    names.map(name => ({
-
+    selected.map(name => ({
       name: name,
-
       values:
-        (
-          allStatistics.people[name]
-          || []
-        )
-          .slice()
-          .sort(
-            (a,b) =>
-              a.sort - b.sort
-          )
-
+        allData.people[name] || []
     }));
 
-
-  const box =
+  const chart =
     document.getElementById(
       "compare-chart"
     );
 
-  box.classList.remove(
+  chart.classList.remove(
     "hidden"
   );
 
-
   renderChart(
-    box,
+    chart,
     series
   );
 
   renderLegend(
-    names
+    selected
   );
 }
 
 
-/* =========================
-   ГРАФИК
-========================= */
+/* ГРАФИК */
 
-const SERIES_COLORS = [
-  "#38bdf8",
-  "#f59e0b",
-  "#a78bfa",
-  "#fb7185",
-  "#2dd4bf",
-  "#f97316",
-  "#84cc16",
-  "#e879f9"
-];
+function renderChart(root,series) {
 
-
-function renderChart(
-  root,
-  series
-) {
-
-  if (!series.length) {
-
-    root.innerHTML =
-      '<div class="empty">Нет данных</div>';
-
-    return;
-  }
-
-
-  const allPeriods =
+  const periodMap =
     new Map();
 
-
-  series.forEach(s => {
-
-    s.values.forEach(v => {
-
-      allPeriods.set(
+  series.forEach(s =>
+    s.values.forEach(v =>
+      periodMap.set(
         v.sort,
         v
-      );
-
-    });
-
-  });
-
-
-  const periods =
-    Array.from(
-      allPeriods.values()
+      )
     )
-      .sort(
-        (a,b) =>
-          a.sort - b.sort
-      );
+  );
 
+  const chartPeriods =
+    Array.from(
+      periodMap.values()
+    )
+    .sort(
+      (a,b) =>
+        a.sort - b.sort
+    );
 
-  if (!periods.length) {
+  if (!chartPeriods.length) {
 
     root.innerHTML =
       '<div class="empty">Нет данных</div>';
@@ -1810,54 +1370,49 @@ function renderChart(
     return;
   }
 
-
-  const width = Math.max(
-    620,
-    periods.length * 90
-  );
+  const width =
+    Math.max(
+      620,
+      chartPeriods.length * 75
+    );
 
   const height = 300;
 
   const left = 45;
   const right = 20;
   const top = 20;
-  const bottom = 55;
+  const bottom = 50;
 
-  const chartWidth =
+  const cw =
     width - left - right;
 
-  const chartHeight =
+  const ch =
     height - top - bottom;
-
-
-  /*
-    Показываем диапазон 70–100,
-    чтобы различия были заметнее.
-  */
 
   const minY = 70;
   const maxY = 100;
 
 
-  const x = index => {
+  function x(index) {
 
-    if (periods.length === 1) {
-      return (
-        left +
-        chartWidth / 2
-      );
+    if (
+      chartPeriods.length === 1
+    ) {
+      return left + cw / 2;
     }
 
     return (
       left +
       index *
-      chartWidth /
-      (periods.length - 1)
+      cw /
+      (
+        chartPeriods.length - 1
+      )
     );
-  };
+  }
 
 
-  const y = value => {
+  function y(value) {
 
     const safe =
       Math.max(
@@ -1870,18 +1425,17 @@ function renderChart(
 
     return (
       top +
-      chartHeight -
+      ch -
       (
-        (safe - minY) /
-        (maxY - minY)
+        (safe-minY) /
+        (maxY-minY)
       ) *
-      chartHeight
+      ch
     );
-  };
+  }
 
 
   let svg = `
-
     <svg
       class="chart"
       viewBox="0 0 ${width} ${height}"
@@ -1890,35 +1444,36 @@ function renderChart(
   `;
 
 
-  [70,75,80,85,90,95,100]
-    .forEach(value => {
+  [
+    70,75,80,85,90,95,100
+  ]
+  .forEach(value => {
 
-      const yy = y(value);
+    const yy =
+      y(value);
 
-      svg += `
+    svg += `
 
-        <line
-          class="grid-line"
-          x1="${left}"
-          y1="${yy}"
-          x2="${width-right}"
-          y2="${yy}"
-        />
+      <line
+        class="grid-line"
+        x1="${left}"
+        y1="${yy}"
+        x2="${width-right}"
+        y2="${yy}"
+      />
 
-        <text
-          class="axis-label"
-          x="5"
-          y="${yy + 4}"
-        >
-          ${value}%
-        </text>
-
-      `;
-
-    });
+      <text
+        class="axis-label"
+        x="4"
+        y="${yy+4}"
+      >
+        ${value}%
+      </text>
+    `;
+  });
 
 
-  periods.forEach(
+  chartPeriods.forEach(
     (period,index) => {
 
       svg += `
@@ -1927,70 +1482,61 @@ function renderChart(
           class="axis-label"
           text-anchor="middle"
           x="${x(index)}"
-          y="${height - 22}"
+          y="${height-18}"
         >
           ${
             SHORT_MONTHS[
-              period.month - 1
+              period.month-1
             ]
-          }
-          ${String(period.year).slice(-2)}
+          } ${String(period.year).slice(-2)}
         </text>
-
       `;
-
     }
   );
 
 
   series.forEach(
-    (s,seriesIndex) => {
+    (serie,sIndex) => {
 
       const color =
-        SERIES_COLORS[
-          seriesIndex %
-          SERIES_COLORS.length
+        COLORS[
+          sIndex %
+          COLORS.length
         ];
 
-
-      const valuesByPeriod =
+      const map =
         new Map(
-          s.values.map(
-            item => [
-              item.sort,
-              item
+          serie.values.map(
+            v => [
+              v.sort,
+              v
             ]
           )
         );
 
-
       let path = "";
-
       let started = false;
 
-
-      periods.forEach(
+      chartPeriods.forEach(
         (period,index) => {
 
-          const item =
-            valuesByPeriod.get(
+          const value =
+            map.get(
               period.sort
             );
 
-          if (!item) {
+          if (!value) {
 
             started = false;
 
             return;
           }
 
-
           const px =
             x(index);
 
           const py =
-            y(item.percent);
-
+            y(value.percent);
 
           if (!started) {
 
@@ -2003,9 +1549,7 @@ function renderChart(
 
             path +=
               ` L ${px} ${py}`;
-
           }
-
         }
       );
 
@@ -2013,56 +1557,48 @@ function renderChart(
       svg += `
 
         <path
-          d="${path}"
           class="chart-line"
           stroke="${color}"
+          d="${path}"
         />
-
       `;
 
 
-      periods.forEach(
+      chartPeriods.forEach(
         (period,index) => {
 
-          const item =
-            valuesByPeriod.get(
+          const value =
+            map.get(
               period.sort
             );
 
-          if (!item) return;
+          if (!value) return;
 
-
-          const dotColor =
-            item.percent >= 90
+          const dot =
+            value.percent >= 90
               ? "#22c55e"
               : color;
-
 
           svg += `
 
             <circle
               class="chart-dot"
               cx="${x(index)}"
-              cy="${y(item.percent)}"
+              cy="${y(value.percent)}"
               r="5"
-              fill="${dotColor}"
+              fill="${dot}"
             >
-
               <title>
-                ${escapeHtml(s.name)}
+                ${escapeHtml(serie.name)}
                 —
                 ${escapeHtml(period.label)}
                 —
-                ${formatPercent(item.percent)}
+                ${formatPercent(value.percent)}
               </title>
-
             </circle>
-
           `;
-
         }
       );
-
     }
   );
 
@@ -2073,15 +1609,13 @@ function renderChart(
 }
 
 
-/* =========================
-   ЛЕГЕНДА
-========================= */
+/* ЛЕГЕНДА */
 
 function renderLegend(names) {
 
   const root =
     document.getElementById(
-      "compare-legend"
+      "legend"
     );
 
   root.innerHTML = "";
@@ -2089,62 +1623,48 @@ function renderLegend(names) {
   names.forEach(
     (name,index) => {
 
-      const item =
-        document.createElement(
-          "div"
-        );
+      root.innerHTML += `
 
-      item.className =
-        "legend-item";
+        <div class="legend-item">
 
-      item.innerHTML = `
+          <span
+            class="legend-dot"
+            style="
+              background:
+              ${
+                COLORS[
+                  index %
+                  COLORS.length
+                ]
+              }
+            "
+          ></span>
 
-        <span
-          class="legend-color"
-          style="
-            background:
-            ${
-              SERIES_COLORS[
-                index %
-                SERIES_COLORS.length
-              ]
-            }
-          "
-        ></span>
-
-        <span>
           ${escapeHtml(name)}
-        </span>
 
+        </div>
       `;
-
-      root.appendChild(item);
-
     }
   );
 }
 
 
-/* =========================
-   ПЕРЕКЛЮЧЕНИЕ ЭКРАНОВ
-========================= */
+/* ЭКРАНЫ */
 
 function showView(id) {
 
   [
-    "ranking-view",
+    "main-view",
     "person-view",
     "compare-view"
-  ].forEach(view => {
-
+  ]
+  .forEach(view =>
     document
       .getElementById(view)
       .classList.add(
         "hidden"
-      );
-
-  });
-
+      )
+  );
 
   document
     .getElementById(id)
@@ -2152,116 +1672,54 @@ function showView(id) {
       "hidden"
     );
 
-
-  window.scrollTo({
-    top: 0,
-    behavior: "smooth"
-  });
+  window.scrollTo(
+    0,
+    0
+  );
 }
 
 
-/* =========================
-   ЦВЕТ ПРОЦЕНТА
-========================= */
+function showMain() {
 
-function getPercentColor(value) {
+  showView(
+    "main-view"
+  );
+}
 
-  if (value >= 90) {
 
+function backFromCompare() {
+
+  if (currentPerson) {
+
+    showView(
+      "person-view"
+    );
+
+  } else {
+
+    showMain();
+  }
+}
+
+
+/* ЦВЕТ ПРОЦЕНТА */
+
+function percentColor(value) {
+
+  if (value >= 90)
     return "#22c55e";
-  }
 
-  if (value <= 80) {
-
+  if (value <= 80)
     return "#ef4444";
-  }
 
-  if (value <= 85) {
+  if (value <= 85)
+    return "#f59e0b";
 
-    return mixColor(
-      "#ef4444",
-      "#facc15",
-      (value - 80) / 5
-    );
-  }
-
-  return mixColor(
-    "#facc15",
-    "#84cc16",
-    (value - 85) / 5
-  );
+  return "#eab308";
 }
 
 
-function mixColor(a,b,t) {
-
-  const A =
-    parseInt(
-      a.slice(1),
-      16
-    );
-
-  const B =
-    parseInt(
-      b.slice(1),
-      16
-    );
-
-
-  const ar = A >> 16;
-
-  const ag =
-    (A >> 8) & 255;
-
-  const ab =
-    A & 255;
-
-
-  const br = B >> 16;
-
-  const bg =
-    (B >> 8) & 255;
-
-  const bb =
-    B & 255;
-
-
-  const r =
-    Math.round(
-      ar +
-      (br-ar)*t
-    );
-
-  const g =
-    Math.round(
-      ag +
-      (bg-ag)*t
-    );
-
-  const bl =
-    Math.round(
-      ab +
-      (bb-ab)*t
-    );
-
-
-  return (
-    "#" +
-    (
-      (1<<24) +
-      (r<<16) +
-      (g<<8) +
-      bl
-    )
-      .toString(16)
-      .slice(1)
-  );
-}
-
-
-/* =========================
-   УТИЛИТЫ
-========================= */
+/* УТИЛИТЫ */
 
 function formatPercent(value) {
 
@@ -2269,13 +1727,13 @@ function formatPercent(value) {
     Number(value)
       .toFixed(1)
       .replace(".",",")
-      +
+    +
     "%"
   );
 }
 
 
-function clampPercent(value) {
+function clamp(value) {
 
   return Math.max(
     0,
@@ -2298,113 +1756,95 @@ function escapeHtml(value) {
 }
 
 
-function escapeAttribute(value) {
-
-  return escapeHtml(value);
-}
-
-
-function showError(error) {
-
-  console.error(error);
+function status(text) {
 
   document.getElementById(
     "status"
   ).textContent =
-    "Ошибка загрузки данных";
+    text;
 }
 
 
-/* =========================
-   КНОПКИ
-========================= */
+function errorStatus(error) {
 
-document
-  .getElementById(
-    "person-back"
-  )
-  .addEventListener(
-    "click",
-    () =>
-      showView(
-        "ranking-view"
-      )
+  console.error(error);
+
+  status(
+    "Ошибка загрузки данных"
   );
+}
 
 
-document
-  .getElementById(
-    "compare-back"
-  )
-  .addEventListener(
-    "click",
-    () => {
-
-      if (openedPerson) {
-
-        showView(
-          "person-view"
-        );
-
-      } else {
-
-        showView(
-          "ranking-view"
-        );
-      }
-
-    }
-  );
-
-
-document
-  .getElementById(
-    "person-compare"
-  )
-  .addEventListener(
-    "click",
-    openCompare
-  );
-
-
-document
-  .getElementById(
-    "show-comparison"
-  )
-  .addEventListener(
-    "click",
-    showComparison
-  );
-
-
-/* =========================
-   АВТООБНОВЛЕНИЕ РЕЙТИНГА
-========================= */
+/* =====================================
+   АВТООБНОВЛЕНИЕ ТЕКУЩЕГО РЕЙТИНГА
+   каждые 5 секунд
+===================================== */
 
 setInterval(() => {
 
-  const rankingVisible =
+  const visible =
     !document
       .getElementById(
-        "ranking-view"
+        "main-view"
       )
       .classList
       .contains(
         "hidden"
       );
 
-
   if (
-    rankingVisible &&
+    visible &&
     selectedPeriod
   ) {
-
     loadPeriod(
       selectedPeriod
     );
   }
 
-}, 5000);
+},5000);
+
+
+/* =====================================
+   ПОИСК НОВЫХ МЕСЯЦЕВ
+   раз в 60 секунд
+===================================== */
+
+setInterval(async () => {
+
+  try {
+
+    const before =
+      JSON.stringify(
+        periods
+      );
+
+    await refreshPeriods();
+
+    const after =
+      JSON.stringify(
+        periods
+      );
+
+    if (before !== after) {
+
+      /*
+        Сбрасываем кэш истории,
+        потому что появился новый месяц.
+      */
+
+      allData = null;
+
+      status(
+        "Обнаружены новые данные"
+      );
+    }
+
+  } catch (error) {
+
+    console.error(error);
+  }
+
+},60000);
 
 
 /* СТАРТ */
