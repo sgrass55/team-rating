@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>Рейтинг команды</title>
 
   <style>
@@ -13,11 +14,15 @@
     body {
       margin: 0;
       min-height: 100vh;
+
       font-family: Arial, sans-serif;
+
       background: #0f172a;
       color: white;
+
       display: flex;
       justify-content: center;
+
       padding: 36px 18px;
     }
 
@@ -28,144 +33,372 @@
 
     h1 {
       margin: 0;
+
       text-align: center;
+
       font-size: 42px;
     }
 
     .subtitle {
-      text-align: center;
-      color: #94a3b8;
       margin-top: 10px;
       margin-bottom: 28px;
+
+      text-align: center;
+
+      color: #94a3b8;
+
       font-size: 16px;
     }
 
-    #ranking {
-      position: relative;
-    }
+
+    /* ==========================
+       КАРТОЧКА
+    ========================== */
 
     .card {
       display: grid;
-      grid-template-columns: 70px 1fr 120px;
+
+      grid-template-columns:
+        70px
+        1fr
+        120px;
+
       gap: 16px;
+
       align-items: center;
 
       padding: 22px;
+
       margin-bottom: 14px;
 
       border-radius: 18px;
+
       background: #1e293b;
 
-      box-shadow: 0 8px 24px rgba(0,0,0,.22);
+      border: 1px solid transparent;
+
+      box-shadow:
+        0 8px 24px
+        rgba(0,0,0,.22);
 
       transition:
         transform .85s cubic-bezier(.22,.61,.36,1),
-        border-color .4s ease,
-        box-shadow .4s ease,
-        background .4s ease;
+        border-color .45s ease,
+        box-shadow .45s ease,
+        background .45s ease;
     }
 
+
     .top1 {
-      border: 1px solid #facc15;
+      border-color: #facc15;
     }
 
     .top2 {
-      border: 1px solid #cbd5e1;
+      border-color: #cbd5e1;
     }
 
     .top3 {
-      border: 1px solid #fb923c;
+      border-color: #fb923c;
     }
+
+
+    /* ==========================
+       МЕСТО
+    ========================== */
 
     .rank {
       font-size: 30px;
+
       font-weight: 700;
+
       text-align: center;
     }
+
+
+    /* ==========================
+       ИМЯ
+    ========================== */
 
     .name {
       font-size: 24px;
+
       font-weight: 700;
     }
 
+
+    /* ==========================
+       ПРОЦЕНТ
+    ========================== */
+
     .percent {
-      font-size: 28px;
+      font-size: 29px;
+
       font-weight: 800;
+
       text-align: right;
-      font-variant-numeric: tabular-nums;
-    }
 
-    .bar {
-      grid-column: 2 / 4;
-      height: 10px;
-      background: #334155;
-      border-radius: 999px;
-      overflow: hidden;
-    }
+      min-width: 110px;
 
-    .fill {
-      height: 100%;
-      border-radius: 999px;
-      background: linear-gradient(
-        90deg,
-        #38bdf8,
-        #22c55e
-      );
+      font-variant-numeric:
+        tabular-nums;
 
       transition:
-        width 1.6s cubic-bezier(.22,.61,.36,1);
+        text-shadow .25s ease;
     }
+
+
+    /* ==========================
+       ШКАЛА
+    ========================== */
+
+    .bar-wrapper {
+      grid-column: 2 / 4;
+
+      position: relative;
+
+      padding-top: 5px;
+    }
+
+
+    .bar {
+      position: relative;
+
+      height: 15px;
+
+      width: 100%;
+
+      background: #334155;
+
+      border-radius: 999px;
+
+      overflow: hidden;
+
+      box-shadow:
+        inset 0 2px 5px
+        rgba(0,0,0,.3);
+    }
+
+
+    /*
+      ЦВЕТНАЯ ЗАПОЛНЕННАЯ ЧАСТЬ
+    */
+
+    .fill {
+      position: absolute;
+
+      left: 0;
+      top: 0;
+
+      height: 100%;
+
+      width: 0;
+
+      border-radius: 999px;
+
+      background:
+        linear-gradient(
+          90deg,
+
+          #450a0a 0%,
+          #7f1d1d 25%,
+          #dc2626 45%,
+          #f97316 65%,
+          #facc15 82%,
+          #22c55e 100%
+        );
+
+      box-shadow:
+        0 0 14px
+        rgba(255,255,255,.12);
+    }
+
+
+    /*
+      ЗАСЕЧКИ КАЖДЫЕ 5%
+    */
+
+    .ticks {
+      position: absolute;
+
+      inset: 0;
+
+      z-index: 10;
+
+      pointer-events: none;
+
+      background-image:
+        repeating-linear-gradient(
+          to right,
+
+          transparent 0,
+          transparent calc(5% - 1px),
+
+          rgba(255,255,255,.35)
+          calc(5% - 1px),
+
+          rgba(255,255,255,.35)
+          5%
+        );
+    }
+
+
+    /*
+      Более заметные деления
+      каждые 10%
+    */
+
+    .ticks-strong {
+      position: absolute;
+
+      inset: 0;
+
+      z-index: 11;
+
+      pointer-events: none;
+
+      background-image:
+        repeating-linear-gradient(
+          to right,
+
+          transparent 0,
+          transparent calc(10% - 1px),
+
+          rgba(255,255,255,.5)
+          calc(10% - 1px),
+
+          rgba(255,255,255,.5)
+          10%
+        );
+    }
+
+
+    /* ==========================
+       ПОДПИСИ ПОД ШКАЛОЙ
+    ========================== */
+
+    .scale-labels {
+      position: relative;
+
+      height: 18px;
+
+      margin-top: 5px;
+
+      color: #64748b;
+
+      font-size: 10px;
+
+      font-weight: 600;
+    }
+
+
+    .scale-label {
+      position: absolute;
+
+      transform:
+        translateX(-50%);
+    }
+
+
+    .scale-label:first-child {
+      transform: none;
+    }
+
+
+    .scale-label:last-child {
+      transform:
+        translateX(-100%);
+    }
+
+
+    /* ==========================
+       СТАТУС
+    ========================== */
 
     .status {
       margin-top: 18px;
+
       text-align: center;
+
       color: #94a3b8;
+
       font-size: 14px;
     }
 
+
+    /* ==========================
+       ПОДЪЁМ / ПАДЕНИЕ
+    ========================== */
+
     .pulse-up {
-      animation: pulseUp .9s ease;
+      animation:
+        pulseUp .9s ease;
     }
+
 
     .pulse-down {
-      animation: pulseDown .9s ease;
+      animation:
+        pulseDown .9s ease;
     }
+
 
     @keyframes pulseUp {
+
       0% {
-        box-shadow: 0 8px 24px rgba(0,0,0,.22);
+        box-shadow:
+          0 8px 24px
+          rgba(0,0,0,.22);
       }
 
       50% {
-        box-shadow: 0 0 30px rgba(34,197,94,.4);
+        box-shadow:
+          0 0 32px
+          rgba(34,197,94,.45);
       }
 
       100% {
-        box-shadow: 0 8px 24px rgba(0,0,0,.22);
+        box-shadow:
+          0 8px 24px
+          rgba(0,0,0,.22);
       }
+
     }
+
 
     @keyframes pulseDown {
+
       0% {
-        box-shadow: 0 8px 24px rgba(0,0,0,.22);
+        box-shadow:
+          0 8px 24px
+          rgba(0,0,0,.22);
       }
 
       50% {
-        box-shadow: 0 0 30px rgba(239,68,68,.3);
+        box-shadow:
+          0 0 32px
+          rgba(239,68,68,.4);
       }
 
       100% {
-        box-shadow: 0 8px 24px rgba(0,0,0,.22);
+        box-shadow:
+          0 8px 24px
+          rgba(0,0,0,.22);
       }
+
     }
 
+
     @media (max-width: 600px) {
+
       h1 {
         font-size: 30px;
       }
 
       .card {
-        grid-template-columns: 50px 1fr 90px;
+        grid-template-columns:
+          50px
+          1fr
+          90px;
+
         padding: 16px;
       }
 
@@ -175,719 +408,1185 @@
 
       .percent {
         font-size: 22px;
+
+        min-width: 80px;
       }
+
+      .scale-labels {
+        font-size: 8px;
+      }
+
     }
+
   </style>
 </head>
 
+
 <body>
 
-  <div class="wrap">
+<div class="wrap">
 
-    <h1>🏆 Рейтинг команды</h1>
+  <h1>
+    🏆 Рейтинг команды
+  </h1>
 
-    <div class="subtitle">
-      Актуальные результаты
-    </div>
-
-    <div id="ranking">
-      Загрузка...
-    </div>
-
-    <div
-      class="status"
-      id="status">
-    </div>
-
+  <div class="subtitle">
+    Актуальные результаты
   </div>
 
-  <script>
+  <div id="ranking">
+    Загрузка...
+  </div>
 
-    const API_URL =
-      "https://script.google.com/macros/s/AKfycbwYcG1OIZ_y2E3OZQw8oH0IuDMyk06lxL41oM6K1TtXN0Noxa5bV7kC_hsWOXTsTde_IA/exec";
+  <div
+    class="status"
+    id="status">
+  </div>
 
-
-    let isLoading = false;
-
-    let displayedData = "";
-    let candidateData = "";
-    let candidateCount = 0;
-
-    let currentPeople = [];
+</div>
 
 
-    function medal(index) {
+<script>
 
-      if (index === 0) return "🥇";
-      if (index === 1) return "🥈";
-      if (index === 2) return "🥉";
-
-      return index + 1;
-    }
+const API_URL =
+"https://script.google.com/macros/s/AKfycbwYcG1OIZ_y2E3OZQw8oH0IuDMyk06lxL41oM6K1TtXN0Noxa5bV7kC_hsWOXTsTde_IA/exec";
 
 
-    function formatPercent(value) {
+let isLoading = false;
 
-      return (
-        Number(value)
-          .toFixed(1)
-          .replace(".", ",")
-        + "%"
+let displayedData = "";
+
+let candidateData = "";
+
+let candidateCount = 0;
+
+let currentPeople = [];
+
+
+/* =============================
+   МЕДАЛИ
+============================= */
+
+function medal(index) {
+
+  if (index === 0) return "🥇";
+
+  if (index === 1) return "🥈";
+
+  if (index === 2) return "🥉";
+
+  return index + 1;
+
+}
+
+
+/* =============================
+   ФОРМАТ ПРОЦЕНТА
+============================= */
+
+function formatPercent(value) {
+
+  return (
+    Number(value)
+      .toFixed(1)
+      .replace(".", ",")
+    +
+    "%"
+  );
+
+}
+
+
+/* =============================
+   СМЕШИВАНИЕ ЦВЕТОВ
+============================= */
+
+function mixColor(
+  color1,
+  color2,
+  amount
+) {
+
+  const c1 = {
+    r: parseInt(
+      color1.substring(1,3),
+      16
+    ),
+
+    g: parseInt(
+      color1.substring(3,5),
+      16
+    ),
+
+    b: parseInt(
+      color1.substring(5,7),
+      16
+    )
+  };
+
+
+  const c2 = {
+
+    r: parseInt(
+      color2.substring(1,3),
+      16
+    ),
+
+    g: parseInt(
+      color2.substring(3,5),
+      16
+    ),
+
+    b: parseInt(
+      color2.substring(5,7),
+      16
+    )
+
+  };
+
+
+  const r =
+    Math.round(
+      c1.r +
+      (c2.r - c1.r) *
+      amount
+    );
+
+
+  const g =
+    Math.round(
+      c1.g +
+      (c2.g - c1.g) *
+      amount
+    );
+
+
+  const b =
+    Math.round(
+      c1.b +
+      (c2.b - c1.b) *
+      amount
+    );
+
+
+  return `rgb(${r},${g},${b})`;
+
+}
+
+
+/* =============================
+   ЦВЕТ ПРОЦЕНТА
+
+   80 = красный
+   85 = жёлтый
+   90 = зелёный
+
+   между ними плавный переход
+============================= */
+
+function getPercentColor(value) {
+
+  value =
+    Number(value);
+
+
+  /*
+    ниже 80 —
+    тёмно-красный → красный
+  */
+
+  if (value <= 80) {
+
+    const amount =
+      Math.max(
+        0,
+        Math.min(
+          1,
+          value / 80
+        )
       );
+
+    return mixColor(
+      "#7f1d1d",
+      "#ef4444",
+      amount
+    );
+
+  }
+
+
+  /*
+    80 → 85
+
+    красный →
+    оранжевый →
+    жёлтый
+  */
+
+  if (value < 85) {
+
+    const amount =
+      (value - 80) / 5;
+
+    return mixColor(
+      "#ef4444",
+      "#facc15",
+      amount
+    );
+
+  }
+
+
+  /*
+    85 → 90
+
+    жёлтый →
+    салатовый →
+    зелёный
+  */
+
+  if (value < 90) {
+
+    const amount =
+      (value - 85) / 5;
+
+    return mixColor(
+      "#facc15",
+      "#22c55e",
+      amount
+    );
+
+  }
+
+
+  /*
+    90+
+    зелёный
+  */
+
+  return "#22c55e";
+
+}
+
+
+/* =============================
+   СОЗДАНИЕ ПОДПИСЕЙ ШКАЛЫ
+============================= */
+
+function scaleLabels() {
+
+  let html = "";
+
+  for (
+    let i = 0;
+    i <= 100;
+    i += 10
+  ) {
+
+    html += `
+
+      <span
+        class="scale-label"
+        style="left:${i}%">
+        ${i}
+      </span>
+
+    `;
+
+  }
+
+  return html;
+
+}
+
+
+/* =============================
+   АНИМАЦИЯ ПРОЦЕНТА
+============================= */
+
+function animateValue(
+  percentElement,
+  fillElement,
+  from,
+  to,
+  duration = 1800
+) {
+
+  const start =
+    performance.now();
+
+
+  function frame(now) {
+
+    const progress =
+      Math.min(
+        (now - start) /
+        duration,
+        1
+      );
+
+
+    /*
+      Плавное замедление
+      к концу
+    */
+
+    const eased =
+      1 -
+      Math.pow(
+        1 - progress,
+        3
+      );
+
+
+    const value =
+      from +
+      (to - from) *
+      eased;
+
+
+    /*
+      Анимация цифры
+    */
+
+    percentElement.textContent =
+      formatPercent(value);
+
+
+    /*
+      Плавный цвет цифры
+    */
+
+    const color =
+      getPercentColor(value);
+
+
+    percentElement.style.color =
+      color;
+
+
+    percentElement.style.textShadow =
+      `0 0 14px ${color}55`;
+
+
+    /*
+      Анимация длины шкалы
+    */
+
+    fillElement.style.width =
+      Math.max(
+        0,
+        Math.min(
+          value,
+          100
+        )
+      ) + "%";
+
+
+    if (progress < 1) {
+
+      requestAnimationFrame(
+        frame
+      );
+
     }
 
+  }
 
-    function animateNumber(
-      element,
-      from,
-      to,
-      duration = 1600
-    ) {
 
-      const start =
-        performance.now();
+  requestAnimationFrame(
+    frame
+  );
 
-      function frame(now) {
+}
 
-        const progress =
-          Math.min(
-            (now - start) / duration,
-            1
+
+/* =============================
+   СОЗДАНИЕ КАРТОЧКИ
+============================= */
+
+function createCard(
+  person,
+  index
+) {
+
+  const card =
+    document.createElement(
+      "div"
+    );
+
+
+  card.dataset.name =
+    person.name;
+
+
+  card.className =
+    "card " +
+    (
+      index === 0
+        ? "top1"
+
+        : index === 1
+        ? "top2"
+
+        : index === 2
+        ? "top3"
+
+        : ""
+    );
+
+
+  const percentColor =
+    getPercentColor(
+      person.percent
+    );
+
+
+  card.innerHTML = `
+
+    <div class="rank">
+
+      ${medal(index)}
+
+    </div>
+
+
+    <div class="name">
+
+      ${person.name}
+
+    </div>
+
+
+    <div
+      class="percent"
+      style="
+        color:${percentColor};
+      "
+    >
+
+      ${formatPercent(
+        person.percent
+      )}
+
+    </div>
+
+
+    <div class="bar-wrapper">
+
+      <div class="bar">
+
+
+        <div
+          class="fill"
+          style="
+            width:
+            ${Math.min(
+              person.percent,
+              100
+            )}%
+          "
+        >
+        </div>
+
+
+        <div class="ticks">
+        </div>
+
+
+        <div class="ticks-strong">
+        </div>
+
+
+      </div>
+
+
+      <div class="scale-labels">
+
+        ${scaleLabels()}
+
+      </div>
+
+
+    </div>
+
+  `;
+
+
+  return card;
+
+}
+
+
+/* =============================
+   ПЕРВАЯ ОТРИСОВКА
+============================= */
+
+function firstRender(
+  people
+) {
+
+  const ranking =
+    document.getElementById(
+      "ranking"
+    );
+
+
+  ranking.innerHTML = "";
+
+
+  people.forEach(
+    (person,index) => {
+
+      ranking.appendChild(
+
+        createCard(
+          person,
+          index
+        )
+
+      );
+
+    }
+  );
+
+
+  currentPeople =
+    JSON.parse(
+      JSON.stringify(
+        people
+      )
+    );
+
+
+  updateStatus();
+
+}
+
+
+/* =============================
+   СТАТУС
+============================= */
+
+function updateStatus() {
+
+  document
+    .getElementById(
+      "status"
+    )
+    .textContent =
+
+      "Обновлено: " +
+
+      new Date()
+        .toLocaleTimeString(
+          "ru-RU"
+        );
+
+}
+
+
+/* =============================
+   ОБНОВЛЕНИЕ РЕЙТИНГА
+============================= */
+
+function updateRanking(
+  newPeople
+) {
+
+  const ranking =
+    document.getElementById(
+      "ranking"
+    );
+
+
+  /*
+    Старые позиции карточек
+  */
+
+  const oldRects = {};
+
+
+  ranking
+    .querySelectorAll(
+      ".card"
+    )
+    .forEach(card => {
+
+      oldRects[
+        card.dataset.name
+      ] =
+        card
+          .getBoundingClientRect();
+
+    });
+
+
+  /*
+    Находим существующие
+    карточки
+  */
+
+  const cards = {};
+
+
+  ranking
+    .querySelectorAll(
+      ".card"
+    )
+    .forEach(card => {
+
+      cards[
+        card.dataset.name
+      ] =
+        card;
+
+    });
+
+
+  /*
+    Обновляем карточки
+  */
+
+  newPeople.forEach(
+    (person,index) => {
+
+      let card =
+        cards[
+          person.name
+        ];
+
+
+      if (!card) {
+
+        card =
+          createCard(
+            person,
+            index
           );
 
-        const eased =
-          1 -
-          Math.pow(
-            1 - progress,
-            3
-          );
-
-        const value =
-          from +
-          (to - from) *
-          eased;
-
-        element.textContent =
-          formatPercent(value);
-
-        if (progress < 1) {
-
-          requestAnimationFrame(
-            frame
-          );
-        }
       }
 
-      requestAnimationFrame(frame);
-    }
+
+      const oldPerson =
+        currentPeople.find(
+          p =>
+            p.name ===
+            person.name
+        );
 
 
-    function createCard(
-      person,
-      index
-    ) {
+      const oldValue =
+        oldPerson
+          ? Number(
+              oldPerson.percent
+            )
+          : Number(
+              person.percent
+            );
 
-      const card =
-        document.createElement("div");
 
-      card.dataset.name =
-        person.name;
+      const newValue =
+        Number(
+          person.percent
+        );
+
+
+      const percentElement =
+        card.querySelector(
+          ".percent"
+        );
+
+
+      const fillElement =
+        card.querySelector(
+          ".fill"
+        );
+
+
+      /*
+        Анимируем одновременно:
+
+        число
+        цвет
+        длину шкалы
+      */
+
+      animateValue(
+
+        percentElement,
+
+        fillElement,
+
+        oldValue,
+
+        newValue,
+
+        1800
+
+      );
+
+
+      /*
+        Новое место
+      */
+
+      card
+        .querySelector(
+          ".rank"
+        )
+        .textContent =
+          medal(index);
+
+
+      /*
+        Оформление топ-3
+      */
 
       card.className =
         "card " +
         (
           index === 0
             ? "top1"
+
             : index === 1
             ? "top2"
+
             : index === 2
             ? "top3"
+
             : ""
         );
 
-      card.innerHTML = `
-
-        <div class="rank">
-          ${medal(index)}
-        </div>
-
-        <div class="name">
-          ${person.name}
-        </div>
-
-        <div
-          class="percent">
-          ${formatPercent(person.percent)}
-        </div>
-
-        <div class="bar">
-
-          <div
-            class="fill"
-            style="
-              width:
-              ${Math.min(person.percent,100)}%
-            ">
-          </div>
-
-        </div>
-      `;
-
-      return card;
-    }
-
-
-    function firstRender(people) {
-
-      const ranking =
-        document.getElementById(
-          "ranking"
-        );
-
-      ranking.innerHTML = "";
-
-      people.forEach(
-        (person,index) => {
-
-          ranking.appendChild(
-            createCard(
-              person,
-              index
-            )
-          );
-
-        }
-      );
-
-      currentPeople =
-        JSON.parse(
-          JSON.stringify(people)
-        );
-
-      updateStatus();
-    }
-
-
-    function updateStatus() {
-
-      document
-        .getElementById("status")
-        .textContent =
-          "Обновлено: " +
-          new Date()
-            .toLocaleTimeString(
-              "ru-RU"
-            );
-    }
-
-
-    function updateRanking(newPeople) {
-
-      const ranking =
-        document.getElementById(
-          "ranking"
-        );
-
 
       /*
-        Запоминаем старые позиции
-        карточек до перестановки
+        Старое место
       */
 
-      const oldRects = {};
-
-      ranking
-        .querySelectorAll(".card")
-        .forEach(card => {
-
-          oldRects[
-            card.dataset.name
-          ] =
-            card
-              .getBoundingClientRect();
-
-        });
-
-
-      /*
-        Собираем текущие карточки
-      */
-
-      const cards = {};
-
-      ranking
-        .querySelectorAll(".card")
-        .forEach(card => {
-
-          cards[
-            card.dataset.name
-          ] =
-            card;
-
-        });
-
-
-      /*
-        Обновляем значения
-        и меняем порядок
-      */
-
-      newPeople.forEach(
-        (person,index) => {
-
-          let card =
-            cards[
+      const oldIndex =
+        currentPeople
+          .findIndex(
+            p =>
+              p.name ===
               person.name
-            ];
-
-          if (!card) {
-
-            card =
-              createCard(
-                person,
-                index
-              );
-          }
-
-
-          const oldPerson =
-            currentPeople.find(
-              p =>
-                p.name ===
-                person.name
-            );
-
-
-          const oldValue =
-            oldPerson
-              ? Number(oldPerson.percent)
-              : Number(person.percent);
-
-
-          const newValue =
-            Number(person.percent);
-
-
-          const percentElement =
-            card.querySelector(
-              ".percent"
-            );
-
-
-          animateNumber(
-            percentElement,
-            oldValue,
-            newValue,
-            1600
           );
 
 
-          /*
-            Плавно двигаем шкалу
-          */
+      /*
+        Поднялся
+      */
 
-          card
-            .querySelector(".fill")
-            .style.width =
-              Math.min(
-                newValue,
-                100
-              ) + "%";
+      if (
+        oldIndex !== -1 &&
+        index < oldIndex
+      ) {
 
+        card.classList.add(
+          "pulse-up"
+        );
 
-          /*
-            Обновляем место
-          */
-
-          card
-            .querySelector(
-              ".rank"
-            )
-            .textContent =
-              medal(index);
+      }
 
 
-          /*
-            Обновляем оформление
-            топ-3
-          */
+      /*
+        Опустился
+      */
 
-          card.className =
-            "card " +
-            (
-              index === 0
-                ? "top1"
-                : index === 1
-                ? "top2"
-                : index === 2
-                ? "top3"
-                : ""
-            );
+      if (
+        oldIndex !== -1 &&
+        index > oldIndex
+      ) {
+
+        card.classList.add(
+          "pulse-down"
+        );
+
+      }
 
 
-          /*
-            Смотрим, поднялся
-            или опустился участник
-          */
+      /*
+        Новый порядок
+      */
 
-          const oldIndex =
-            currentPeople
-              .findIndex(
-                p =>
-                  p.name ===
-                  person.name
-              );
-
-
-          if (
-            oldIndex !== -1 &&
-            index < oldIndex
-          ) {
-
-            card.classList.add(
-              "pulse-up"
-            );
-
-          }
-
-
-          if (
-            oldIndex !== -1 &&
-            index > oldIndex
-          ) {
-
-            card.classList.add(
-              "pulse-down"
-            );
-
-          }
-
-
-          /*
-            Переставляем карточку
-            в новое место
-          */
-
-          ranking.appendChild(card);
-
-        }
+      ranking.appendChild(
+        card
       );
 
-
-      /*
-        Получаем новые позиции
-      */
-
-      const newRects = {};
-
-      ranking
-        .querySelectorAll(".card")
-        .forEach(card => {
-
-          newRects[
-            card.dataset.name
-          ] =
-            card
-              .getBoundingClientRect();
-
-        });
+    }
+  );
 
 
-      /*
-        FLIP-анимация
-        перемещения карточек
-      */
+  /*
+    Новые позиции
+  */
 
-      ranking
-        .querySelectorAll(".card")
-        .forEach(card => {
-
-          const name =
-            card.dataset.name;
-
-          const oldRect =
-            oldRects[name];
-
-          const newRect =
-            newRects[name];
+  const newRects = {};
 
 
-          if (
-            !oldRect ||
-            !newRect
-          ) {
-            return;
-          }
+  ranking
+    .querySelectorAll(
+      ".card"
+    )
+    .forEach(card => {
+
+      newRects[
+        card.dataset.name
+      ] =
+        card
+          .getBoundingClientRect();
+
+    });
 
 
-          const deltaY =
-            oldRect.top -
-            newRect.top;
+  /*
+    Плавное перемещение
+    карточек
+  */
+
+  ranking
+    .querySelectorAll(
+      ".card"
+    )
+    .forEach(card => {
+
+      const name =
+        card.dataset.name;
 
 
-          if (
-            Math.abs(deltaY) > 1
-          ) {
+      const oldRect =
+        oldRects[name];
 
-            card.style.transition =
-              "none";
 
-            card.style.transform =
-              `translateY(${deltaY}px)`;
+      const newRect =
+        newRects[name];
 
+
+      if (
+        !oldRect ||
+        !newRect
+      ) {
+
+        return;
+
+      }
+
+
+      const deltaY =
+        oldRect.top -
+        newRect.top;
+
+
+      if (
+        Math.abs(
+          deltaY
+        ) > 1
+      ) {
+
+        card.style.transition =
+          "none";
+
+
+        card.style.transform =
+          `translateY(${deltaY}px)`;
+
+
+        requestAnimationFrame(
+          () => {
 
             requestAnimationFrame(
               () => {
 
-                requestAnimationFrame(
-                  () => {
+                card.style.transition =
+                  "transform .85s cubic-bezier(.22,.61,.36,1), border-color .45s ease, box-shadow .45s ease, background .45s ease";
 
-                    card.style.transition =
-                      "transform .85s cubic-bezier(.22,.61,.36,1), border-color .4s ease, box-shadow .4s ease, background .4s ease";
 
-                    card.style.transform =
-                      "translateY(0)";
-
-                  }
-                );
+                card.style.transform =
+                  "translateY(0)";
 
               }
             );
 
           }
-
-        });
-
-
-      currentPeople =
-        JSON.parse(
-          JSON.stringify(
-            newPeople
-          )
         );
 
-
-      updateStatus();
-    }
-
-
-    async function loadRanking() {
-
-      if (isLoading) {
-        return;
       }
 
-      isLoading = true;
+    });
 
 
-      try {
-
-        const response =
-          await fetch(
-            API_URL +
-            "?t=" +
-            Date.now(),
-            {
-              cache:
-                "no-store"
-            }
-          );
-
-
-        if (!response.ok) {
-
-          throw new Error(
-            "Ошибка API"
-          );
-
-        }
-
-
-        const data =
-          await response.json();
-
-
-        if (
-          !data ||
-          !Array.isArray(
-            data.people
-          )
-        ) {
-
-          throw new Error(
-            "Некорректные данные"
-          );
-
-        }
-
-
-        const people =
-          data.people
-            .map(person => ({
-              name:
-                String(
-                  person.name || ""
-                ).trim(),
-
-              percent:
-                Number(
-                  person.percent || 0
-                )
-            }))
-
-            .filter(
-              person =>
-                person.name &&
-                person.percent > 0
-            )
-
-            .sort(
-              (a,b) =>
-                b.percent -
-                a.percent
-            )
-
-            .slice(0,5);
-
-
-        /*
-          Защита от неполного
-          ответа API
-        */
-
-        if (
-          people.length !== 5
-        ) {
-          return;
-        }
-
-
-        const fingerprint =
-          JSON.stringify(
-            people
-          );
-
-
-        /*
-          Первый запуск
-        */
-
-        if (!displayedData) {
-
-          displayedData =
-            fingerprint;
-
-          firstRender(
-            people
-          );
-
-          return;
-        }
-
-
-        /*
-          Данные не изменились
-        */
-
-        if (
-          fingerprint ===
-          displayedData
-        ) {
-
-          candidateData = "";
-          candidateCount = 0;
-
-          return;
-        }
-
-
-        /*
-          Подтверждаем новое
-          состояние дважды
-        */
-
-        if (
-          fingerprint ===
-          candidateData
-        ) {
-
-          candidateCount++;
-
-        } else {
-
-          candidateData =
-            fingerprint;
-
-          candidateCount = 1;
-
-        }
-
-
-        /*
-          Новые данные появились
-          два раза подряд
-        */
-
-        if (
-          candidateCount >= 2
-        ) {
-
-          displayedData =
-            fingerprint;
-
-          candidateData = "";
-          candidateCount = 0;
-
-
-          updateRanking(
-            people
-          );
-        }
-
-      }
-
-      catch(error) {
-
-        console.log(
-          "Ошибка загрузки:",
-          error
-        );
-
-        document
-          .getElementById(
-            "status"
-          )
-          .textContent =
-            "Ошибка получения данных";
-
-      }
-
-      finally {
-
-        isLoading = false;
-
-      }
-    }
-
-
-    /*
-      Первый запрос сразу
-    */
-
-    loadRanking();
-
-
-    /*
-      Проверяем новые значения
-      каждые 2 секунды
-    */
-
-    setInterval(
-      loadRanking,
-      2000
+  currentPeople =
+    JSON.parse(
+      JSON.stringify(
+        newPeople
+      )
     );
 
-  </script>
+
+  updateStatus();
+
+}
+
+
+/* =============================
+   ЗАГРУЗКА API
+============================= */
+
+async function loadRanking() {
+
+  if (
+    isLoading
+  ) {
+
+    return;
+
+  }
+
+
+  isLoading = true;
+
+
+  try {
+
+    const response =
+      await fetch(
+
+        API_URL +
+        "?t=" +
+        Date.now(),
+
+        {
+          cache:
+            "no-store"
+        }
+
+      );
+
+
+    if (
+      !response.ok
+    ) {
+
+      throw new Error(
+        "Ошибка API"
+      );
+
+    }
+
+
+    const data =
+      await response.json();
+
+
+    if (
+      !data ||
+      !Array.isArray(
+        data.people
+      )
+    ) {
+
+      throw new Error(
+        "Некорректные данные"
+      );
+
+    }
+
+
+    const people =
+      data.people
+
+        .map(
+          person => ({
+
+            name:
+              String(
+                person.name || ""
+              ).trim(),
+
+            percent:
+              Number(
+                person.percent || 0
+              )
+
+          })
+        )
+
+
+        .filter(
+          person =>
+            person.name &&
+            person.percent > 0
+        )
+
+
+        .sort(
+          (a,b) =>
+            b.percent -
+            a.percent
+        )
+
+
+        .slice(
+          0,
+          5
+        );
+
+
+    /*
+      Принимаем только полный
+      список из 5 человек
+    */
+
+    if (
+      people.length !== 5
+    ) {
+
+      return;
+
+    }
+
+
+    const fingerprint =
+      JSON.stringify(
+        people
+      );
+
+
+    /*
+      Первый запуск
+    */
+
+    if (
+      !displayedData
+    ) {
+
+      displayedData =
+        fingerprint;
+
+
+      firstRender(
+        people
+      );
+
+
+      return;
+
+    }
+
+
+    /*
+      Ничего не изменилось
+    */
+
+    if (
+      fingerprint ===
+      displayedData
+    ) {
+
+      candidateData = "";
+
+      candidateCount = 0;
+
+      return;
+
+    }
+
+
+    /*
+      Подтверждаем новые данные
+    */
+
+    if (
+      fingerprint ===
+      candidateData
+    ) {
+
+      candidateCount++;
+
+    }
+
+    else {
+
+      candidateData =
+        fingerprint;
+
+      candidateCount = 1;
+
+    }
+
+
+    /*
+      Два одинаковых
+      ответа подряд
+    */
+
+    if (
+      candidateCount >= 2
+    ) {
+
+      displayedData =
+        fingerprint;
+
+
+      candidateData = "";
+
+
+      candidateCount = 0;
+
+
+      updateRanking(
+        people
+      );
+
+    }
+
+  }
+
+
+  catch(error) {
+
+    console.log(
+      "Ошибка:",
+      error
+    );
+
+
+    document
+      .getElementById(
+        "status"
+      )
+      .textContent =
+        "Ошибка получения данных";
+
+  }
+
+
+  finally {
+
+    isLoading = false;
+
+  }
+
+}
+
+
+/* =============================
+   ЗАПУСК
+============================= */
+
+loadRanking();
+
+
+/*
+  Проверка новых данных
+  каждые 2 секунды
+*/
+
+setInterval(
+  loadRanking,
+  2000
+);
+
+</script>
 
 </body>
 </html>
