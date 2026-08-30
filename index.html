@@ -27,8 +27,8 @@
     }
 
     h1 {
-      text-align: center;
       margin: 0;
+      text-align: center;
       font-size: 42px;
     }
 
@@ -37,6 +37,7 @@
       color: #94a3b8;
       margin-top: 10px;
       margin-bottom: 28px;
+      font-size: 16px;
     }
 
     #ranking {
@@ -58,10 +59,10 @@
       box-shadow: 0 8px 24px rgba(0,0,0,.22);
 
       transition:
-        transform .75s cubic-bezier(.22,.61,.36,1),
-        border-color .45s ease,
-        background .45s ease,
-        box-shadow .45s ease;
+        transform .85s cubic-bezier(.22,.61,.36,1),
+        border-color .4s ease,
+        box-shadow .4s ease,
+        background .4s ease;
     }
 
     .top1 {
@@ -80,7 +81,6 @@
       font-size: 30px;
       font-weight: 700;
       text-align: center;
-      transition: transform .4s ease;
     }
 
     .name {
@@ -93,7 +93,6 @@
       font-weight: 800;
       text-align: right;
       font-variant-numeric: tabular-nums;
-      min-width: 110px;
     }
 
     .bar {
@@ -107,16 +106,14 @@
     .fill {
       height: 100%;
       border-radius: 999px;
-
-      background:
-        linear-gradient(
-          90deg,
-          #38bdf8,
-          #22c55e
-        );
+      background: linear-gradient(
+        90deg,
+        #38bdf8,
+        #22c55e
+      );
 
       transition:
-        width 1.5s cubic-bezier(.22,.61,.36,1);
+        width 1.6s cubic-bezier(.22,.61,.36,1);
     }
 
     .status {
@@ -127,11 +124,11 @@
     }
 
     .pulse-up {
-      animation: pulseUp .8s ease;
+      animation: pulseUp .9s ease;
     }
 
     .pulse-down {
-      animation: pulseDown .8s ease;
+      animation: pulseDown .9s ease;
     }
 
     @keyframes pulseUp {
@@ -140,7 +137,7 @@
       }
 
       50% {
-        box-shadow: 0 0 28px rgba(34,197,94,.45);
+        box-shadow: 0 0 30px rgba(34,197,94,.4);
       }
 
       100% {
@@ -154,7 +151,7 @@
       }
 
       50% {
-        box-shadow: 0 0 28px rgba(239,68,68,.35);
+        box-shadow: 0 0 30px rgba(239,68,68,.3);
       }
 
       100% {
@@ -178,7 +175,6 @@
 
       .percent {
         font-size: 22px;
-        min-width: 80px;
       }
     }
   </style>
@@ -186,247 +182,712 @@
 
 <body>
 
-<div class="wrap">
+  <div class="wrap">
 
-  <h1>🏆 Рейтинг команды</h1>
+    <h1>🏆 Рейтинг команды</h1>
 
-  <div class="subtitle">
-    Актуальные результаты
+    <div class="subtitle">
+      Актуальные результаты
+    </div>
+
+    <div id="ranking">
+      Загрузка...
+    </div>
+
+    <div
+      class="status"
+      id="status">
+    </div>
+
   </div>
 
-  <div id="ranking">
-    Загрузка...
-  </div>
+  <script>
 
-  <div
-    class="status"
-    id="status">
-  </div>
-
-</div>
-
-<script>
-
-const CSV_URL =
-"https://docs.google.com/spreadsheets/d/e/2PACX-1vTGL-KACsRd8HUNn2iHLPk6cAgRTsMTcxFMbkL7BkdbHWc3DWaS2fHt53zVx-hQSHXszSzdXVAZO_vS/pub?gid=0&single=true&output=csv";
+    const API_URL =
+      "https://script.google.com/macros/s/AKfycbwYcG1OIZ_y2E3OZQw8oH0IuDMyk06lxL41oM6K1TtXN0Noxa5bV7kC_hsWOXTsTde_IA/exec";
 
 
-let isLoading = false;
+    let isLoading = false;
 
-let candidateData = "";
-let candidateCount = 0;
+    let displayedData = "";
+    let candidateData = "";
+    let candidateCount = 0;
 
-let displayedData = "";
-
-let currentPeople = [];
-let currentPositions = {};
+    let currentPeople = [];
 
 
-function parseCSV(text) {
+    function medal(index) {
 
-  const rows = [];
+      if (index === 0) return "🥇";
+      if (index === 1) return "🥈";
+      if (index === 2) return "🥉";
 
-  let row = [];
-  let cell = "";
-  let inQuotes = false;
+      return index + 1;
+    }
 
-  for (
-    let i = 0;
-    i < text.length;
-    i++
-  ) {
 
-    const char = text[i];
-    const next = text[i + 1];
+    function formatPercent(value) {
 
-    if (char === '"') {
+      return (
+        Number(value)
+          .toFixed(1)
+          .replace(".", ",")
+        + "%"
+      );
+    }
 
-      if (
-        inQuotes &&
-        next === '"'
-      ) {
 
-        cell += '"';
-        i++;
+    function animateNumber(
+      element,
+      from,
+      to,
+      duration = 1600
+    ) {
 
-      } else {
+      const start =
+        performance.now();
 
-        inQuotes = !inQuotes;
+      function frame(now) {
+
+        const progress =
+          Math.min(
+            (now - start) / duration,
+            1
+          );
+
+        const eased =
+          1 -
+          Math.pow(
+            1 - progress,
+            3
+          );
+
+        const value =
+          from +
+          (to - from) *
+          eased;
+
+        element.textContent =
+          formatPercent(value);
+
+        if (progress < 1) {
+
+          requestAnimationFrame(
+            frame
+          );
+        }
+      }
+
+      requestAnimationFrame(frame);
+    }
+
+
+    function createCard(
+      person,
+      index
+    ) {
+
+      const card =
+        document.createElement("div");
+
+      card.dataset.name =
+        person.name;
+
+      card.className =
+        "card " +
+        (
+          index === 0
+            ? "top1"
+            : index === 1
+            ? "top2"
+            : index === 2
+            ? "top3"
+            : ""
+        );
+
+      card.innerHTML = `
+
+        <div class="rank">
+          ${medal(index)}
+        </div>
+
+        <div class="name">
+          ${person.name}
+        </div>
+
+        <div
+          class="percent">
+          ${formatPercent(person.percent)}
+        </div>
+
+        <div class="bar">
+
+          <div
+            class="fill"
+            style="
+              width:
+              ${Math.min(person.percent,100)}%
+            ">
+          </div>
+
+        </div>
+      `;
+
+      return card;
+    }
+
+
+    function firstRender(people) {
+
+      const ranking =
+        document.getElementById(
+          "ranking"
+        );
+
+      ranking.innerHTML = "";
+
+      people.forEach(
+        (person,index) => {
+
+          ranking.appendChild(
+            createCard(
+              person,
+              index
+            )
+          );
+
+        }
+      );
+
+      currentPeople =
+        JSON.parse(
+          JSON.stringify(people)
+        );
+
+      updateStatus();
+    }
+
+
+    function updateStatus() {
+
+      document
+        .getElementById("status")
+        .textContent =
+          "Обновлено: " +
+          new Date()
+            .toLocaleTimeString(
+              "ru-RU"
+            );
+    }
+
+
+    function updateRanking(newPeople) {
+
+      const ranking =
+        document.getElementById(
+          "ranking"
+        );
+
+
+      /*
+        Запоминаем старые позиции
+        карточек до перестановки
+      */
+
+      const oldRects = {};
+
+      ranking
+        .querySelectorAll(".card")
+        .forEach(card => {
+
+          oldRects[
+            card.dataset.name
+          ] =
+            card
+              .getBoundingClientRect();
+
+        });
+
+
+      /*
+        Собираем текущие карточки
+      */
+
+      const cards = {};
+
+      ranking
+        .querySelectorAll(".card")
+        .forEach(card => {
+
+          cards[
+            card.dataset.name
+          ] =
+            card;
+
+        });
+
+
+      /*
+        Обновляем значения
+        и меняем порядок
+      */
+
+      newPeople.forEach(
+        (person,index) => {
+
+          let card =
+            cards[
+              person.name
+            ];
+
+          if (!card) {
+
+            card =
+              createCard(
+                person,
+                index
+              );
+          }
+
+
+          const oldPerson =
+            currentPeople.find(
+              p =>
+                p.name ===
+                person.name
+            );
+
+
+          const oldValue =
+            oldPerson
+              ? Number(oldPerson.percent)
+              : Number(person.percent);
+
+
+          const newValue =
+            Number(person.percent);
+
+
+          const percentElement =
+            card.querySelector(
+              ".percent"
+            );
+
+
+          animateNumber(
+            percentElement,
+            oldValue,
+            newValue,
+            1600
+          );
+
+
+          /*
+            Плавно двигаем шкалу
+          */
+
+          card
+            .querySelector(".fill")
+            .style.width =
+              Math.min(
+                newValue,
+                100
+              ) + "%";
+
+
+          /*
+            Обновляем место
+          */
+
+          card
+            .querySelector(
+              ".rank"
+            )
+            .textContent =
+              medal(index);
+
+
+          /*
+            Обновляем оформление
+            топ-3
+          */
+
+          card.className =
+            "card " +
+            (
+              index === 0
+                ? "top1"
+                : index === 1
+                ? "top2"
+                : index === 2
+                ? "top3"
+                : ""
+            );
+
+
+          /*
+            Смотрим, поднялся
+            или опустился участник
+          */
+
+          const oldIndex =
+            currentPeople
+              .findIndex(
+                p =>
+                  p.name ===
+                  person.name
+              );
+
+
+          if (
+            oldIndex !== -1 &&
+            index < oldIndex
+          ) {
+
+            card.classList.add(
+              "pulse-up"
+            );
+
+          }
+
+
+          if (
+            oldIndex !== -1 &&
+            index > oldIndex
+          ) {
+
+            card.classList.add(
+              "pulse-down"
+            );
+
+          }
+
+
+          /*
+            Переставляем карточку
+            в новое место
+          */
+
+          ranking.appendChild(card);
+
+        }
+      );
+
+
+      /*
+        Получаем новые позиции
+      */
+
+      const newRects = {};
+
+      ranking
+        .querySelectorAll(".card")
+        .forEach(card => {
+
+          newRects[
+            card.dataset.name
+          ] =
+            card
+              .getBoundingClientRect();
+
+        });
+
+
+      /*
+        FLIP-анимация
+        перемещения карточек
+      */
+
+      ranking
+        .querySelectorAll(".card")
+        .forEach(card => {
+
+          const name =
+            card.dataset.name;
+
+          const oldRect =
+            oldRects[name];
+
+          const newRect =
+            newRects[name];
+
+
+          if (
+            !oldRect ||
+            !newRect
+          ) {
+            return;
+          }
+
+
+          const deltaY =
+            oldRect.top -
+            newRect.top;
+
+
+          if (
+            Math.abs(deltaY) > 1
+          ) {
+
+            card.style.transition =
+              "none";
+
+            card.style.transform =
+              `translateY(${deltaY}px)`;
+
+
+            requestAnimationFrame(
+              () => {
+
+                requestAnimationFrame(
+                  () => {
+
+                    card.style.transition =
+                      "transform .85s cubic-bezier(.22,.61,.36,1), border-color .4s ease, box-shadow .4s ease, background .4s ease";
+
+                    card.style.transform =
+                      "translateY(0)";
+
+                  }
+                );
+
+              }
+            );
+
+          }
+
+        });
+
+
+      currentPeople =
+        JSON.parse(
+          JSON.stringify(
+            newPeople
+          )
+        );
+
+
+      updateStatus();
+    }
+
+
+    async function loadRanking() {
+
+      if (isLoading) {
+        return;
+      }
+
+      isLoading = true;
+
+
+      try {
+
+        const response =
+          await fetch(
+            API_URL +
+            "?t=" +
+            Date.now(),
+            {
+              cache:
+                "no-store"
+            }
+          );
+
+
+        if (!response.ok) {
+
+          throw new Error(
+            "Ошибка API"
+          );
+
+        }
+
+
+        const data =
+          await response.json();
+
+
+        if (
+          !data ||
+          !Array.isArray(
+            data.people
+          )
+        ) {
+
+          throw new Error(
+            "Некорректные данные"
+          );
+
+        }
+
+
+        const people =
+          data.people
+            .map(person => ({
+              name:
+                String(
+                  person.name || ""
+                ).trim(),
+
+              percent:
+                Number(
+                  person.percent || 0
+                )
+            }))
+
+            .filter(
+              person =>
+                person.name &&
+                person.percent > 0
+            )
+
+            .sort(
+              (a,b) =>
+                b.percent -
+                a.percent
+            )
+
+            .slice(0,5);
+
+
+        /*
+          Защита от неполного
+          ответа API
+        */
+
+        if (
+          people.length !== 5
+        ) {
+          return;
+        }
+
+
+        const fingerprint =
+          JSON.stringify(
+            people
+          );
+
+
+        /*
+          Первый запуск
+        */
+
+        if (!displayedData) {
+
+          displayedData =
+            fingerprint;
+
+          firstRender(
+            people
+          );
+
+          return;
+        }
+
+
+        /*
+          Данные не изменились
+        */
+
+        if (
+          fingerprint ===
+          displayedData
+        ) {
+
+          candidateData = "";
+          candidateCount = 0;
+
+          return;
+        }
+
+
+        /*
+          Подтверждаем новое
+          состояние дважды
+        */
+
+        if (
+          fingerprint ===
+          candidateData
+        ) {
+
+          candidateCount++;
+
+        } else {
+
+          candidateData =
+            fingerprint;
+
+          candidateCount = 1;
+
+        }
+
+
+        /*
+          Новые данные появились
+          два раза подряд
+        */
+
+        if (
+          candidateCount >= 2
+        ) {
+
+          displayedData =
+            fingerprint;
+
+          candidateData = "";
+          candidateCount = 0;
+
+
+          updateRanking(
+            people
+          );
+        }
 
       }
 
-    }
+      catch(error) {
 
-    else if (
-      char === "," &&
-      !inQuotes
-    ) {
+        console.log(
+          "Ошибка загрузки:",
+          error
+        );
 
-      row.push(cell);
-      cell = "";
+        document
+          .getElementById(
+            "status"
+          )
+          .textContent =
+            "Ошибка получения данных";
 
-    }
-
-    else if (
-      (char === "\n" ||
-       char === "\r") &&
-      !inQuotes
-    ) {
-
-      if (
-        char === "\r" &&
-        next === "\n"
-      ) {
-        i++;
       }
 
-      row.push(cell);
-      rows.push(row);
+      finally {
 
-      row = [];
-      cell = "";
+        isLoading = false;
 
+      }
     }
 
-    else {
 
-      cell += char;
+    /*
+      Первый запрос сразу
+    */
 
-    }
-
-  }
-
-  if (
-    cell.length ||
-    row.length
-  ) {
-
-    row.push(cell);
-    rows.push(row);
-
-  }
-
-  return rows;
-}
+    loadRanking();
 
 
-function parsePercent(value) {
+    /*
+      Проверяем новые значения
+      каждые 2 секунды
+    */
 
-  if (!value) {
-    return 0;
-  }
-
-  return (
-    parseFloat(
-      value
-        .replace("%","")
-        .replace(/\s/g,"")
-        .replace(",",".")
-    ) || 0
-  );
-
-}
-
-
-function medal(index) {
-
-  if (index === 0) {
-    return "🥇";
-  }
-
-  if (index === 1) {
-    return "🥈";
-  }
-
-  if (index === 2) {
-    return "🥉";
-  }
-
-  return index + 1;
-
-}
-
-
-function formatPercent(value) {
-
-  return (
-    value
-      .toFixed(1)
-      .replace(".",",")
-    + "%"
-  );
-
-}
-
-
-function animateNumber(
-  element,
-  from,
-  to,
-  duration = 1400
-) {
-
-  const start =
-    performance.now();
-
-  function frame(now) {
-
-    const progress =
-      Math.min(
-        (now - start) /
-        duration,
-        1
-      );
-
-    const eased =
-      1 -
-      Math.pow(
-        1 - progress,
-        3
-      );
-
-    const value =
-      from +
-      (to - from) *
-      eased;
-
-    element.textContent =
-      formatPercent(value);
-
-    if (progress < 1) {
-
-      requestAnimationFrame(
-        frame
-      );
-
-    }
-
-  }
-
-  requestAnimationFrame(frame);
-
-}
-
-
-function createCard(
-  person,
-  index
-) {
-
-  const card =
-    document.createElement("div");
-
-  card.className =
-    "card " +
-    (
-      index === 0
-        ? "top1"
-        : index === 1
-        ? "top2"
-        : index === 2
-        ? "top3"
-        : ""
+    setInterval(
+      loadRanking,
+      2000
     );
 
-  card.dataset.name =
-   
+  </script>
+
+</body>
+</html>
