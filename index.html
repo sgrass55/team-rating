@@ -1646,6 +1646,21 @@
         scale(.992);
     }
 
+  
+    /* =====================================================
+       V15 — NUMERIC PLACES / STRONGER FIRST PLACE
+       ===================================================== */
+
+    .rank-card:first-child {
+      border-width: 2px;
+      border-color:
+        rgba(255, 255, 255, .30);
+    }
+
+    .rank-card:first-child .place {
+      font-weight: 900;
+    }
+
   </style>
 </head>
 
@@ -5935,15 +5950,15 @@
     ) {
 
       if (index === 0) {
-        return "🥇";
+        return "1";
       }
 
       if (index === 1) {
-        return "🥈";
+        return "2";
       }
 
       if (index === 2) {
-        return "🥉";
+        return "3";
       }
 
 
