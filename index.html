@@ -1434,6 +1434,101 @@
       }
     }
 
+  
+    /* =====================================================
+       HISTORY / COMPARISON GRAPH — MOBILE POSITION
+       ===================================================== */
+
+    #personModal .modal-card,
+    #historyModal .modal-card,
+    #compareModal .modal-card {
+      align-self: flex-start;
+    }
+
+    .chart-wrap {
+      margin-top: 10px;
+    }
+
+    #compareChart {
+      display: block;
+    }
+
+    @media (max-width: 700px) {
+
+      /*
+        Окно истории/сравнения поднимаем выше и используем
+        доступную высоту телефона эффективнее.
+      */
+
+      #personModal,
+      #historyModal,
+      #compareModal {
+        padding-top:
+          max(12px, env(safe-area-inset-top));
+      }
+
+      #personModal.visible,
+      #historyModal.visible,
+      #compareModal.visible {
+        align-items: flex-start;
+      }
+
+      #personModal .modal-card,
+      #historyModal .modal-card,
+      #compareModal .modal-card {
+        margin-top: 0;
+        max-height:
+          calc(
+            100dvh
+            - max(12px, env(safe-area-inset-top))
+            - max(12px, env(safe-area-inset-bottom))
+          );
+      }
+
+      /*
+        Уменьшаем лишние вертикальные отступы над графиком.
+      */
+
+      .person-history-head,
+      .history-head,
+      .compare-head,
+      .compare-controls {
+        margin-bottom: 10px;
+      }
+
+      .chart-wrap {
+        margin-top: 4px;
+      }
+
+      /*
+        Сам график становится выше в видимой части,
+        но начинается заметно раньше.
+      */
+
+      #compareChart {
+        min-width: 700px;
+        height: auto;
+      }
+
+      /*
+        Если вокруг SVG есть контейнер с горизонтальным скроллом,
+        не добавляем лишнюю пустоту сверху/снизу.
+      */
+
+      .chart-wrap {
+        padding-top: 0;
+        padding-bottom: 4px;
+      }
+    }
+
+  
+    @media (max-width: 700px) {
+      .chart-wrap svg {
+        max-height: 320px;
+        vertical-align: top;
+      }
+    }
+
   </style>
 </head>
 
