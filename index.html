@@ -1,66 +1,39 @@
 <!DOCTYPE html>
 <html lang="ru">
-
 <head>
-
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
-
-  <title>Статистика команды</title>
-
+  <title>Рейтинг команды</title>
 
   <style>
-
     * {
       box-sizing: border-box;
     }
 
-
     :root {
-
       --bg: #050c18;
-
-      --card:
-        rgba(22, 36, 63, 0.92);
-
-      --border:
-        rgba(255, 255, 255, 0.11);
-
+      --bg2: #0c1730;
+      --card: rgba(22, 36, 63, 0.92);
+      --card2: rgba(14, 27, 49, 0.96);
+      --border: rgba(255, 255, 255, 0.12);
       --text: #f5f7ff;
-
       --muted: #8e9bb7;
-
       --blue: #37bff5;
-
       --green: #31d879;
-
       --gold: #f6c626;
-
       --silver: #bac4d1;
-
       --bronze: #cf7b30;
-
       --danger: #ff6174;
-
     }
-
 
     html,
     body {
-
       margin: 0;
-
       min-height: 100%;
-
     }
 
-
     body {
-
       min-height: 100vh;
 
       font-family:
@@ -71,184 +44,95 @@
         Arial,
         sans-serif;
 
-      color:
-        var(--text);
+      color: var(--text);
 
       background:
         radial-gradient(
           circle at 50% 0%,
           #172959 0%,
-          #0b162b 34%,
-          #050c18 75%
+          #0b162b 32%,
+          #050c18 72%
         );
 
-      background-attachment:
-        fixed;
-
+      background-attachment: fixed;
     }
-
 
     body.modal-open {
-
       overflow: hidden;
-
     }
-
-
-    button,
-    input {
-
-      font: inherit;
-
-    }
-
 
     button {
-
-      -webkit-tap-highlight-color:
-        transparent;
-
+      font: inherit;
     }
-
-
-
-    /* =====================================================
-       ОСНОВНАЯ СТРАНИЦА
-       ===================================================== */
-
 
     .page {
-
-      min-height:
-        100vh;
-
-      padding:
-        24px
-        16px
-        60px;
-
+      min-height: 100vh;
+      padding: 24px 16px 60px;
     }
-
 
     .container {
-
-      width:
-        min(
-          920px,
-          100%
-        );
-
-      margin:
-        0 auto;
-
+      width: min(920px, 100%);
+      margin: 0 auto;
     }
-
-
 
     /* =====================================================
        HEADER
        ===================================================== */
 
-
     .header {
-
-      text-align:
-        center;
-
-      margin-bottom:
-        18px;
-
+      text-align: center;
+      margin-bottom: 18px;
     }
 
+    .title {
+      margin: 0;
+
+      font-size: 34px;
+      line-height: 1.1;
+
+      font-weight: 850;
+      letter-spacing: -1px;
+    }
 
     .subtitle {
+      margin-top: 7px;
 
-      color:
-        var(--muted);
-
-      font-size:
-        14px;
-
+      font-size: 14px;
+      color: var(--muted);
     }
-
 
     .current-period {
+      margin-top: 12px;
 
-      margin-top:
-        8px;
-
-      font-size:
-        27px;
-
-      line-height:
-        1.2;
-
-      font-weight:
-        850;
-
-      letter-spacing:
-        -0.4px;
-
+      font-size: 25px;
+      font-weight: 850;
     }
-
 
     .status {
+      min-height: 18px;
+      margin-top: 7px;
 
-      min-height:
-        0;
-
-      margin:
-        0;
-
-      font-size:
-        12px;
-
-      color:
-        var(--muted);
-
+      font-size: 12px;
+      color: var(--muted);
     }
-
-
-    .status:not(:empty) {
-
-      margin-top:
-        7px;
-
-    }
-
 
     .status.error {
-
-      color:
-        var(--danger);
-
+      color: var(--danger);
     }
-
-
 
     /* =====================================================
-       РЕЙТИНГ
+       RANKING
        ===================================================== */
 
-
     .ranking {
+      display: grid;
+      gap: 9px;
 
-      display:
-        grid;
-
-      gap:
-        9px;
-
-      margin-top:
-        16px;
-
+      margin-top: 16px;
     }
 
-
     .rank-card {
-
-      display:
-        grid;
+      display: grid;
 
       grid-template-columns:
         44px
@@ -256,22 +140,17 @@
         minmax(220px, 4fr)
         auto;
 
-      align-items:
-        center;
+      align-items: center;
 
-      min-height:
-        66px;
+      min-height: 66px;
 
-      padding:
-        10px
-        15px;
+      padding: 10px 15px;
 
       border:
         1px solid
         var(--border);
 
-      border-radius:
-        17px;
+      border-radius: 17px;
 
       background:
         linear-gradient(
@@ -281,217 +160,163 @@
         );
 
       transition:
-        transform .15s ease,
-        border-color .15s ease;
+        transform 0.65s cubic-bezier(.2,.8,.2,1),
+        border-color 0.3s ease,
+        box-shadow 0.3s ease,
+        opacity 0.3s ease;
 
+      will-change: transform;
     }
-
 
     .rank-card:hover {
-
-      transform:
-        translateY(-1px);
-
+      transform: translateY(-1px);
     }
-
 
     .rank-card.first {
-
       border-color:
-        rgba(246, 198, 38, .75);
-
+        rgba(246, 198, 38, 0.75);
     }
-
 
     .rank-card.second {
-
       border-color:
-        rgba(186, 196, 209, .55);
-
+        rgba(186, 196, 209, 0.55);
     }
-
 
     .rank-card.third {
-
       border-color:
-        rgba(207, 123, 48, .72);
-
+        rgba(207, 123, 48, 0.72);
     }
-
 
     .place {
-
-      text-align:
-        center;
-
-      font-size:
-        20px;
-
+      text-align: center;
+      font-size: 20px;
     }
-
 
     .person-name {
+      min-width: 0;
 
-      min-width:
-        0;
+      overflow: hidden;
 
-      overflow:
-        hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
 
-      white-space:
-        nowrap;
-
-      text-overflow:
-        ellipsis;
-
-      font-size:
-        16px;
-
-      font-weight:
-        780;
-
+      font-size: 16px;
+      font-weight: 780;
     }
-
 
     .percent {
+      padding-left: 13px;
 
-      padding-left:
-        13px;
+      white-space: nowrap;
 
-      white-space:
-        nowrap;
+      font-size: 21px;
+      line-height: 1;
 
-      font-size:
-        21px;
-
-      line-height:
-        1;
-
-      font-weight:
-        850;
-
-      color:
-        var(--blue);
-
+      font-weight: 850;
+      color: var(--blue);
     }
-
 
     .percent.green {
-
-      color:
-        var(--green);
-
+      color: var(--green);
     }
 
+    .percent {
+      transition:
+        color 0.35s ease,
+        transform 0.25s ease;
+    }
 
+    .percent.value-changed {
+      transform: scale(1.08);
+    }
+
+    .rank-card.new-card {
+      animation: cardAppear 0.45s ease both;
+    }
+
+    @keyframes cardAppear {
+      from {
+        opacity: 0;
+        transform: translateY(12px) scale(.985);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
 
     /* =====================================================
-       ШКАЛА
+       CLICKABLE SCALE
        ===================================================== */
 
-
     .bar-wrap {
+      position: relative;
 
-      position:
-        relative;
+      padding: 12px 7px;
 
-      padding:
-        12px
-        7px;
+      cursor: pointer;
 
-      border-radius:
-        12px;
+      border-radius: 12px;
 
-      cursor:
-        pointer;
-
-      outline:
-        none;
-
-      transition:
-        background .15s ease;
-
+      outline: none;
     }
-
 
     .bar-wrap:hover {
-
       background:
-        rgba(255, 255, 255, .035);
-
+        rgba(255, 255, 255, 0.035);
     }
-
 
     .bar-wrap:focus-visible {
-
       box-shadow:
         0 0 0 2px
-        rgba(55, 191, 245, .5);
-
+        rgba(55, 191, 245, 0.5);
     }
-
 
     .bar {
+      position: relative;
 
-      position:
-        relative;
+      height: 12px;
 
-      height:
-        12px;
+      overflow: hidden;
 
-      overflow:
-        hidden;
-
-      border-radius:
-        999px;
+      border-radius: 999px;
 
       background:
-        rgba(255, 255, 255, .08);
-
+        rgba(255, 255, 255, 0.08);
     }
 
+    /*
+      Вертикальные деления каждые 5%.
+    */
 
     .bar::after {
-
       content: "";
 
-      position:
-        absolute;
+      position: absolute;
+      inset: 0;
 
-      inset:
-        0;
-
-      pointer-events:
-        none;
+      pointer-events: none;
 
       background:
         repeating-linear-gradient(
           to right,
           transparent 0,
           transparent calc(5% - 1px),
-          rgba(255, 255, 255, .18) calc(5% - 1px),
-          rgba(255, 255, 255, .18) 5%
+          rgba(255, 255, 255, 0.18)
+            calc(5% - 1px),
+          rgba(255, 255, 255, 0.18)
+            5%
         );
-
     }
 
-
     .bar-fill {
+      position: absolute;
 
-      position:
-        absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
 
-      left:
-        0;
-
-      top:
-        0;
-
-      bottom:
-        0;
-
-      border-radius:
-        inherit;
+      border-radius: inherit;
 
       background:
         linear-gradient(
@@ -501,1347 +326,890 @@
         );
 
       transition:
-        width .3s ease;
-
+        width 0.65s cubic-bezier(.2,.8,.2,1);
     }
 
-
     .bar-hint {
+      position: absolute;
 
-      position:
-        absolute;
+      left: 50%;
+      bottom: -1px;
 
-      left:
-        50%;
+      transform: translateX(-50%);
 
-      bottom:
-        -1px;
+      opacity: 0;
 
-      transform:
-        translateX(-50%);
+      pointer-events: none;
 
-      opacity:
-        0;
+      white-space: nowrap;
 
-      pointer-events:
-        none;
-
-      white-space:
-        nowrap;
-
-      font-size:
-        9px;
-
-      color:
-        var(--muted);
+      font-size: 9px;
+      color: var(--muted);
 
       transition:
-        opacity .15s ease;
-
+        opacity 0.15s ease;
     }
 
-
-    .bar-wrap:hover
-    .bar-hint {
-
-      opacity:
-        1;
-
+    .bar-wrap:hover .bar-hint {
+      opacity: 1;
     }
-
-
 
     /* =====================================================
-       АРХИВ
+       ARCHIVE LINK
        ===================================================== */
-
 
     .archive-link-wrap {
+      display: flex;
+      justify-content: center;
 
-      display:
-        flex;
-
-      justify-content:
-        center;
-
-      margin-top:
-        24px;
-
+      margin-top: 22px;
     }
-
 
     .archive-link {
+      appearance: none;
 
-      appearance:
-        none;
+      border: 0;
+      padding: 6px 12px;
 
-      padding:
-        8px
-        14px;
+      color: #cbd7ed;
 
-      border:
-        0;
+      background: transparent;
 
-      background:
-        transparent;
+      cursor: pointer;
 
-      color:
-        #cbd7ed;
+      font-size: 14px;
+      font-weight: 700;
 
-      cursor:
-        pointer;
-
-      font-size:
-        14px;
-
-      font-weight:
-        700;
-
-      text-decoration:
-        underline;
-
+      text-decoration: underline;
       text-decoration-color:
-        rgba(203, 215, 237, .45);
-
-      text-underline-offset:
-        4px;
-
+        rgba(203, 215, 237, 0.45);
+      text-underline-offset: 4px;
     }
-
 
     .archive-link:hover {
-
-      color:
-        #ffffff;
-
+      color: #ffffff;
     }
 
-
-
     /* =====================================================
-       MODAL
+       MODALS
        ===================================================== */
 
-
     .modal {
+      display: none;
 
-      display:
-        none;
+      position: fixed;
+      inset: 0;
 
-      position:
-        fixed;
+      z-index: 1000;
 
-      inset:
-        0;
-
-      z-index:
-        1000;
-
-      padding:
-        18px;
+      padding: 18px;
 
       background:
-        rgba(2, 8, 18, .78);
+        rgba(2, 8, 18, 0.76);
 
       backdrop-filter:
         blur(10px);
-
       -webkit-backdrop-filter:
         blur(10px);
-
     }
-
 
     .modal.visible {
+      display: flex;
 
-      display:
-        flex;
-
-      align-items:
-        center;
-
-      justify-content:
-        center;
-
+      align-items: center;
+      justify-content: center;
     }
 
-
     .modal-card {
+      width: min(960px, 100%);
+      max-height: calc(100vh - 36px);
 
-      width:
-        min(
-          960px,
-          100%
-        );
-
-      max-height:
-        calc(100vh - 36px);
-
-      overflow-y:
-        auto;
+      overflow-y: auto;
 
       border:
         1px solid
-        rgba(255, 255, 255, .13);
+        rgba(255, 255, 255, 0.13);
 
-      border-radius:
-        22px;
+      border-radius: 22px;
 
       background:
         linear-gradient(
           180deg,
-          rgba(17, 31, 57, .99),
-          rgba(8, 18, 34, .99)
+          rgba(17, 31, 57, 0.99),
+          rgba(8, 18, 34, 0.99)
         );
 
       box-shadow:
         0 30px 100px
-        rgba(0, 0, 0, .42);
-
+        rgba(0, 0, 0, 0.42);
     }
 
-
     .modal-head {
+      position: sticky;
+      top: 0;
 
-      position:
-        sticky;
+      z-index: 3;
 
-      top:
-        0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
 
-      z-index:
-        3;
+      gap: 14px;
 
-      display:
-        flex;
-
-      justify-content:
-        space-between;
-
-      align-items:
-        center;
-
-      gap:
-        14px;
-
-      padding:
-        17px
-        18px;
+      padding: 17px 18px;
 
       border-bottom:
         1px solid
-        rgba(255, 255, 255, .08);
+        rgba(255, 255, 255, 0.08);
 
       background:
-        rgba(12, 25, 46, .96);
+        rgba(12, 25, 46, 0.96);
 
       backdrop-filter:
         blur(12px);
-
       -webkit-backdrop-filter:
         blur(12px);
-
     }
-
 
     .modal-title {
+      min-width: 0;
 
-      min-width:
-        0;
+      margin: 0;
 
-      margin:
-        0;
+      overflow: hidden;
 
-      overflow:
-        hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
 
-      white-space:
-        nowrap;
-
-      text-overflow:
-        ellipsis;
-
-      font-size:
-        21px;
-
-      font-weight:
-        850;
-
+      font-size: 21px;
+      font-weight: 850;
     }
-
 
     .close-btn {
+      flex: 0 0 auto;
 
-      flex:
-        0 0 auto;
-
-      width:
-        36px;
-
-      height:
-        36px;
+      width: 36px;
+      height: 36px;
 
       border:
         1px solid
-        rgba(255, 255, 255, .11);
+        rgba(255, 255, 255, 0.11);
 
-      border-radius:
-        50%;
+      border-radius: 50%;
 
-      color:
-        var(--text);
+      color: var(--text);
 
       background:
-        rgba(255, 255, 255, .06);
+        rgba(255, 255, 255, 0.06);
 
-      cursor:
-        pointer;
+      cursor: pointer;
 
-      font-size:
-        20px;
-
-      line-height:
-        1;
-
+      font-size: 20px;
+      line-height: 1;
     }
-
 
     .close-btn:hover {
-
       background:
-        rgba(255, 255, 255, .11);
-
+        rgba(255, 255, 255, 0.11);
     }
-
 
     .modal-body {
-
-      padding:
-        18px;
-
+      padding: 18px;
     }
-
-
-    .panel {
-
-      padding:
-        15px;
-
-      border:
-        1px solid
-        rgba(255, 255, 255, .09);
-
-      border-radius:
-        17px;
-
-      background:
-        rgba(255, 255, 255, .035);
-
-    }
-
-
-    .panel + .panel {
-
-      margin-top:
-        15px;
-
-    }
-
 
     .section-title {
-
       margin:
         0
         0
         12px;
 
-      font-size:
-        18px;
-
-      font-weight:
-        820;
-
+      font-size: 18px;
+      font-weight: 820;
     }
-
 
     .subtle {
-
-      color:
-        var(--muted);
-
-      font-size:
-        12px;
-
+      color: var(--muted);
+      font-size: 12px;
     }
 
+    .panel {
+      padding: 15px;
 
+      border:
+        1px solid
+        rgba(255, 255, 255, 0.09);
+
+      border-radius: 17px;
+
+      background:
+        rgba(255, 255, 255, 0.035);
+    }
+
+    .panel + .panel {
+      margin-top: 15px;
+    }
 
     /* =====================================================
-       АРХИВ — КНОПКИ
+       ARCHIVE
        ===================================================== */
-
 
     .archive-years,
     .archive-months {
+      display: flex;
+      flex-wrap: wrap;
 
-      display:
-        flex;
-
-      flex-wrap:
-        wrap;
-
-      gap:
-        7px;
-
+      gap: 7px;
     }
-
 
     .archive-months {
-
-      margin-top:
-        10px;
-
+      margin-top: 10px;
     }
 
-
     .period-button {
+      appearance: none;
 
-      appearance:
-        none;
-
-      padding:
-        9px
-        13px;
+      padding: 9px 13px;
 
       border:
         1px solid
-        rgba(255, 255, 255, .12);
+        rgba(255, 255, 255, 0.12);
 
-      border-radius:
-        11px;
+      border-radius: 11px;
 
-      color:
-        var(--text);
+      color: var(--text);
 
       background:
-        rgba(255, 255, 255, .06);
+        rgba(255, 255, 255, 0.06);
 
-      cursor:
-        pointer;
-
+      cursor: pointer;
     }
-
 
     .period-button:hover {
-
       background:
-        rgba(255, 255, 255, .10);
-
+        rgba(255, 255, 255, 0.1);
     }
 
-
     .period-button.active {
-
       border-color:
         var(--blue);
 
       background:
-        rgba(55, 191, 245, .16);
-
+        rgba(55, 191, 245, 0.16);
     }
-
 
     .archive-ranking {
+      display: grid;
+      gap: 9px;
 
-      margin-top:
-        16px;
-
+      margin-top: 16px;
     }
-
 
     .archive-placeholder {
+      padding: 32px 15px;
 
-      padding:
-        30px
-        14px;
-
-      text-align:
-        center;
-
-      color:
-        var(--muted);
-
+      text-align: center;
+      color: var(--muted);
     }
 
-
-
     /* =====================================================
-       ИСТОРИЯ
+       HISTORY
        ===================================================== */
-
 
     .history-list {
-
-      display:
-        grid;
-
-      gap:
-        7px;
-
+      display: grid;
+      gap: 7px;
     }
-
 
     .history-row {
+      display: flex;
 
-      display:
-        flex;
+      justify-content: space-between;
+      align-items: center;
 
-      justify-content:
-        space-between;
+      gap: 14px;
 
-      align-items:
-        center;
+      padding: 9px 11px;
 
-      gap:
-        14px;
-
-      padding:
-        9px
-        11px;
-
-      border-radius:
-        11px;
+      border-radius: 11px;
 
       background:
-        rgba(255, 255, 255, .05);
-
+        rgba(255, 255, 255, 0.05);
     }
-
 
     .history-period {
-
-      color:
-        #dbe4f7;
-
+      color: #dbe4f7;
     }
-
 
     .history-percent {
-
-      font-weight:
-        850;
-
-      color:
-        var(--blue);
-
+      font-weight: 850;
+      color: var(--blue);
     }
-
 
     .history-percent.green {
-
-      color:
-        var(--green);
-
+      color: var(--green);
     }
 
-
-
     /* =====================================================
-       СРАВНЕНИЕ
+       COMPARISON
        ===================================================== */
-
 
     .compare-options {
+      display: flex;
+      flex-wrap: wrap;
 
-      display:
-        flex;
+      gap: 8px;
 
-      flex-wrap:
-        wrap;
-
-      gap:
-        8px;
-
-      margin-bottom:
-        14px;
-
+      margin-bottom: 14px;
     }
-
 
     .compare-option {
+      display: flex;
+      align-items: center;
 
-      display:
-        flex;
+      gap: 7px;
 
-      align-items:
-        center;
+      padding: 8px 10px;
 
-      gap:
-        7px;
-
-      padding:
-        8px
-        10px;
-
-      border-radius:
-        10px;
+      border-radius: 10px;
 
       background:
-        rgba(255, 255, 255, .05);
+        rgba(255, 255, 255, 0.05);
 
-      cursor:
-        pointer;
-
+      cursor: pointer;
     }
-
-
-    .compare-option input {
-
-      cursor:
-        pointer;
-
-    }
-
 
     .chart-wrap {
-
-      width:
-        100%;
-
-      overflow-x:
-        auto;
-
+      overflow-x: auto;
     }
-
 
     #compareChart {
-
-      display:
-        block;
-
-      min-width:
-        760px;
-
+      min-width: 760px;
     }
 
-
-
     /* =====================================================
-       LOADER
+       LOADER / EMPTY
        ===================================================== */
 
-
     .loader {
+      width: 32px;
+      height: 32px;
 
-      width:
-        32px;
-
-      height:
-        32px;
-
-      margin:
-        35px
-        auto;
+      margin: 35px auto;
 
       border:
         3px solid
-        rgba(255, 255, 255, .14);
+        rgba(255, 255, 255, 0.14);
 
       border-top-color:
         var(--blue);
 
-      border-radius:
-        50%;
+      border-radius: 50%;
 
       animation:
-        spin .8s linear infinite;
-
+        spin 0.8s linear infinite;
     }
-
 
     @keyframes spin {
-
       to {
-
-        transform:
-          rotate(360deg);
-
+        transform: rotate(360deg);
       }
-
     }
-
 
     .empty {
+      padding: 28px 14px;
 
-      padding:
-        28px
-        14px;
-
-      text-align:
-        center;
-
-      color:
-        var(--muted);
-
+      text-align: center;
+      color: var(--muted);
     }
-
-
 
     /* =====================================================
        MOBILE
        ===================================================== */
 
-
-    @media
-    (max-width: 700px) {
-
+    @media (max-width: 700px) {
 
       .page {
-
         padding:
           17px
           10px
           40px;
-
       }
 
+      .title {
+        font-size: 28px;
+      }
 
       .current-period {
-
-        font-size:
-          23px;
-
+        font-size: 21px;
       }
 
-
       .rank-card {
-
         grid-template-columns:
           34px
           1fr
           auto;
 
         grid-template-areas:
-
           "place name percent"
-
           ". bar bar";
 
-        gap:
-          4px
-          8px;
+        gap: 4px 8px;
 
         padding:
           9px
           11px
           5px;
-
       }
-
 
       .place {
-
-        grid-area:
-          place;
-
+        grid-area: place;
       }
-
 
       .person-name {
-
-        grid-area:
-          name;
-
+        grid-area: name;
       }
-
 
       .percent {
+        grid-area: percent;
 
-        grid-area:
-          percent;
+        padding-left: 4px;
 
-        padding-left:
-          4px;
-
-        font-size:
-          18px;
-
+        font-size: 18px;
       }
 
-
       .bar-wrap {
-
-        grid-area:
-          bar;
+        grid-area: bar;
 
         padding:
           10px
           0
           12px;
-
       }
-
-
-      .bar-hint {
-
-        display:
-          none;
-
-      }
-
 
       .modal {
-
-        padding:
-          8px;
-
+        padding: 8px;
       }
 
-
       .modal-card {
-
         max-height:
           calc(100vh - 16px);
 
-        border-radius:
-          17px;
-
+        border-radius: 17px;
       }
-
 
       .modal-head {
-
-        padding:
-          13px
-          14px;
-
+        padding: 13px 14px;
       }
-
 
       .modal-body {
-
-        padding:
-          13px;
-
+        padding: 13px;
       }
-
 
       .modal-title {
-
-        font-size:
-          18px;
-
+        font-size: 18px;
       }
-
     }
-
   </style>
-
 </head>
 
-
 <body>
-
-
-  <!-- =====================================================
-       ГЛАВНАЯ
-       ===================================================== -->
-
 
   <main class="page">
 
     <div class="container">
 
-
       <header class="header">
 
-
         <div class="subtitle">
-
           Текущий месяц
-
         </div>
-
 
         <div
           class="current-period"
-          id="currentPeriod"
-        >
-
+          id="currentPeriod">
           —
-
         </div>
-
 
         <div
           class="status"
-          id="status"
-        ></div>
-
+          id="status">
+        </div>
 
       </header>
 
 
+      <!--
+        На главной странице теперь
+        ТОЛЬКО текущий месяц.
+      -->
 
       <section
         class="ranking"
-        id="ranking"
-      ></section>
+        id="ranking">
+      </section>
 
 
+      <!--
+        История и сравнение убраны
+        с главной страницы.
+
+        Остаётся только ссылка Архив.
+      -->
 
       <div class="archive-link-wrap">
-
 
         <button
           class="archive-link"
           id="archiveBtn"
-          type="button"
-        >
-
+          type="button">
           Архив
-
         </button>
 
-
       </div>
-
 
     </div>
 
   </main>
 
 
-
   <!-- =====================================================
-       АРХИВ
+       ARCHIVE MODAL
        ===================================================== -->
-
 
   <div
     class="modal"
     id="archiveModal"
-    aria-hidden="true"
-  >
-
+    aria-hidden="true">
 
     <div
       class="modal-card"
       role="dialog"
       aria-modal="true"
-    >
-
+      aria-labelledby="archiveTitle">
 
       <div class="modal-head">
 
-
-        <h2 class="modal-title">
-
+        <h2
+          class="modal-title"
+          id="archiveTitle">
           Архив
-
         </h2>
-
 
         <button
           class="close-btn"
           id="archiveClose"
           type="button"
-          aria-label="Закрыть"
-        >
-
+          aria-label="Закрыть">
           ×
-
         </button>
 
-
       </div>
-
 
 
       <div class="modal-body">
 
-
         <div class="panel">
 
-
-          <h3 class="section-title">
-
+          <div class="section-title">
             Выберите месяц
-
-          </h3>
-
+          </div>
 
           <div
             class="archive-years"
-            id="archiveYears"
-          ></div>
-
+            id="archiveYears">
+          </div>
 
           <div
             class="archive-months"
-            id="archiveMonths"
-          ></div>
-
+            id="archiveMonths">
+          </div>
 
         </div>
 
 
+        <!--
+          Рейтинг архивного месяца
+          НЕ загружается заранее.
+
+          Он появится только после
+          клика по конкретному месяцу.
+        -->
 
         <div
           class="archive-ranking"
-          id="archiveRanking"
-        >
-
+          id="archiveRanking">
 
           <div class="archive-placeholder">
-
             Выберите архивный месяц
-
           </div>
-
 
         </div>
 
-
       </div>
 
-
     </div>
-
 
   </div>
 
 
-
   <!-- =====================================================
-       СТАТИСТИКА ЧЕЛОВЕКА
-       ===================================================== -->
+       PERSON DETAILS MODAL
 
+       Открывается кликом по шкале
+       конкретного участника.
+
+       Здесь одновременно:
+       1. История участника
+       2. Сравнение
+       ===================================================== -->
 
   <div
     class="modal"
     id="personModal"
-    aria-hidden="true"
-  >
-
+    aria-hidden="true">
 
     <div
       class="modal-card"
       role="dialog"
       aria-modal="true"
-    >
-
+      aria-labelledby="personModalTitle">
 
       <div class="modal-head">
 
-
         <h2
           class="modal-title"
-          id="personModalTitle"
-        >
-
+          id="personModalTitle">
           Статистика участника
-
         </h2>
-
 
         <button
           class="close-btn"
           id="personClose"
           type="button"
-          aria-label="Закрыть"
-        >
-
+          aria-label="Закрыть">
           ×
-
         </button>
 
-
       </div>
-
 
 
       <div class="modal-body">
 
-
         <div class="panel">
 
-
           <h3 class="section-title">
-
             История статистики
-
           </h3>
-
 
           <div
             class="history-list"
-            id="historyList"
-          ></div>
-
+            id="historyList">
+          </div>
 
         </div>
 
 
-
         <div class="panel">
 
-
           <h3 class="section-title">
-
             Сравнение участников
-
           </h3>
-
 
           <div
             class="compare-options"
-            id="compareOptions"
-          ></div>
-
+            id="compareOptions">
+          </div>
 
           <div class="chart-wrap">
-
 
             <svg
               id="compareChart"
               width="100%"
-              height="390"
-              viewBox="0 0 900 390"
-            ></svg>
-
+              height="370"
+              viewBox="0 0 900 370"
+              preserveAspectRatio="none">
+            </svg>
 
           </div>
 
-
         </div>
-
 
       </div>
 
-
     </div>
-
 
   </div>
 
 
-
   <script>
-
 
     /* =====================================================
        API
        ===================================================== */
-
 
     const API_URL =
       "https://script.google.com/macros/s/AKfycbwYcG1OIZ_y2E3OZQw8oH0IuDMyk06lxL41oM6K1TtXN0Noxa5bV7kC_hsWOXTsTde_IA/exec";
 
 
     const MONTH_KEYS = [
-
       "ЯНВАРЬ",
-
       "ФЕВРАЛЬ",
-
       "МАРТ",
-
       "АПРЕЛЬ",
-
       "МАЙ",
-
       "ИЮНЬ",
-
       "ИЮЛЬ",
-
       "АВГУСТ",
-
       "СЕНТЯБРЬ",
-
       "ОКТЯБРЬ",
-
       "НОЯБРЬ",
-
       "ДЕКАБРЬ"
-
     ];
 
 
     const MONTH_NAMES = [
-
       "Январь",
-
       "Февраль",
-
       "Март",
-
       "Апрель",
-
       "Май",
-
       "Июнь",
-
       "Июль",
-
       "Август",
-
       "Сентябрь",
-
       "Октябрь",
-
       "Ноябрь",
-
       "Декабрь"
-
     ];
-
 
 
     /* =====================================================
        STATE
        ===================================================== */
 
-
     const state = {
-
 
       currentPeriod:
         null,
 
-
       currentPeople:
         [],
-
-
-      currentMonthLoading:
-        false,
-
 
       archivePeriods:
         null,
 
-
       archiveSelectedYear:
         null,
-
 
       archiveSelectedPeriod:
         null,
 
+      /*
+        Архивные рейтинги кешируем
+        только ПОСЛЕ первого клика.
+      */
 
       archiveRankingCache:
         new Map(),
 
+      /*
+        История + сравнение тоже
+        НЕ грузятся при открытии сайта.
+
+        Загружаются только после
+        клика по шкале участника.
+      */
 
       historyData:
         null,
 
-
       historyLoading:
         null,
-
 
       selectedPerson:
         null,
 
-
       selectedComparePeople:
-        new Set()
+        new Set(),
 
-
+      currentMonthLoading:
+        false
     };
-
 
 
     /* =====================================================
        DOM
        ===================================================== */
 
-
     const rankingEl =
       document.getElementById(
         "ranking"
       );
-
 
     const currentPeriodEl =
       document.getElementById(
         "currentPeriod"
       );
 
-
     const statusEl =
       document.getElementById(
         "status"
       );
-
 
     const archiveBtn =
       document.getElementById(
         "archiveBtn"
       );
 
-
     const archiveModal =
       document.getElementById(
         "archiveModal"
       );
-
 
     const archiveClose =
       document.getElementById(
         "archiveClose"
       );
 
-
     const archiveYearsEl =
       document.getElementById(
         "archiveYears"
       );
-
 
     const archiveMonthsEl =
       document.getElementById(
         "archiveMonths"
       );
 
-
     const archiveRankingEl =
       document.getElementById(
         "archiveRanking"
       );
-
 
     const personModal =
       document.getElementById(
         "personModal"
       );
 
-
     const personClose =
       document.getElementById(
         "personClose"
       );
-
 
     const personModalTitle =
       document.getElementById(
         "personModalTitle"
       );
 
-
     const historyListEl =
       document.getElementById(
         "historyList"
       );
 
-
     const compareOptionsEl =
       document.getElementById(
         "compareOptions"
       );
-
 
     const compareChartEl =
       document.getElementById(
@@ -1849,16 +1217,11 @@
       );
 
 
-
     /* =====================================================
-       API
+       FETCH
        ===================================================== */
 
-
-    async function api(
-      params
-    ) {
-
+    async function api(params) {
 
       const url =
         new URL(
@@ -1866,31 +1229,21 @@
         );
 
 
-      Object.entries(
-        params
-      ).forEach(
+      Object
+        .entries(params)
+        .forEach(
+          ([key, value]) => {
 
-        ([key, value]) => {
-
-
-          url.searchParams.set(
-            key,
-            value
-          );
-
-
-        }
-
-      );
+            url.searchParams.set(
+              key,
+              value
+            );
+          }
+        );
 
 
       /*
-        Каждый запрос получает
-        уникальный URL.
-
-        Это уменьшает вероятность
-        получения старого ответа
-        из браузерного кеша.
+        Не используем браузерный кеш.
       */
 
       url.searchParams.set(
@@ -1901,32 +1254,20 @@
 
       const response =
         await fetch(
-
           url.toString(),
-
           {
-
             cache:
               "no-store"
-
           }
-
         );
 
 
-      if (
-        !response.ok
-      ) {
-
+      if (!response.ok) {
 
         throw new Error(
-
           "HTTP " +
           response.status
-
         );
-
-
       }
 
 
@@ -1939,38 +1280,28 @@
         data.ok === false
       ) {
 
-
         throw new Error(
-
           data.error ||
           "Ошибка API"
-
         );
-
-
       }
 
 
       return data;
-
-
     }
 
 
-
     /* =====================================================
-       ТЕКУЩИЙ ПЕРИОД
+       CURRENT MONTH
        ===================================================== */
 
-
     function getCurrentPeriod() {
-
 
       const now =
         new Date();
 
 
-      const monthIndex =
+      const month =
         now.getMonth();
 
 
@@ -1979,498 +1310,517 @@
 
 
       return {
-
-
         key:
-          MONTH_KEYS[
-            monthIndex
-          ] +
+          MONTH_KEYS[month] +
           year,
 
-
         month:
-          monthIndex + 1,
-
+          month + 1,
 
         year:
           year,
 
-
-        sort:
-          year * 100 +
-          monthIndex + 1,
-
-
         label:
-          MONTH_NAMES[
-            monthIndex
-          ] +
+          MONTH_NAMES[month] +
           " " +
           year
-
-
       };
-
-
     }
-
-
-
-    /* =====================================================
-       ГЛАВНАЯ СТРАНИЦА
-       ===================================================== */
 
 
     async function loadCurrentMonth(
       silent = false
     ) {
 
-
-      /*
-        Не запускаем новый запрос,
-        пока предыдущий ещё работает.
-
-        Это особенно важно,
-        потому что обновление
-        запускается каждые 2 секунды.
-      */
-
-      if (
-        state.currentMonthLoading
-      ) {
-
-
+      if (state.currentMonthLoading) {
         return;
-
-
       }
 
-
-      state.currentMonthLoading =
-        true;
-
+      state.currentMonthLoading = true;
 
       const period =
         getCurrentPeriod();
 
-
-      const previousPeriodKey =
-
-        state.currentPeriod
-          ? state.currentPeriod.key
-          : null;
-
-
       const monthChanged =
+        state.currentPeriod &&
+        state.currentPeriod.key !== period.key;
 
-        previousPeriodKey &&
-
-        previousPeriodKey !==
-          period.key;
-
-
-      /*
-        Если наступил новый месяц,
-        сбрасываем кеш Архива.
-
-        Благодаря этому старый месяц
-        появится там при следующем
-        открытии Архива.
-      */
-
-      if (
-        monthChanged
-      ) {
-
-
-        state.archivePeriods =
-          null;
-
-
-        state.archiveSelectedYear =
-          null;
-
-
-        state.archiveSelectedPeriod =
-          null;
-
-
-        state.archiveRankingCache
-          .clear();
-
-
-        state.historyData =
-          null;
-
-
-        state.historyLoading =
-          null;
-
-
+      if (monthChanged) {
+        state.archivePeriods = null;
+        state.archiveSelectedYear = null;
+        state.archiveSelectedPeriod = null;
+        state.archiveRankingCache.clear();
+        state.historyData = null;
+        state.historyLoading = null;
+        state.currentPeople = [];
+        rankingEl.innerHTML = "";
       }
 
+      state.currentPeriod = period;
+      currentPeriodEl.textContent = period.label;
 
-      state.currentPeriod =
-        period;
-
-
-      currentPeriodEl.textContent =
-        period.label;
-
-
-      const cacheKey =
-
-        "team_rating_current_" +
-        period.key;
-
-
-      /*
-        При первом открытии
-        пытаемся мгновенно показать
-        последнее сохранённое значение.
-      */
-
-      if (
-        !silent &&
-        state.currentPeople.length === 0
-      ) {
-
-
-        let cacheWasShown =
-          false;
-
-
-        try {
-
-
-          const saved =
-            localStorage.getItem(
-              cacheKey
-            );
-
-
-          if (
-            saved
-          ) {
-
-
-            const cachedPeople =
-              JSON.parse(
-                saved
-              );
-
-
-            if (
-              Array.isArray(
-                cachedPeople
-              ) &&
-              cachedPeople.length
-            ) {
-
-
-              const people =
-                sanitizePeople(
-                  cachedPeople
-                );
-
-
-              if (
-                people.length
-              ) {
-
-
-                state.currentPeople =
-                  people;
-
-
-                renderRanking(
-
-                  rankingEl,
-
-                  people,
-
-                  true
-
-                );
-
-
-                cacheWasShown =
-                  true;
-
-
-              }
-
-
-            }
-
-
-          }
-
-
-        }
-
-        catch (
-          error
-        ) {
-
-
-          console.warn(
-            "Ошибка локального кеша",
-            error
-          );
-
-
-        }
-
-
-        if (
-          !cacheWasShown
-        ) {
-
-
-          showLoader(
-            rankingEl
-          );
-
-
-        }
-
-
+      if (!silent && !rankingEl.children.length) {
+        showRankingLoader(rankingEl);
       }
 
-
-      setStatus(
-        ""
-      );
-
+      setStatus("");
 
       try {
 
-
         /*
-          ВАЖНО:
-
-          это единственный запрос,
-          который запускается
-          автоматически каждые 2 секунды.
+          fresh=1 предназначен для текущего месяца.
+          После небольшого изменения Code.gs он
+          заставит сервер отдавать свежие данные,
+          не используя 20-секундный live-cache.
         */
+        const data = await api({
+          mode: "month",
+          period: period.key,
+          fresh: "1"
+        });
 
-        const data =
-          await api({
+        const actualPeriod = getCurrentPeriod();
 
-
-            mode:
-              "month",
-
-
-            period:
-              period.key
-
-
-          });
-
-
-        /*
-          Пока запрос выполнялся,
-          календарный месяц мог измениться.
-
-          Такой ответ уже не нужен.
-        */
-
-        const actualPeriod =
-          getCurrentPeriod();
-
-
-        if (
-          actualPeriod.key !==
-          period.key
-        ) {
-
-
+        if (actualPeriod.key !== period.key) {
           return;
-
-
         }
 
-
-        const people =
-          sanitizePeople(
-
-            getRankingArray(
-              data
-            )
-
-          );
-
-
-        state.currentPeople =
-          people;
-
-
-        /*
-          Сохраняем свежие показатели
-          для быстрого следующего входа.
-        */
-
-        try {
-
-
-          localStorage.setItem(
-
-            cacheKey,
-
-            JSON.stringify(
-              people
-            )
-
-          );
-
-
-        }
-
-        catch (
-          error
-        ) {
-
-
-          console.warn(
-            "Не удалось сохранить кеш",
-            error
-          );
-
-
-        }
-
-
-        /*
-          Обновляем только
-          содержимое рейтинга главной.
-        */
-
-        renderRanking(
-
-          rankingEl,
-
-          people,
-
-          true
-
+        const people = sanitizePeople(
+          getRankingArray(data)
         );
 
+        if (!rankingEl.querySelector(".rank-card")) {
+          renderRanking(
+            rankingEl,
+            people,
+            { clickableScale: true }
+          );
+        } else {
+          updateLiveRanking(people);
+        }
 
-        setStatus(
-          ""
-        );
+        state.currentPeople = people;
+        setStatus("");
 
-
-      }
-
-      catch (
-        error
-      ) {
-
+      } catch (error) {
 
         console.error(
-          "Ошибка загрузки текущего месяца:",
+          "Ошибка обновления текущего месяца:",
           error
         );
 
-
-        /*
-          Если на экране уже есть
-          предыдущие данные,
-          не удаляем их.
-        */
-
-        if (
-          state.currentPeople.length === 0
-        ) {
-
-
+        if (!state.currentPeople.length) {
           setStatus(
-
             "Ошибка загрузки данных",
-
             true
-
           );
-
 
           showEmpty(
-
             rankingEl,
-
             "Не удалось получить данные текущего месяца"
-
           );
-
-
         }
 
-
+      } finally {
+        state.currentMonthLoading = false;
       }
-
-      finally {
-
-
-        state.currentMonthLoading =
-          false;
-
-
-      }
-
-
     }
 
 
-
     /* =====================================================
-       АРХИВ
+       LIVE RANKING UPDATE
+
+       Не удаляем карточки при каждом обновлении.
+       Меняем существующие элементы и используем
+       FLIP-анимацию для перемещения по рейтингу.
        ===================================================== */
 
+    function updateLiveRanking(people) {
+
+      if (!Array.isArray(people) || !people.length) {
+        return;
+      }
+
+      const existingCards = new Map();
+      const firstPositions = new Map();
+
+      Array.from(
+        rankingEl.querySelectorAll(".rank-card")
+      ).forEach(card => {
+
+        const name =
+          card.dataset.personName || "";
+
+        if (!name) {
+          return;
+        }
+
+        existingCards.set(name, card);
+        firstPositions.set(
+          name,
+          card.getBoundingClientRect()
+        );
+      });
+
+      const incomingNames =
+        new Set(
+          people.map(person => person.name)
+        );
+
+      existingCards.forEach(
+        (card, name) => {
+          if (!incomingNames.has(name)) {
+            card.remove();
+          }
+        }
+      );
+
+      people.forEach(
+        (person, index) => {
+
+          let card =
+            existingCards.get(person.name);
+
+          if (!card) {
+            card = createRankingCard(
+              person,
+              index,
+              true
+            );
+
+            card.classList.add("new-card");
+            rankingEl.appendChild(card);
+          } else {
+            updateRankingCard(
+              card,
+              person,
+              index
+            );
+          }
+
+          rankingEl.appendChild(card);
+        }
+      );
+
+      /*
+        После перестановки измеряем новые позиции
+        и визуально стартуем со старой позиции.
+      */
+      const movements = [];
+
+      Array.from(
+        rankingEl.querySelectorAll(".rank-card")
+      ).forEach(card => {
+
+        const name =
+          card.dataset.personName || "";
+
+        const first =
+          firstPositions.get(name);
+
+        if (!first) {
+          return;
+        }
+
+        const last =
+          card.getBoundingClientRect();
+
+        const deltaY =
+          first.top - last.top;
+
+        if (Math.abs(deltaY) < 1) {
+          return;
+        }
+
+        card.style.transition = "none";
+        card.style.transform =
+          `translateY(${deltaY}px)`;
+
+        movements.push(card);
+      });
+
+      if (!movements.length) {
+        return;
+      }
+
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+
+          movements.forEach(card => {
+            card.style.transition =
+              "transform 0.65s cubic-bezier(.2,.8,.2,1), border-color .3s ease, box-shadow .3s ease, opacity .3s ease";
+
+            card.style.transform = "";
+          });
+        });
+      });
+    }
+
+
+    function createRankingCard(
+      person,
+      index,
+      clickableScale = true
+    ) {
+
+      const card =
+        document.createElement("article");
+
+      card.className = "rank-card";
+      card.dataset.personName = person.name;
+      card.dataset.percent = String(
+        clampPercent(person.percent)
+      );
+
+      card.innerHTML = `
+        <div class="place"></div>
+
+        <div
+          class="person-name"
+          title="${escapeHtml(person.name)}">
+          ${escapeHtml(person.name)}
+        </div>
+
+        <div
+          class="bar-wrap"
+          ${clickableScale ? 'tabindex="0" role="button"' : ""}>
+
+          <div class="bar">
+            <div class="bar-fill"></div>
+          </div>
+
+          ${
+            clickableScale
+              ? '<span class="bar-hint">нажмите для истории</span>'
+              : ""
+          }
+        </div>
+
+        <div class="percent"></div>
+      `;
+
+      if (clickableScale) {
+        const scale =
+          card.querySelector(".bar-wrap");
+
+        const activate = () => {
+          openPersonDetails(person.name);
+        };
+
+        scale.addEventListener("click", activate);
+
+        scale.addEventListener(
+          "keydown",
+          event => {
+            if (
+              event.key === "Enter" ||
+              event.key === " "
+            ) {
+              event.preventDefault();
+              activate();
+            }
+          }
+        );
+      }
+
+      updateRankingCard(
+        card,
+        person,
+        index,
+        true
+      );
+
+      return card;
+    }
+
+
+    function updateRankingCard(
+      card,
+      person,
+      index,
+      immediate = false
+    ) {
+
+      const newPercent =
+        clampPercent(person.percent);
+
+      const oldPercent =
+        Number(card.dataset.percent);
+
+      card.dataset.personName = person.name;
+
+      card.classList.toggle("first", index === 0);
+      card.classList.toggle("second", index === 1);
+      card.classList.toggle("third", index === 2);
+
+      const placeEl =
+        card.querySelector(".place");
+
+      const nameEl =
+        card.querySelector(".person-name");
+
+      const fillEl =
+        card.querySelector(".bar-fill");
+
+      const percentEl =
+        card.querySelector(".percent");
+
+      if (placeEl) {
+        placeEl.textContent =
+          getPlaceIcon(index);
+      }
+
+      if (nameEl) {
+        nameEl.textContent = person.name;
+        nameEl.title = person.name;
+      }
+
+      if (
+        immediate ||
+        !Number.isFinite(oldPercent)
+      ) {
+        if (fillEl) {
+          fillEl.style.width =
+            newPercent + "%";
+        }
+
+        if (percentEl) {
+          percentEl.textContent =
+            formatPercent(newPercent);
+        }
+
+        card.dataset.percent =
+          String(newPercent);
+
+      } else if (
+        Math.abs(oldPercent - newPercent) > 0.0001
+      ) {
+
+        if (fillEl) {
+          fillEl.style.width =
+            newPercent + "%";
+        }
+
+        animatePercentValue(
+          percentEl,
+          oldPercent,
+          newPercent,
+          650
+        );
+
+        if (percentEl) {
+          percentEl.classList.add(
+            "value-changed"
+          );
+
+          setTimeout(
+            () => {
+              percentEl.classList.remove(
+                "value-changed"
+              );
+            },
+            260
+          );
+        }
+
+        card.dataset.percent =
+          String(newPercent);
+      }
+
+      if (percentEl) {
+        percentEl.classList.toggle(
+          "green",
+          newPercent >= 90
+        );
+      }
+    }
+
+
+    function animatePercentValue(
+      element,
+      from,
+      to,
+      duration = 650
+    ) {
+
+      if (!element) {
+        return;
+      }
+
+      const animationId =
+        String(Date.now()) + Math.random();
+
+      element.dataset.animationId =
+        animationId;
+
+      const start =
+        performance.now();
+
+      function frame(now) {
+
+        if (
+          element.dataset.animationId !==
+          animationId
+        ) {
+          return;
+        }
+
+        const progress =
+          Math.min(
+            1,
+            (now - start) / duration
+          );
+
+        const eased =
+          1 - Math.pow(1 - progress, 3);
+
+        const value =
+          from +
+          (to - from) * eased;
+
+        element.textContent =
+          formatPercent(value);
+
+        if (progress < 1) {
+          requestAnimationFrame(frame);
+        } else {
+          element.textContent =
+            formatPercent(to);
+        }
+      }
+
+      requestAnimationFrame(frame);
+    }
+
+
+    /* =====================================================
+       ARCHIVE
+
+       Список периодов грузится
+       ТОЛЬКО после клика "Архив".
+       ===================================================== */
 
     archiveBtn.addEventListener(
-
       "click",
-
       async () => {
-
 
         openModal(
           archiveModal
         );
 
 
-        archiveRankingEl.innerHTML =
-          '<div class="archive-placeholder">Выберите архивный месяц</div>';
-
-
-        /*
-          При открытии Архива
-          статистика месяцев
-          НЕ загружается.
-
-          Получаем только список
-          доступных периодов.
-        */
-
         if (
           state.archivePeriods
         ) {
 
-
           renderArchiveControls();
 
-
           return;
-
-
         }
 
 
         archiveYearsEl.innerHTML =
           '<div class="loader"></div>';
-
 
         archiveMonthsEl.innerHTML =
           "";
@@ -2478,89 +1828,62 @@
 
         try {
 
-
           const data =
             await api({
-
-
               mode:
                 "months"
-
-
             });
 
 
           const source =
-
             Array.isArray(
               data.months
             )
-
               ? data.months
-
               : Array.isArray(
                   data.periods
                 )
-
                 ? data.periods
-
                 : [];
 
 
-          const current =
-            getCurrentPeriod();
-
-
-          const currentSort =
-            current.year *
-            100 +
-            current.month;
+          const currentKey =
+            getCurrentPeriod()
+              .key;
 
 
           /*
-            В Архив попадают
-            только месяцы старше
-            текущего месяца.
+            Текущий месяц не показываем
+            в архиве.
+
+            И не создаём пустые
+            будущие месяцы.
           */
 
           state.archivePeriods =
-
             source
-
               .map(
                 normalizePeriodObject
               )
-
               .filter(
-
                 item =>
                   item &&
-                  item.sort <
-                    currentSort
-
+                  item.key !==
+                    currentKey
               )
-
               .sort(
-
                 (a, b) =>
                   a.sort -
                   b.sort
-
               );
 
 
           chooseArchiveStartYear();
 
-
           renderArchiveControls();
 
 
-        }
-
-        catch (
-          error
-        ) {
-
+        } catch (error) {
 
           console.error(
             error
@@ -2570,81 +1893,53 @@
           archiveYearsEl.innerHTML =
             "";
 
-
           archiveMonthsEl.innerHTML =
             "";
 
 
           showEmpty(
-
             archiveRankingEl,
-
-            "Не удалось загрузить список месяцев"
-
+            "Не удалось загрузить архив"
           );
-
-
         }
-
-
       }
-
     );
-
 
 
     function chooseArchiveStartYear() {
 
-
-      const periods =
-        state.archivePeriods ||
-        [];
-
-
       if (
-        periods.length === 0
+        !state.archivePeriods ||
+        state.archivePeriods.length === 0
       ) {
-
 
         state.archiveSelectedYear =
           null;
 
-
         return;
-
-
       }
 
 
       const latest =
-        periods[
-          periods.length - 1
+        state.archivePeriods[
+          state.archivePeriods.length - 1
         ];
 
 
       state.archiveSelectedYear =
         latest.year;
-
-
     }
-
 
 
     function renderArchiveControls() {
 
-
       renderArchiveYears();
 
-
       renderArchiveMonths();
-
-
     }
 
 
-
     function renderArchiveYears() {
-
 
       archiveYearsEl.innerHTML =
         "";
@@ -2656,27 +1951,17 @@
 
 
       const years =
-
         [
-
           ...new Set(
-
             periods.map(
-
-              period =>
-                period.year
-
+              item =>
+                item.year
             )
-
           )
-
         ]
-
           .sort(
-
             (a, b) =>
               b - a
-
           );
 
 
@@ -2684,21 +1969,15 @@
         years.length === 0
       ) {
 
-
         archiveYearsEl.innerHTML =
           '<div class="subtle">Архивных месяцев пока нет</div>';
 
-
         return;
-
-
       }
 
 
       years.forEach(
-
         year => {
-
 
           const button =
             document.createElement(
@@ -2709,15 +1988,11 @@
           button.type =
             "button";
 
-
           button.className =
             "period-button";
 
-
           button.textContent =
-            String(
-              year
-            );
+            String(year);
 
 
           if (
@@ -2725,25 +2000,18 @@
             state.archiveSelectedYear
           ) {
 
-
             button.classList.add(
               "active"
             );
-
-
           }
 
 
           button.addEventListener(
-
             "click",
-
             () => {
-
 
               state.archiveSelectedYear =
                 year;
-
 
               state.archiveSelectedPeriod =
                 null;
@@ -2754,29 +2022,19 @@
 
               archiveRankingEl.innerHTML =
                 '<div class="archive-placeholder">Выберите архивный месяц</div>';
-
-
             }
-
           );
 
 
           archiveYearsEl.appendChild(
             button
           );
-
-
         }
-
       );
-
-
     }
 
 
-
     function renderArchiveMonths() {
-
 
       archiveMonthsEl.innerHTML =
         "";
@@ -2785,64 +2043,33 @@
       if (
         !state.archiveSelectedYear
       ) {
-
-
         return;
-
-
       }
 
 
       const periods =
-
-        (
-          state.archivePeriods ||
-          []
-        )
-
+        (state.archivePeriods || [])
           .filter(
-
-            period =>
-              period.year ===
-                state.archiveSelectedYear
-
+            item =>
+              item.year ===
+              state.archiveSelectedYear
           )
-
           .sort(
-
             (a, b) =>
               a.month -
               b.month
-
           );
 
 
-      if (
-        periods.length === 0
-      ) {
-
-
-        archiveMonthsEl.innerHTML =
-          '<div class="subtle">Нет доступных месяцев</div>';
-
-
-        return;
-
-
-      }
-
-
       /*
-        Только кнопки месяцев.
+        Показываем только существующие
+        архивные месяцы.
 
-        Здесь статистика
-        ещё НЕ запрашивается.
+        Никаких disabled-блоков.
       */
 
       periods.forEach(
-
         period => {
-
 
           const button =
             document.createElement(
@@ -2853,10 +2080,8 @@
           button.type =
             "button";
 
-
           button.className =
             "period-button";
-
 
           button.textContent =
             MONTH_NAMES[
@@ -2869,21 +2094,15 @@
             state.archiveSelectedPeriod
           ) {
 
-
             button.classList.add(
               "active"
             );
-
-
           }
 
 
           button.addEventListener(
-
             "click",
-
             () => {
-
 
               state.archiveSelectedPeriod =
                 period.key;
@@ -2893,132 +2112,97 @@
 
 
               /*
-                Только после нажатия
-                на конкретный месяц
-                запрашиваем его статистику.
+                КЛЮЧЕВОЙ МОМЕНТ:
+
+                ranking за месяц
+                загружается только
+                прямо сейчас —
+                после клика по месяцу.
               */
 
               loadArchiveMonth(
                 period
               );
-
-
             }
-
           );
 
 
           archiveMonthsEl.appendChild(
             button
           );
-
-
         }
-
       );
-
-
     }
-
-
-
-    /* =====================================================
-       ЗАГРУЗКА КОНКРЕТНОГО
-       АРХИВНОГО МЕСЯЦА
-       ===================================================== */
 
 
     async function loadArchiveMonth(
       period
     ) {
 
-
-      showLoader(
+      showRankingLoader(
         archiveRankingEl
       );
 
 
+      /*
+        Если пользователь уже открывал
+        этот месяц, используем
+        клиентский кеш.
+      */
+
       if (
-
         state.archiveRankingCache
-          .has(
-            period.key
-          )
-
+          .has(period.key)
       ) {
+
+        const cached =
+          state.archiveRankingCache
+            .get(period.key);
 
 
         renderArchiveMonthResult(
-
           period,
-
-          state.archiveRankingCache
-            .get(
-              period.key
-            )
-
+          cached
         );
 
-
         return;
-
-
       }
 
 
       try {
 
-
         const data =
           await api({
-
-
             mode:
               "month",
 
-
             period:
               period.key
-
-
           });
 
 
         const people =
           sanitizePeople(
-
             getRankingArray(
               data
             )
-
           );
 
 
         state.archiveRankingCache
           .set(
-
             period.key,
-
             people
-
           );
 
 
         renderArchiveMonthResult(
-
           period,
-
           people
-
         );
 
 
-      }
-
-      catch (
-        error
-      ) {
-
+      } catch (error) {
 
         console.error(
           error
@@ -3026,19 +2210,11 @@
 
 
         showEmpty(
-
           archiveRankingEl,
-
           "Не удалось загрузить этот месяц"
-
         );
-
-
       }
-
-
     }
-
 
 
     function renderArchiveMonthResult(
@@ -3046,34 +2222,30 @@
       people
     ) {
 
-
       archiveRankingEl.innerHTML =
         "";
 
 
-      const title =
+      const label =
         document.createElement(
-          "h3"
+          "div"
         );
 
 
-      title.className =
+      label.className =
         "section-title";
 
 
-      title.textContent =
-
+      label.textContent =
         MONTH_NAMES[
           period.month - 1
         ] +
-
         " " +
-
         period.year;
 
 
       archiveRankingEl.appendChild(
-        title
+        label
       );
 
 
@@ -3093,29 +2265,23 @@
 
 
       renderRanking(
-
         ranking,
-
         people,
-
-        true
-
+        {
+          clickableScale:
+            true
+        }
       );
-
-
     }
 
 
-
     /* =====================================================
-       СТАТИСТИКА ЧЕЛОВЕКА
+       CLICK ON SCALE
        ===================================================== */
-
 
     async function openPersonDetails(
       personName
     ) {
-
 
       state.selectedPerson =
         personName;
@@ -3123,9 +2289,7 @@
 
       state.selectedComparePeople =
         new Set([
-
           personName
-
         ]);
 
 
@@ -3152,14 +2316,13 @@
 
       try {
 
-
         /*
-          История НЕ загружается
-          автоматически.
+          mode=all НЕ вызывается
+          при загрузке главной.
 
-          mode=all вызывается
-          только после нажатия
-          на шкалу человека.
+          Только после того,
+          как пользователь нажал
+          на шкалу участника.
         */
 
         await ensureHistoryData();
@@ -3176,12 +2339,7 @@
         renderCompareChart();
 
 
-      }
-
-      catch (
-        error
-      ) {
-
+      } catch (error) {
 
         console.error(
           error
@@ -3190,115 +2348,73 @@
 
         historyListEl.innerHTML =
           '<div class="empty">Не удалось загрузить историю</div>';
-
-
-        compareOptionsEl.innerHTML =
-          '<div class="empty">Не удалось загрузить сравнение</div>';
-
-
       }
-
-
     }
-
 
 
     async function ensureHistoryData() {
 
-
       if (
         state.historyData
       ) {
-
-
         return;
-
-
       }
 
+
+      /*
+        Защита от нескольких
+        одновременных запросов.
+      */
 
       if (
         state.historyLoading
       ) {
 
-
         return state.historyLoading;
-
-
       }
 
 
       state.historyLoading =
-        (
+        (async () => {
 
-          async () => {
-
-
-            const data =
-              await api({
-
-
-                mode:
-                  "all"
+          const data =
+            await api({
+              mode:
+                "all"
+            });
 
 
-              });
+          state.historyData =
+            normalizeHistoryData(
+              data
+            );
 
-
-            state.historyData =
-              normalizeHistoryData(
-                data
-              );
-
-
-          }
-
-        )();
+        })();
 
 
       try {
 
-
         await state.historyLoading;
 
-
-      }
-
-      finally {
-
+      } finally {
 
         state.historyLoading =
           null;
-
-
       }
-
-
     }
 
 
-
     /* =====================================================
-       НОРМАЛИЗАЦИЯ ИСТОРИИ
+       HISTORY
        ===================================================== */
-
 
     function normalizeHistoryData(
       data
     ) {
 
-
       const result = {
-
-
-        people:
-          {},
-
-
-        periods:
-          []
-
-
+        people: {},
+        periods: []
       };
 
 
@@ -3306,559 +2422,254 @@
         new Map();
 
 
+      /*
+        Новый формат Code.gs:
+
+        people: [
+          {
+            name,
+            history:[...]
+          }
+        ]
+      */
+
       if (
         Array.isArray(
           data.people
         )
       ) {
 
-
         data.people.forEach(
-
           person => {
-
 
             const name =
               String(
-
-                person.name ||
-                ""
-
+                person.name || ""
               ).trim();
 
 
-            if (
-              !name
-            ) {
-
-
+            if (!name) {
               return;
-
-
             }
 
 
             const rows =
               normalizeHistoryRows(
-
                 person.history
-
               );
 
 
-            result.people[
-              name
-            ] =
+            result.people[name] =
               rows;
 
 
             rows.forEach(
-
               row => {
 
-
                 periodMap.set(
-
                   row.period,
-
                   {
-
-
                     key:
                       row.period,
-
 
                     year:
                       row.year,
 
-
                     month:
                       row.month,
 
-
                     sort:
-                      row.sort,
-
-
-                    label:
-                      row.label
-
-
+                      row.sort
                   }
-
                 );
-
-
               }
-
             );
-
-
           }
-
         );
-
-
       }
 
+
+      /*
+        Совместимость со старым
+        форматом объекта.
+      */
 
       else if (
-
         data.people &&
-
         typeof data.people ===
           "object"
-
       ) {
 
+        Object
+          .entries(
+            data.people
+          )
+          .forEach(
+            ([name, rows]) => {
 
-        Object.entries(
-          data.people
-        ).forEach(
-
-          ([name, rows]) => {
-
-
-            const normalized =
-              normalizeHistoryRows(
-                rows
-              );
-
-
-            result.people[
-              name
-            ] =
-              normalized;
-
-
-            normalized.forEach(
-
-              row => {
-
-
-                periodMap.set(
-
-                  row.period,
-
-                  {
-
-
-                    key:
-                      row.period,
-
-
-                    year:
-                      row.year,
-
-
-                    month:
-                      row.month,
-
-
-                    sort:
-                      row.sort,
-
-
-                    label:
-                      row.label
-
-
-                  }
-
+              const normalized =
+                normalizeHistoryRows(
+                  rows
                 );
 
 
-              }
-
-            );
-
-
-          }
-
-        );
+              result.people[name] =
+                normalized;
 
 
-      }
+              normalized.forEach(
+                row => {
 
+                  periodMap.set(
+                    row.period,
+                    {
+                      key:
+                        row.period,
 
-      if (
-        Array.isArray(
-          data.history
-        )
-      ) {
+                      year:
+                        row.year,
 
+                      month:
+                        row.month,
 
-        data.history.forEach(
-
-          item => {
-
-
-            const name =
-              String(
-
-                item.name ||
-                ""
-
-              ).trim();
-
-
-            const row =
-              normalizeHistoryRow(
-                item
+                      sort:
+                        row.sort
+                    }
+                  );
+                }
               );
-
-
-            if (
-              !name ||
-              !row
-            ) {
-
-
-              return;
-
-
             }
-
-
-            if (
-              !result.people[
-                name
-              ]
-            ) {
-
-
-              result.people[
-                name
-              ] =
-                [];
-
-
-            }
-
-
-            const exists =
-              result.people[
-                name
-              ].some(
-
-                old =>
-                  old.period ===
-                  row.period
-
-              );
-
-
-            if (
-              !exists
-            ) {
-
-
-              result.people[
-                name
-              ].push(
-                row
-              );
-
-
-            }
-
-
-            periodMap.set(
-
-              row.period,
-
-              {
-
-
-                key:
-                  row.period,
-
-
-                year:
-                  row.year,
-
-
-                month:
-                  row.month,
-
-
-                sort:
-                  row.sort,
-
-
-                label:
-                  row.label
-
-
-              }
-
-            );
-
-
-          }
-
-        );
-
-
-      }
-
-
-      Object.values(
-        result.people
-      ).forEach(
-
-        rows => {
-
-
-          rows.sort(
-
-            (a, b) =>
-              a.sort -
-              b.sort
-
           );
-
-
-        }
-
-      );
+      }
 
 
       result.periods =
-
         [
-
           ...periodMap.values()
-
         ]
-
           .sort(
-
             (a, b) =>
               a.sort -
               b.sort
-
           );
 
 
       return result;
-
-
     }
-
 
 
     function normalizeHistoryRows(
       rows
     ) {
 
-
       if (
         !Array.isArray(
           rows
         )
       ) {
-
-
         return [];
-
-
       }
 
 
       return rows
-
         .map(
-          normalizeHistoryRow
-        )
+          row => {
 
+            const year =
+              Number(
+                row.year
+              );
+
+
+            const month =
+              Number(
+                row.month
+              );
+
+
+            const percent =
+              Number(
+                row.percent
+              );
+
+
+            return {
+              period:
+                String(
+                  row.period || ""
+                ),
+
+              year:
+                year,
+
+              month:
+                month,
+
+              sort:
+                Number(
+                  row.sort ||
+                  (
+                    year *
+                    100 +
+                    month
+                  )
+                ),
+
+              percent:
+                percent,
+
+              label:
+                row.label ||
+                (
+                  MONTH_NAMES[
+                    month - 1
+                  ] +
+                  " " +
+                  year
+                )
+            };
+          }
+        )
         .filter(
-          Boolean
+          row =>
+            row.period &&
+            Number.isFinite(
+              row.year
+            ) &&
+            Number.isFinite(
+              row.month
+            ) &&
+            isSafePercent(
+              row.percent
+            )
         )
-
         .sort(
-
           (a, b) =>
             a.sort -
             b.sort
-
         );
-
-
     }
-
-
-
-    function normalizeHistoryRow(
-      row
-    ) {
-
-
-      if (
-        !row
-      ) {
-
-
-        return null;
-
-
-      }
-
-
-      const year =
-        Number(
-          row.year
-        );
-
-
-      const month =
-        Number(
-          row.month
-        );
-
-
-      const percent =
-        Number(
-          row.percent
-        );
-
-
-      if (
-
-        !Number.isFinite(
-          year
-        ) ||
-
-        !Number.isFinite(
-          month
-        ) ||
-
-        month < 1 ||
-
-        month > 12 ||
-
-        !isSafePercent(
-          percent
-        )
-
-      ) {
-
-
-        return null;
-
-
-      }
-
-
-      const period =
-        String(
-
-          row.period ||
-
-          (
-
-            MONTH_KEYS[
-              month - 1
-            ] +
-
-            year
-
-          )
-
-        );
-
-
-      return {
-
-
-        period:
-          period,
-
-
-        year:
-          year,
-
-
-        month:
-          month,
-
-
-        sort:
-          Number(
-
-            row.sort ||
-
-            (
-
-              year *
-              100 +
-
-              month
-
-            )
-
-          ),
-
-
-        percent:
-          percent,
-
-
-        label:
-          row.label ||
-
-          (
-
-            MONTH_NAMES[
-              month - 1
-            ] +
-
-            " " +
-
-            year
-
-          )
-
-
-      };
-
-
-    }
-
-
-
-    /* =====================================================
-       ИСТОРИЯ ЧЕЛОВЕКА
-       ===================================================== */
 
 
     function renderPersonHistory(
       name
     ) {
 
-
       historyListEl.innerHTML =
         "";
 
 
       const rows =
-
         state.historyData &&
-
         state.historyData.people &&
-
         Array.isArray(
-
           state.historyData.people[
             name
           ]
-
         )
-
           ? state.historyData.people[
               name
             ]
-
           : [];
 
 
@@ -3866,33 +2677,22 @@
         rows.length === 0
       ) {
 
-
         historyListEl.innerHTML =
           '<div class="empty">История отсутствует</div>';
 
-
         return;
-
-
       }
 
 
       rows
-
         .slice()
-
         .sort(
-
           (a, b) =>
             b.sort -
             a.sort
-
         )
-
         .forEach(
-
           item => {
-
 
             const row =
               document.createElement(
@@ -3907,79 +2707,53 @@
             row.innerHTML = `
 
               <span class="history-period">
-
                 ${escapeHtml(item.label)}
-
               </span>
 
-              <span
-                class="${
-                  item.percent >= 90
-                    ? "history-percent green"
-                    : "history-percent"
-                }"
-              >
-
+              <span class="${
+                item.percent >= 90
+                  ? "history-percent green"
+                  : "history-percent"
+              }">
                 ${formatPercent(item.percent)}
-
               </span>
-
             `;
 
 
             historyListEl.appendChild(
               row
             );
-
-
           }
-
         );
-
-
     }
 
 
-
     /* =====================================================
-       СРАВНЕНИЕ
+       COMPARISON
        ===================================================== */
 
-
     function renderCompareOptions() {
-
 
       compareOptionsEl.innerHTML =
         "";
 
 
       if (
-
         !state.historyData ||
-
         !state.historyData.people
-
       ) {
-
-
         return;
-
-
       }
 
 
       const names =
         Object.keys(
-
           state.historyData.people
-
         );
 
 
       names.forEach(
-
         name => {
-
 
           const label =
             document.createElement(
@@ -4002,50 +2776,32 @@
 
 
           checkbox.checked =
-
             state.selectedComparePeople
-              .has(
-                name
-              );
+              .has(name);
 
 
           checkbox.addEventListener(
-
             "change",
-
             () => {
-
 
               if (
                 checkbox.checked
               ) {
 
+                state
+                  .selectedComparePeople
+                  .add(name);
 
-                state.selectedComparePeople
-                  .add(
-                    name
-                  );
+              } else {
 
-
-              }
-
-              else {
-
-
-                state.selectedComparePeople
-                  .delete(
-                    name
-                  );
-
-
+                state
+                  .selectedComparePeople
+                  .delete(name);
               }
 
 
               renderCompareChart();
-
-
             }
-
           );
 
 
@@ -4072,19 +2828,12 @@
           compareOptionsEl.appendChild(
             label
           );
-
-
         }
-
       );
-
-
     }
 
 
-
     function renderCompareChart() {
-
 
       const svg =
         compareChartEl;
@@ -4097,19 +2846,13 @@
       if (
         !state.historyData
       ) {
-
-
         return;
-
-
       }
 
 
       const selected =
         [
-
           ...state.selectedComparePeople
-
         ];
 
 
@@ -4117,106 +2860,59 @@
         selected.length === 0
       ) {
 
-
         addSvgText(
-
           svg,
-
           450,
-
-          195,
-
+          185,
           "Выберите участников для сравнения",
-
           "#8e9bb7",
-
           "middle",
-
           15
-
         );
 
-
         return;
-
-
       }
 
 
       const periods =
-
         Array.isArray(
           state.historyData.periods
         )
-
           ? state.historyData.periods
-
           : [];
 
 
       if (
         periods.length === 0
       ) {
-
-
-        addSvgText(
-
-          svg,
-
-          450,
-
-          195,
-
-          "Нет данных для сравнения",
-
-          "#8e9bb7",
-
-          "middle",
-
-          15
-
-        );
-
-
         return;
-
-
       }
 
 
       const width =
         900;
 
-
       const height =
-        390;
-
+        370;
 
       const left =
         55;
 
-
       const right =
-        25;
-
+        22;
 
       const top =
-        60;
-
+        35;
 
       const bottom =
         55;
 
-
       const chartWidth =
-
         width -
         left -
         right;
 
-
       const chartHeight =
-
         height -
         top -
         bottom;
@@ -4225,197 +2921,120 @@
       const minY =
         70;
 
-
       const maxY =
         100;
 
 
       /*
-        Горизонтальная шкала
-        от 70 до 100
-        с шагом 5%.
+        Y-шкала каждые 5%.
       */
 
       for (
-
-        let value = minY;
-
-        value <= maxY;
-
+        let value = 70;
+        value <= 100;
         value += 5
-
       ) {
 
-
         const y =
-          valueToY(
-
-            value,
-
-            minY,
-
-            maxY,
-
-            top,
-
-            chartHeight
-
+          top +
+          chartHeight *
+          (
+            1 -
+            (
+              value -
+              minY
+            ) /
+            (
+              maxY -
+              minY
+            )
           );
 
 
         addSvgLine(
-
           svg,
-
           left,
-
           y,
-
           width - right,
-
           y,
-
           "rgba(255,255,255,.09)"
-
         );
 
 
         addSvgText(
-
           svg,
-
           46,
-
           y + 4,
-
           value + "%",
-
           "#8e9bb7",
-
           "end",
-
           11
-
         );
-
-
       }
 
 
       periods.forEach(
-
         (period, index) => {
 
-
           if (
-
-            periods.length > 16 &&
-
+            periods.length > 14 &&
             index % 2 !== 0 &&
-
             index !==
               periods.length - 1
-
           ) {
-
-
             return;
-
-
           }
 
 
           const x =
             getChartX(
-
               index,
-
               periods.length,
-
               left,
-
               chartWidth
-
             );
-
-
-          const monthName =
-
-            MONTH_NAMES[
-              period.month - 1
-            ] ||
-
-            "";
 
 
           const label =
-
-            monthName.slice(
-              0,
-              3
-            ) +
-
-            " " +
-
+            MONTH_NAMES[
+              period.month - 1
+            ].slice(0, 3)
+            +
+            " "
+            +
             String(
               period.year
-            ).slice(
-              -2
-            );
+            ).slice(-2);
 
 
           addSvgText(
-
             svg,
-
             x,
-
             height - 18,
-
             label,
-
             "#8e9bb7",
-
             "middle",
-
             10
-
           );
-
-
         }
-
       );
 
 
       selected.forEach(
-
-        (
-
-          name,
-
-          seriesIndex
-
-        ) => {
-
+        (name, seriesIndex) => {
 
           const rows =
-
             state.historyData.people[
               name
-            ] ||
-
-            [];
+            ] || [];
 
 
-          const values =
+          const map =
             new Map();
 
 
           rows.forEach(
-
             row => {
-
 
               if (
                 isSafePercent(
@@ -4423,97 +3042,42 @@
                 )
               ) {
 
-
-                values.set(
-
+                map.set(
                   row.period,
-
                   Number(
                     row.percent
                   )
-
                 );
-
-
               }
-
-
             }
-
           );
 
 
           const hue =
-
             (
-
-              190 +
-
               seriesIndex *
-              67
-
+              71 +
+              188
             ) %
-
             360;
 
 
           const color =
-
-            `hsl(${hue} 78% 62%)`;
-
-
-          const legendY =
-
-            18 +
-
-            seriesIndex *
-            17;
-
-
-          addSvgText(
-
-            svg,
-
-            left + 8,
-
-            legendY,
-
-            name,
-
-            color,
-
-            "start",
-
-            10
-
-          );
+            `hsl(${hue} 75% 62%)`;
 
 
           let path =
             "";
 
-
           let started =
             false;
 
 
-          const circles =
-            [];
-
-
           periods.forEach(
-
-            (
-
-              period,
-
-              index
-
-            ) => {
-
+            (period, index) => {
 
               const value =
-                values.get(
+                map.get(
                   period.key
                 );
 
@@ -4522,187 +3086,84 @@
                 value === undefined
               ) {
 
-
                 started =
                   false;
 
-
                 return;
-
-
               }
 
 
               const x =
                 getChartX(
-
                   index,
-
                   periods.length,
-
                   left,
-
                   chartWidth
-
                 );
 
 
-              const chartValue =
+              const clamped =
                 Math.max(
-
                   minY,
-
                   Math.min(
-
                     maxY,
-
                     value
-
                   )
-
                 );
 
 
               const y =
-                valueToY(
-
-                  chartValue,
-
-                  minY,
-
-                  maxY,
-
-                  top,
-
-                  chartHeight
-
+                top +
+                chartHeight *
+                (
+                  1 -
+                  (
+                    clamped -
+                    minY
+                  ) /
+                  (
+                    maxY -
+                    minY
+                  )
                 );
 
 
-              if (
-                !started
-              ) {
-
+              if (!started) {
 
                 path +=
                   `M ${x} ${y} `;
 
-
                 started =
                   true;
 
-
-              }
-
-              else {
-
+              } else {
 
                 path +=
                   `L ${x} ${y} `;
-
-
               }
-
-
-              circles.push({
-
-                x,
-
-                y,
-
-                value
-
-              });
-
-
-            }
-
-          );
-
-
-          const pathElement =
-            document.createElementNS(
-
-              "http://www.w3.org/2000/svg",
-
-              "path"
-
-            );
-
-
-          pathElement.setAttribute(
-            "d",
-            path
-          );
-
-
-          pathElement.setAttribute(
-            "fill",
-            "none"
-          );
-
-
-          pathElement.setAttribute(
-            "stroke",
-            color
-          );
-
-
-          pathElement.setAttribute(
-            "stroke-width",
-            "2.5"
-          );
-
-
-          pathElement.setAttribute(
-            "stroke-linecap",
-            "round"
-          );
-
-
-          pathElement.setAttribute(
-            "stroke-linejoin",
-            "round"
-          );
-
-
-          svg.appendChild(
-            pathElement
-          );
-
-
-          circles.forEach(
-
-            point => {
 
 
               const circle =
                 document.createElementNS(
-
                   "http://www.w3.org/2000/svg",
-
                   "circle"
-
                 );
 
 
               circle.setAttribute(
                 "cx",
-                point.x
+                x
               );
-
 
               circle.setAttribute(
                 "cy",
-                point.y
+                y
               );
-
 
               circle.setAttribute(
                 "r",
                 "3.5"
               );
-
 
               circle.setAttribute(
                 "fill",
@@ -4710,71 +3171,85 @@
               );
 
 
-              const title =
-                document.createElementNS(
-
-                  "http://www.w3.org/2000/svg",
-
-                  "title"
-
-                );
-
-
-              title.textContent =
-
-                name +
-
-                ": " +
-
-                formatPercent(
-                  point.value
-                );
-
-
-              circle.appendChild(
-                title
-              );
-
-
               svg.appendChild(
                 circle
               );
-
-
             }
-
           );
 
 
+          const pathEl =
+            document.createElementNS(
+              "http://www.w3.org/2000/svg",
+              "path"
+            );
+
+
+          pathEl.setAttribute(
+            "d",
+            path
+          );
+
+          pathEl.setAttribute(
+            "fill",
+            "none"
+          );
+
+          pathEl.setAttribute(
+            "stroke",
+            color
+          );
+
+          pathEl.setAttribute(
+            "stroke-width",
+            "2.5"
+          );
+
+          pathEl.setAttribute(
+            "stroke-linecap",
+            "round"
+          );
+
+          pathEl.setAttribute(
+            "stroke-linejoin",
+            "round"
+          );
+
+
+          svg.appendChild(
+            pathEl
+          );
+
+
+          addSvgText(
+            svg,
+            left + 8,
+            18 +
+            seriesIndex * 16,
+            name,
+            color,
+            "start",
+            10
+          );
         }
-
       );
-
-
     }
 
 
-
     /* =====================================================
-       РЕЙТИНГ
+       GENERIC RANKING RENDERER
        ===================================================== */
-
 
     function getRankingArray(
       data
     ) {
-
 
       if (
         Array.isArray(
           data.people
         )
       ) {
-
-
         return data.people;
-
-
       }
 
 
@@ -4783,367 +3258,98 @@
           data.ranking
         )
       ) {
-
-
         return data.ranking;
-
-
       }
 
 
       return [];
-
-
     }
-
 
 
     function sanitizePeople(
       people
     ) {
 
-
       if (
         !Array.isArray(
           people
         )
       ) {
-
-
         return [];
-
-
       }
 
 
       return people
-
         .map(
+          item => ({
+            name:
+              String(
+                item.name || ""
+              ).trim(),
 
-          item => {
-
-
-            return {
-
-
-              name:
-                String(
-
-                  item.name ||
-                  ""
-
-                ).trim(),
-
-
-              percent:
-                Number(
-                  item.percent
-                )
-
-
-            };
-
-
-          }
-
+            percent:
+              Number(
+                item.percent
+              )
+          })
         )
-
         .filter(
-
           item =>
             item.name &&
             isSafePercent(
               item.percent
             )
-
         )
-
         .sort(
-
           (a, b) =>
             b.percent -
             a.percent
-
         );
-
-
     }
-
 
 
     function renderRanking(
-
       target,
-
       people,
-
-      clickable = true
-
+      options = {}
     ) {
 
+      target.innerHTML = "";
 
-      target.innerHTML =
-        "";
-
-
-      if (
-        people.length === 0
-      ) {
-
-
+      if (!people.length) {
         showEmpty(
-
           target,
-
           "За этот месяц статистика не найдена"
-
         );
-
-
         return;
-
-
       }
 
-
       people.forEach(
-
-        (
-
-          person,
-
-          index
-
-        ) => {
-
+        (person, index) => {
 
           const card =
-            document.createElement(
-              "article"
+            createRankingCard(
+              person,
+              index,
+              Boolean(options.clickableScale)
             );
 
-
-          card.className =
-            "rank-card";
-
-
-          if (
-            index === 0
-          ) {
-
-
-            card.classList.add(
-              "first"
-            );
-
-
-          }
-
-
-          if (
-            index === 1
-          ) {
-
-
-            card.classList.add(
-              "second"
-            );
-
-
-          }
-
-
-          if (
-            index === 2
-          ) {
-
-
-            card.classList.add(
-              "third"
-            );
-
-
-          }
-
-
-          const percent =
-            clampPercent(
-              person.percent
-            );
-
-
-          const percentClass =
-
-            percent >= 90
-
-              ? "percent green"
-
-              : "percent";
-
-
-          card.innerHTML = `
-
-
-            <div class="place">
-
-              ${getPlaceIcon(index)}
-
-            </div>
-
-
-            <div
-              class="person-name"
-              title="${escapeHtml(person.name)}"
-            >
-
-              ${escapeHtml(person.name)}
-
-            </div>
-
-
-            <div
-              class="bar-wrap"
-              ${
-                clickable
-                  ? 'tabindex="0" role="button"'
-                  : ""
-              }
-            >
-
-
-              <div class="bar">
-
-
-                <div
-                  class="bar-fill"
-                  style="width:${percent}%"
-                ></div>
-
-
-              </div>
-
-
-              ${
-                clickable
-                  ? '<span class="bar-hint">нажмите для статистики</span>'
-                  : ""
-              }
-
-
-            </div>
-
-
-            <div
-              class="${percentClass}"
-            >
-
-              ${formatPercent(percent)}
-
-            </div>
-
-
-          `;
-
-
-          if (
-            clickable
-          ) {
-
-
-            const scale =
-              card.querySelector(
-                ".bar-wrap"
-              );
-
-
-            const open =
-              () => {
-
-
-                openPersonDetails(
-                  person.name
-                );
-
-
-              };
-
-
-            scale.addEventListener(
-
-              "click",
-
-              open
-
-            );
-
-
-            scale.addEventListener(
-
-              "keydown",
-
-              event => {
-
-
-                if (
-
-                  event.key ===
-                    "Enter" ||
-
-                  event.key ===
-                    " "
-
-                ) {
-
-
-                  event.preventDefault();
-
-
-                  open();
-
-
-                }
-
-
-              }
-
-            );
-
-
-          }
-
-
-          target.appendChild(
-            card
-          );
-
-
+          target.appendChild(card);
         }
-
       );
-
-
     }
 
 
-
     /* =====================================================
-       ПЕРИОДЫ
+       PERIOD NORMALIZATION
        ===================================================== */
-
 
     function normalizePeriodObject(
       item
     ) {
 
-
-      if (
-        !item
-      ) {
-
-
+      if (!item) {
         return null;
-
-
       }
 
 
@@ -5160,96 +3366,62 @@
 
 
       if (
-
         !item.key ||
-
         !Number.isFinite(
           year
         ) ||
-
         !Number.isFinite(
           month
         ) ||
-
         month < 1 ||
-
         month > 12
-
       ) {
-
-
         return null;
-
-
       }
 
 
       return {
-
-
         key:
           String(
             item.key
           ),
 
-
         year:
           year,
-
 
         month:
           month,
 
-
         sort:
           Number(
-
             item.sort ||
-
             (
-
               year *
               100 +
-
               month
-
             )
-
           ),
-
 
         label:
           item.label ||
-
           (
-
             MONTH_NAMES[
               month - 1
             ] +
-
             " " +
-
             year
-
           )
-
-
       };
-
-
     }
 
 
-
     /* =====================================================
-       MODAL
+       MODAL HELPERS
        ===================================================== */
-
 
     function openModal(
       modal
     ) {
-
 
       modal.classList.add(
         "visible"
@@ -5257,27 +3429,22 @@
 
 
       modal.setAttribute(
-
         "aria-hidden",
-
         "false"
-
       );
 
 
-      document.body.classList.add(
-        "modal-open"
-      );
-
-
+      document.body
+        .classList
+        .add(
+          "modal-open"
+        );
     }
-
 
 
     function closeModal(
       modal
     ) {
-
 
       modal.classList.remove(
         "visible"
@@ -5285,311 +3452,172 @@
 
 
       modal.setAttribute(
-
         "aria-hidden",
-
         "true"
-
       );
 
 
       if (
-
         !document.querySelector(
           ".modal.visible"
         )
-
       ) {
 
-
-        document.body.classList.remove(
-          "modal-open"
-        );
-
-
+        document.body
+          .classList
+          .remove(
+            "modal-open"
+          );
       }
-
-
     }
 
 
-
     archiveClose.addEventListener(
-
       "click",
-
       () => {
-
 
         closeModal(
           archiveModal
         );
-
-
       }
-
     );
 
 
     personClose.addEventListener(
-
       "click",
-
       () => {
-
 
         closeModal(
           personModal
         );
-
-
       }
-
     );
 
 
     archiveModal.addEventListener(
-
       "click",
-
       event => {
-
 
         if (
           event.target ===
           archiveModal
         ) {
 
-
           closeModal(
             archiveModal
           );
-
-
         }
-
-
       }
-
     );
 
 
     personModal.addEventListener(
-
       "click",
-
       event => {
-
 
         if (
           event.target ===
           personModal
         ) {
 
-
           closeModal(
             personModal
           );
-
-
         }
-
-
       }
-
     );
 
 
     document.addEventListener(
-
       "keydown",
-
       event => {
-
 
         if (
           event.key !==
           "Escape"
         ) {
-
-
           return;
-
-
         }
 
 
         if (
-
-          personModal.classList.contains(
-            "visible"
-          )
-
+          personModal
+            .classList
+            .contains(
+              "visible"
+            )
         ) {
-
 
           closeModal(
             personModal
           );
 
-
           return;
-
-
         }
 
 
         if (
-
-          archiveModal.classList.contains(
-            "visible"
-          )
-
+          archiveModal
+            .classList
+            .contains(
+              "visible"
+            )
         ) {
-
 
           closeModal(
             archiveModal
           );
-
-
         }
-
-
       }
-
     );
-
 
 
     /* =====================================================
        SVG HELPERS
        ===================================================== */
 
-
     function getChartX(
-
       index,
-
       count,
-
       left,
-
       width
-
     ) {
-
 
       if (
         count <= 1
       ) {
 
-
         return (
-
           left +
-
           width / 2
-
         );
-
-
       }
 
 
       return (
-
         left +
-
         width *
-
         index /
-
         (
-
           count - 1
-
         )
-
       );
-
-
     }
-
-
-
-    function valueToY(
-
-      value,
-
-      min,
-
-      max,
-
-      top,
-
-      height
-
-    ) {
-
-
-      return (
-
-        top +
-
-        height *
-
-        (
-
-          1 -
-
-          (
-
-            value -
-            min
-
-          ) /
-
-          (
-
-            max -
-            min
-
-          )
-
-        )
-
-      );
-
-
-    }
-
 
 
     function addSvgLine(
-
       svg,
-
       x1,
-
       y1,
-
       x2,
-
       y2,
-
       stroke
-
     ) {
-
 
       const line =
         document.createElementNS(
-
           "http://www.w3.org/2000/svg",
-
           "line"
-
         );
 
 
@@ -5598,30 +3626,25 @@
         x1
       );
 
-
       line.setAttribute(
         "y1",
         y1
       );
-
 
       line.setAttribute(
         "x2",
         x2
       );
 
-
       line.setAttribute(
         "y2",
         y2
       );
 
-
       line.setAttribute(
         "stroke",
         stroke
       );
-
 
       line.setAttribute(
         "stroke-width",
@@ -5632,38 +3655,23 @@
       svg.appendChild(
         line
       );
-
-
     }
 
 
-
     function addSvgText(
-
       svg,
-
       x,
-
       y,
-
       text,
-
       fill,
-
       anchor,
-
       size
-
     ) {
-
 
       const element =
         document.createElementNS(
-
           "http://www.w3.org/2000/svg",
-
           "text"
-
         );
 
 
@@ -5672,24 +3680,20 @@
         x
       );
 
-
       element.setAttribute(
         "y",
         y
       );
-
 
       element.setAttribute(
         "fill",
         fill
       );
 
-
       element.setAttribute(
         "text-anchor",
         anchor
       );
-
 
       element.setAttribute(
         "font-size",
@@ -5704,75 +3708,43 @@
       svg.appendChild(
         element
       );
-
-
     }
 
 
-
     /* =====================================================
-       HELPERS
+       UI HELPERS
        ===================================================== */
-
 
     function getPlaceIcon(
       index
     ) {
 
-
-      if (
-        index === 0
-      ) {
-
-
+      if (index === 0) {
         return "🥇";
-
-
       }
 
-
-      if (
-        index === 1
-      ) {
-
-
+      if (index === 1) {
         return "🥈";
-
-
       }
 
-
-      if (
-        index === 2
-      ) {
-
-
+      if (index === 2) {
         return "🥉";
-
-
       }
 
 
       return String(
         index + 1
       );
-
-
     }
 
 
-
-    function showLoader(
+    function showRankingLoader(
       target
     ) {
 
-
       target.innerHTML =
         '<div class="loader"></div>';
-
-
     }
-
 
 
     function showEmpty(
@@ -5780,48 +3752,32 @@
       text
     ) {
 
-
       target.innerHTML =
         `<div class="empty">${escapeHtml(text)}</div>`;
-
-
     }
-
 
 
     function setStatus(
-
       text,
-
       error = false
-
     ) {
 
-
       statusEl.textContent =
-        text ||
-        "";
+        text || "";
 
 
-      statusEl.classList.toggle(
-
-        "error",
-
-        Boolean(
-          error
-        )
-
-      );
-
-
+      statusEl
+        .classList
+        .toggle(
+          "error",
+          Boolean(error)
+        );
     }
-
 
 
     function isSafePercent(
       value
     ) {
-
 
       const number =
         Number(
@@ -5830,26 +3786,18 @@
 
 
       return (
-
         Number.isFinite(
           number
         ) &&
-
         number >= 0 &&
-
         number <= 100
-
       );
-
-
     }
-
 
 
     function clampPercent(
       value
     ) {
-
 
       const number =
         Number(
@@ -5862,37 +3810,23 @@
           number
         )
       ) {
-
-
         return 0;
-
-
       }
 
 
       return Math.max(
-
         0,
-
         Math.min(
-
           100,
-
           number
-
         )
-
       );
-
-
     }
-
 
 
     function formatPercent(
       value
     ) {
-
 
       const number =
         Number(
@@ -5905,354 +3839,116 @@
           number
         )
       ) {
-
-
         return "—";
-
-
       }
 
 
       return (
-
         number
-
-          .toFixed(
-            1
-          )
-
+          .toFixed(1)
           .replace(
             ".",
             ","
           )
-
         +
-
         "%"
-
       );
-
-
     }
-
 
 
     function escapeHtml(
       value
     ) {
 
-
       return String(
-
-        value ||
-        ""
-
+        value || ""
       )
-
         .replace(
           /&/g,
           "&amp;"
         )
-
         .replace(
           /</g,
           "&lt;"
         )
-
         .replace(
           />/g,
           "&gt;"
         )
-
         .replace(
           /"/g,
           "&quot;"
         )
-
         .replace(
           /'/g,
           "&#039;"
         );
-
-
     }
 
 
-
     /* =====================================================
-       АВТООБНОВЛЕНИЕ
-       ТОЛЬКО ГЛАВНОЙ СТРАНИЦЫ
-       КАЖДЫЕ 2 СЕКУНДЫ
-       ===================================================== */
+       AUTO REFRESH
 
+       Только главная страница.
+       Каждые 2 секунды.
+       Архив и история сюда не входят.
+       ===================================================== */
 
     let lastKnownPeriodKey =
       getCurrentPeriod().key;
 
-
     setInterval(
+      () => {
 
-      async () => {
-
-
-        /*
-          Если вкладка браузера
-          неактивна — запросы
-          не отправляем.
-        */
-
-        if (
-          document.hidden
-        ) {
-
-
+        if (document.hidden) {
           return;
-
-
         }
 
-
-        /*
-          Если предыдущий запрос
-          Apps Script ещё выполняется,
-          новый не запускается.
-        */
-
-        if (
-          state.currentMonthLoading
-        ) {
-
-
+        if (state.currentMonthLoading) {
           return;
-
-
         }
-
 
         const actualPeriod =
           getCurrentPeriod();
 
-
-        /*
-          Проверяем переход
-          в новый месяц.
-        */
-
         if (
-
           actualPeriod.key !==
           lastKnownPeriodKey
-
         ) {
-
-
           lastKnownPeriodKey =
             actualPeriod.key;
 
-
-          state.archivePeriods =
-            null;
-
-
-          state.archiveSelectedYear =
-            null;
-
-
-          state.archiveSelectedPeriod =
-            null;
-
-
-          state.archiveRankingCache
-            .clear();
-
-
-          state.historyData =
-            null;
-
-
-          state.historyLoading =
-            null;
-
-
-          /*
-            Загружаем новый
-            текущий месяц.
-          */
-
-          await loadCurrentMonth(
-            false
-          );
-
-
-          /*
-            Если Архив был открыт
-            в момент смены месяца,
-            закрываем его.
-
-            При следующем открытии
-            список месяцев будет
-            получен заново.
-          */
-
-          if (
-
-            archiveModal.classList
-              .contains(
-                "visible"
-              )
-
-          ) {
-
-
-            closeModal(
-              archiveModal
-            );
-
-
-          }
-
-
-          return;
-
-
+          state.archivePeriods = null;
+          state.archiveSelectedYear = null;
+          state.archiveSelectedPeriod = null;
+          state.archiveRankingCache.clear();
+          state.historyData = null;
+          state.historyLoading = null;
         }
 
-
-        /*
-          Каждые 2 секунды
-          обновляется ТОЛЬКО
-          текущий рейтинг.
-
-          Архив — нет.
-          История — нет.
-          Сравнение — нет.
-        */
-
-        await loadCurrentMonth(
-          true
-        );
-
-
+        loadCurrentMonth(true);
       },
-
       2000
-
     );
-
-
-
-    /* =====================================================
-       ВОЗВРАТ НА ВКЛАДКУ
-       ===================================================== */
 
 
     document.addEventListener(
-
       "visibilitychange",
-
       () => {
-
-
-        if (
-          document.hidden
-        ) {
-
-
-          return;
-
-
+        if (!document.hidden) {
+          loadCurrentMonth(true);
         }
-
-
-        const actualPeriod =
-          getCurrentPeriod();
-
-
-        if (
-
-          actualPeriod.key !==
-          lastKnownPeriodKey
-
-        ) {
-
-
-          lastKnownPeriodKey =
-            actualPeriod.key;
-
-
-          state.archivePeriods =
-            null;
-
-
-          state.archiveSelectedYear =
-            null;
-
-
-          state.archiveSelectedPeriod =
-            null;
-
-
-          state.archiveRankingCache
-            .clear();
-
-
-          state.historyData =
-            null;
-
-
-          state.historyLoading =
-            null;
-
-
-          loadCurrentMonth(
-            false
-          );
-
-
-          return;
-
-
-        }
-
-
-        /*
-          После возвращения
-          на вкладку обновляется
-          только главная.
-        */
-
-        loadCurrentMonth(
-          true
-        );
-
-
       }
-
     );
-
 
 
     /* =====================================================
        START
        ===================================================== */
 
-
-    lastKnownPeriodKey =
-      getCurrentPeriod().key;
-
-
-    /*
-      При первом открытии сайта
-      автоматически загружается
-      только текущий месяц.
-    */
-
     loadCurrentMonth();
-
 
   </script>
 
-
 </body>
-
 </html>
