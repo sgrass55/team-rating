@@ -482,6 +482,100 @@ h1 {
   margin-top: 7px;
   font-size: 11px;
 }
+@media (max-width: 600px) {
+
+  body {
+    height: auto;
+    min-height: 100vh;
+    padding: 14px 10px;
+    overflow-y: auto;
+  }
+
+  .wrap {
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+  }
+
+  h1 {
+    font-size: 26px;
+    line-height: 1.1;
+  }
+
+  .subtitle {
+    margin-top: 4px;
+    margin-bottom: 12px;
+    font-size: 13px;
+  }
+
+  .card {
+    grid-template-columns: 42px 1fr 78px;
+    gap: 8px;
+
+    padding: 11px 10px;
+    margin-bottom: 8px;
+
+    border-radius: 14px;
+  }
+
+  .rank {
+    font-size: 22px;
+  }
+
+  .name {
+    font-size: 17px;
+    line-height: 1.15;
+    overflow-wrap: anywhere;
+  }
+
+  .percent {
+    font-size: 20px;
+    min-width: 72px;
+    text-align: right;
+  }
+
+  .bar-wrapper {
+    grid-column: 2 / 4;
+    padding-top: 0;
+  }
+
+  .bar {
+    height: 9px;
+  }
+
+  .scale-labels {
+    height: 11px;
+    margin-top: 2px;
+    font-size: 7px;
+  }
+
+  .status {
+    margin-top: 8px;
+    font-size: 10px;
+  }
+
+  .ticks {
+    background-image:
+      repeating-linear-gradient(
+        to right,
+        transparent 0,
+        transparent calc(5% - 1px),
+        rgba(255,255,255,.28) calc(5% - 1px),
+        rgba(255,255,255,.28) 5%
+      );
+  }
+
+  .ticks-strong {
+    background-image:
+      repeating-linear-gradient(
+        to right,
+        transparent 0,
+        transparent calc(10% - 1px),
+        rgba(255,255,255,.45) calc(10% - 1px),
+        rgba(255,255,255,.45) 10%
+      );
+  }
+} 
   </style>
 </head>
 
