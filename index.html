@@ -923,6 +923,260 @@
         font-size: 18px;
       }
     }
+  
+    .rank-card {
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      transform: translateZ(0);
+    }
+
+  
+    /* =====================================================
+       ARCHIVE — MOBILE POLISH + SWIPE
+       ===================================================== */
+
+    #archiveModal .modal-card {
+      overflow: hidden;
+    }
+
+    #archiveModal .modal-body {
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    #archiveDetail {
+      position: relative;
+      overflow-x: hidden;
+      touch-action: pan-y;
+    }
+
+    #archiveRanking {
+      will-change: transform, opacity;
+      transform: translate3d(0, 0, 0);
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+    }
+
+    #archiveModal .archive-modal-head {
+      background:
+        linear-gradient(
+          180deg,
+          rgba(17, 31, 57, 0.99),
+          rgba(14, 27, 49, 0.96)
+        );
+    }
+
+    #archiveModal .archive-back-btn,
+    #archiveModal .close-btn {
+      transition:
+        transform 160ms ease,
+        background 160ms ease,
+        border-color 160ms ease;
+    }
+
+    #archiveModal .archive-back-btn:active,
+    #archiveModal .close-btn:active {
+      transform: scale(.92);
+      background: rgba(255, 255, 255, 0.12);
+    }
+
+    #archiveModal .archive-swipe-hint {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+
+      width: fit-content;
+      max-width: calc(100% - 24px);
+
+      margin:
+        18px
+        auto
+        4px;
+
+      padding:
+        8px
+        12px;
+
+      border:
+        1px solid
+        rgba(255,255,255,.08);
+
+      border-radius: 999px;
+
+      background:
+        rgba(255,255,255,.045);
+
+      color:
+        rgba(219, 228, 247, .62);
+
+      font-size: 11px;
+      line-height: 1.25;
+    }
+
+    #archiveModal .archive-view-header {
+      margin:
+        4px
+        0
+        18px;
+
+      padding:
+        4px
+        0
+        2px;
+    }
+
+    #archiveModal .archive-view-header .subtitle {
+      font-size: 13px;
+      letter-spacing: .01em;
+    }
+
+    #archiveModal .archive-view-header .current-period {
+      margin-top: 7px;
+      font-size: clamp(27px, 7vw, 38px);
+      line-height: 1.04;
+      letter-spacing: -.025em;
+    }
+
+    @media (max-width: 700px) {
+
+      #archiveModal {
+        box-sizing: border-box;
+
+        padding:
+          max(18px, env(safe-area-inset-top))
+          8px
+          max(14px, env(safe-area-inset-bottom));
+      }
+
+      #archiveModal.visible {
+        align-items: stretch;
+      }
+
+      #archiveModal .modal-card {
+        width: 100%;
+
+        /*
+          100dvh учитывает реальную видимую высоту Safari,
+          включая изменение нижней панели браузера.
+        */
+        height:
+          calc(
+            100dvh
+            - max(18px, env(safe-area-inset-top))
+            - max(14px, env(safe-area-inset-bottom))
+          );
+
+        max-height: none;
+
+        display: flex;
+        flex-direction: column;
+
+        border-radius: 22px;
+      }
+
+      @supports not (height: 100dvh) {
+        #archiveModal .modal-card {
+          height:
+            calc(
+              100vh
+              - max(54px, calc(env(safe-area-inset-top) + 30px))
+            );
+        }
+      }
+
+      #archiveModal .modal-head {
+        flex: 0 0 auto;
+
+        min-height: 66px;
+
+        padding:
+          12px
+          14px;
+
+        border-bottom-color:
+          rgba(255,255,255,.075);
+      }
+
+      #archiveModal .archive-modal-head {
+        grid-template-columns:
+          44px
+          minmax(0, 1fr)
+          44px;
+      }
+
+      #archiveModal .archive-back-btn,
+      #archiveModal .close-btn {
+        width: 42px;
+        height: 42px;
+      }
+
+      #archiveModal .archive-back-btn {
+        font-size: 27px;
+      }
+
+      #archiveModal .close-btn {
+        font-size: 23px;
+      }
+
+      #archiveModal .modal-title {
+        font-size: 22px;
+        letter-spacing: -.01em;
+      }
+
+      #archiveModal .modal-body {
+        flex: 1 1 auto;
+
+        min-height: 0;
+
+        padding:
+          18px
+          12px
+          max(34px, calc(env(safe-area-inset-bottom) + 26px));
+
+        /*
+          Дополнительное пространство снизу — последняя карточка
+          больше не прячется за панелью Safari.
+        */
+        scroll-padding-bottom:
+          max(70px, calc(env(safe-area-inset-bottom) + 56px));
+      }
+
+      #archiveModal .archive-ranking {
+        padding-bottom: 16px;
+      }
+
+      #archiveModal .ranking {
+        gap: 11px;
+      }
+
+      #archiveModal .rank-card {
+        border-radius: 19px;
+
+        padding:
+          11px
+          12px
+          7px;
+
+        box-shadow:
+          0 8px 24px
+          rgba(0,0,0,.10);
+      }
+
+      #archiveModal .person-name {
+        font-size: clamp(17px, 5.1vw, 23px);
+      }
+
+      #archiveModal .percent {
+        font-size: clamp(17px, 4.9vw, 22px);
+      }
+
+      #archiveModal .archive-swipe-hint {
+        margin-bottom:
+          max(18px, env(safe-area-inset-bottom));
+      }
+    }
+
   </style>
 </head>
 
@@ -1763,13 +2017,12 @@
     ) {
 
       /*
-        Один соседний обмен:
-        - карточка, которая поднимается, плавно идёт на место выше;
-        - карточка, которую она вытесняет, ОДНОВРЕМЕННО и плавно
-          опускается на освободившееся место.
-
-        Поэтому визуально нет прыжка:
-        оба блока буквально меняются местами.
+        Плавный "обгон":
+        - движущаяся карточка как будто догоняет соседнюю,
+          проходит на её место и мягко останавливается;
+        - вытесненная карточка одновременно занимает
+          освободившееся место без рывка;
+        - обе карточки двигаются в одном временном интервале.
       */
 
       const movingFirst =
@@ -1780,7 +2033,9 @@
 
 
       /*
-        Меняем порядок в DOM.
+        Сначала меняем порядок в DOM,
+        затем FLIP-анимацией визуально оставляем
+        обе карточки на прежних позициях.
       */
 
       rankingEl.insertBefore(
@@ -1806,43 +2061,39 @@
 
 
       /*
-        Во время обмена верхняя карточка находится немного выше
-        по слою, чтобы пересечение выглядело естественно.
+        Начальная точка — старые позиции.
       */
-
-      moving.style.zIndex = "3";
-      displaced.style.zIndex = "2";
-
-
-      /*
-        Оба элемента начинают визуально со СТАРЫХ мест.
-      */
-
-      moving.style.transform =
-        `translate3d(0, ${movingDeltaY}px, 0)`;
-
-      displaced.style.transform =
-        `translate3d(0, ${displacedDeltaY}px, 0)`;
 
       moving.style.transition = "none";
       displaced.style.transition = "none";
 
-      moving.style.willChange = "transform";
-      displaced.style.willChange = "transform";
+      moving.style.transform =
+        `translate3d(0, ${movingDeltaY}px, 0) scale(1)`;
+
+      displaced.style.transform =
+        `translate3d(0, ${displacedDeltaY}px, 0) scale(1)`;
+
+      moving.style.willChange =
+        "transform";
+
+      displaced.style.willChange =
+        "transform";
+
+      moving.style.zIndex = "4";
+      displaced.style.zIndex = "2";
 
 
       /*
-        Принудительно фиксируем начальное положение.
+        Фиксируем начальное состояние.
       */
 
-      void moving.offsetHeight;
-      void displaced.offsetHeight;
+      void rankingEl.offsetHeight;
 
 
       /*
-        На следующем кадре одновременно отправляем:
-        moving -> на новое место,
-        displaced -> на освободившееся место.
+        Первый короткий этап:
+        обгоняющая карточка чуть "подбирается" к соседней.
+        Вытесняемая уже начинает уходить на новое место.
       */
 
       await new Promise(resolve => {
@@ -1851,114 +2102,45 @@
 
           requestAnimationFrame(() => {
 
-            const transition =
-              "transform 420ms cubic-bezier(.22,.78,.2,1)";
-
             moving.style.transition =
-              transition;
+              "transform 180ms cubic-bezier(.24,.7,.3,1)";
 
             displaced.style.transition =
-              transition;
+              "transform 180ms cubic-bezier(.24,.7,.3,1)";
 
             moving.style.transform =
-              "translate3d(0, 0, 0)";
+              `translate3d(0, ${movingDeltaY * 0.38}px, 0) scale(1.012)`;
 
             displaced.style.transform =
-              "translate3d(0, 0, 0)";
+              `translate3d(0, ${displacedDeltaY * 0.62}px, 0) scale(.996)`;
 
-            resolve();
+            setTimeout(resolve, 180);
           });
         });
       });
 
 
       /*
-        Ждём завершения движения обоих блоков,
-        затем только переходим к следующему соседнему обмену.
+        Второй этап:
+        карточка "перегоняет" соседнюю и встаёт на её место.
+        Вытесненная одновременно мягко доезжает вниз.
       */
 
       await new Promise(resolve => {
 
-        let finished = 0;
+        moving.style.transition =
+          "transform 360ms cubic-bezier(.18,.84,.2,1)";
 
-        const done = () => {
+        displaced.style.transition =
+          "transform 360ms cubic-bezier(.18,.84,.2,1)";
 
-          finished++;
+        moving.style.transform =
+          "translate3d(0, 0, 0) scale(1)";
 
-          if (finished >= 2) {
+        displaced.style.transform =
+          "translate3d(0, 0, 0) scale(1)";
 
-            moving.removeEventListener(
-              "transitionend",
-              onMovingEnd
-            );
-
-            displaced.removeEventListener(
-              "transitionend",
-              onDisplacedEnd
-            );
-
-            resolve();
-          }
-        };
-
-
-        const onMovingEnd = event => {
-
-          if (
-            event.propertyName ===
-            "transform"
-          ) {
-            done();
-          }
-        };
-
-
-        const onDisplacedEnd = event => {
-
-          if (
-            event.propertyName ===
-            "transform"
-          ) {
-            done();
-          }
-        };
-
-
-        moving.addEventListener(
-          "transitionend",
-          onMovingEnd
-        );
-
-        displaced.addEventListener(
-          "transitionend",
-          onDisplacedEnd
-        );
-
-
-        /*
-          Страховка на случай, если браузер не пришлёт transitionend.
-        */
-
-        setTimeout(
-          () => {
-
-            if (finished < 2) {
-
-              moving.removeEventListener(
-                "transitionend",
-                onMovingEnd
-              );
-
-              displaced.removeEventListener(
-                "transitionend",
-                onDisplacedEnd
-              );
-
-              resolve();
-            }
-          },
-          520
-        );
+        setTimeout(resolve, 370);
       });
 
 
@@ -2424,23 +2606,24 @@
 
     function enterArchiveMonth(period) {
       if (!period) {
-        return;
+        return Promise.resolve();
       }
 
       state.archiveSelectedYear = period.year;
       state.archiveSelectedPeriod = period.key;
       showArchiveDetail();
-      loadArchiveMonth(period);
+
+      return loadArchiveMonth(period);
     }
 
 
-    function shiftArchiveMonth(direction) {
+    function getShiftedArchivePeriod(direction) {
       const periods = (state.archivePeriods || [])
         .slice()
         .sort((a, b) => a.sort - b.sort);
 
       if (!periods.length) {
-        return;
+        return null;
       }
 
       let index = periods.findIndex(
@@ -2454,10 +2637,150 @@
       const nextIndex = index + direction;
 
       if (nextIndex < 0 || nextIndex >= periods.length) {
+        return null;
+      }
+
+      return periods[nextIndex];
+    }
+
+
+    function shiftArchiveMonth(direction) {
+      const period =
+        getShiftedArchivePeriod(direction);
+
+      if (!period) {
+        return Promise.resolve(false);
+      }
+
+      return enterArchiveMonth(period)
+        .then(() => true);
+    }
+
+
+    let archiveSwipeAnimating = false;
+
+
+    async function animateArchiveSwipe(direction) {
+
+      if (archiveSwipeAnimating) {
         return;
       }
 
-      enterArchiveMonth(periods[nextIndex]);
+      const nextPeriod =
+        getShiftedArchivePeriod(direction);
+
+      if (!nextPeriod) {
+
+        /*
+          На первом / последнем месяце — мягкий "отскок".
+        */
+
+        archiveSwipeAnimating = true;
+
+        archiveRankingEl.style.transition =
+          "transform 180ms cubic-bezier(.22,.8,.2,1)";
+
+        archiveRankingEl.style.transform =
+          `translate3d(${direction > 0 ? -18 : 18}px, 0, 0)`;
+
+        await new Promise(resolve =>
+          setTimeout(resolve, 90)
+        );
+
+        archiveRankingEl.style.transform =
+          "translate3d(0, 0, 0)";
+
+        await new Promise(resolve =>
+          setTimeout(resolve, 190)
+        );
+
+        archiveRankingEl.style.transition = "";
+        archiveSwipeAnimating = false;
+
+        return;
+      }
+
+
+      archiveSwipeAnimating = true;
+
+      const outX =
+        direction > 0 ? -108 : 108;
+
+      const inX =
+        direction > 0 ? 108 : -108;
+
+
+      /*
+        Текущий месяц уезжает в сторону.
+      */
+
+      archiveRankingEl.style.transition =
+        "transform 230ms cubic-bezier(.32,.72,.2,1), opacity 190ms ease";
+
+      archiveRankingEl.style.transform =
+        `translate3d(${outX}%, 0, 0)`;
+
+      archiveRankingEl.style.opacity =
+        "0.12";
+
+
+      await new Promise(resolve =>
+        setTimeout(resolve, 225)
+      );
+
+
+      /*
+        Загружаем соседний месяц за пределами экрана.
+      */
+
+      archiveRankingEl.style.transition =
+        "none";
+
+      archiveRankingEl.style.transform =
+        `translate3d(${inX}%, 0, 0)`;
+
+      archiveRankingEl.style.opacity =
+        "0.10";
+
+
+      await enterArchiveMonth(
+        nextPeriod
+      );
+
+
+      /*
+        Новый месяц плавно заезжает с противоположной стороны.
+      */
+
+      void archiveRankingEl.offsetHeight;
+
+
+      await new Promise(resolve => {
+
+        requestAnimationFrame(() => {
+
+          requestAnimationFrame(() => {
+
+            archiveRankingEl.style.transition =
+              "transform 300ms cubic-bezier(.18,.82,.2,1), opacity 230ms ease";
+
+            archiveRankingEl.style.transform =
+              "translate3d(0, 0, 0)";
+
+            archiveRankingEl.style.opacity =
+              "1";
+
+            setTimeout(resolve, 310);
+          });
+        });
+      });
+
+
+      archiveRankingEl.style.transition = "";
+      archiveRankingEl.style.transform = "";
+      archiveRankingEl.style.opacity = "";
+
+      archiveSwipeAnimating = false;
     }
 
 
@@ -4339,36 +4662,213 @@
 
     let archiveTouchStartX = 0;
     let archiveTouchStartY = 0;
+    let archiveTouchDx = 0;
+    let archiveTouchDragging = false;
+
 
     archiveDetail.addEventListener(
       "touchstart",
       event => {
-        const touch = event.changedTouches[0];
-        archiveTouchStartX = touch.clientX;
-        archiveTouchStartY = touch.clientY;
+
+        if (archiveSwipeAnimating) {
+          return;
+        }
+
+        const touch =
+          event.changedTouches[0];
+
+        archiveTouchStartX =
+          touch.clientX;
+
+        archiveTouchStartY =
+          touch.clientY;
+
+        archiveTouchDx = 0;
+        archiveTouchDragging = false;
+
+        archiveRankingEl.style.transition =
+          "none";
       },
       { passive: true }
     );
 
+
     archiveDetail.addEventListener(
-      "touchend",
+      "touchmove",
       event => {
-        const touch = event.changedTouches[0];
-        const dx = touch.clientX - archiveTouchStartX;
-        const dy = touch.clientY - archiveTouchStartY;
+
+        if (archiveSwipeAnimating) {
+          return;
+        }
+
+        const touch =
+          event.changedTouches[0];
+
+        const dx =
+          touch.clientX -
+          archiveTouchStartX;
+
+        const dy =
+          touch.clientY -
+          archiveTouchStartY;
+
+
+        /*
+          Вертикальный скролл не перехватываем.
+        */
 
         if (
-          Math.abs(dx) < 55 ||
-          Math.abs(dx) <= Math.abs(dy) * 1.15
+          !archiveTouchDragging &&
+          Math.abs(dx) <=
+            Math.abs(dy) * 1.08
         ) {
           return;
         }
 
-        if (dx < 0) {
-          shiftArchiveMonth(1);
-        } else {
-          shiftArchiveMonth(-1);
+
+        archiveTouchDragging =
+          true;
+
+        archiveTouchDx =
+          dx;
+
+
+        /*
+          Контент следует за пальцем,
+          но с лёгким сопротивлением.
+        */
+
+        const width =
+          Math.max(
+            1,
+            archiveDetail.clientWidth
+          );
+
+        const max =
+          width * 0.78;
+
+        const resisted =
+          Math.max(
+            -max,
+            Math.min(
+              max,
+              dx * 0.82
+            )
+          );
+
+
+        archiveRankingEl.style.transform =
+          `translate3d(${resisted}px, 0, 0)`;
+
+
+        const opacity =
+          Math.max(
+            0.60,
+            1 -
+              Math.abs(resisted) /
+              width *
+              0.34
+          );
+
+
+        archiveRankingEl.style.opacity =
+          String(opacity);
+
+
+        event.preventDefault();
+      },
+      { passive: false }
+    );
+
+
+    archiveDetail.addEventListener(
+      "touchend",
+      async event => {
+
+        if (archiveSwipeAnimating) {
+          return;
         }
+
+        const touch =
+          event.changedTouches[0];
+
+        const dx =
+          archiveTouchDragging
+            ? archiveTouchDx
+            : touch.clientX -
+              archiveTouchStartX;
+
+        const dy =
+          touch.clientY -
+          archiveTouchStartY;
+
+
+        const horizontal =
+          Math.abs(dx) >
+          Math.abs(dy) * 1.08;
+
+
+        if (
+          !horizontal ||
+          Math.abs(dx) < 58
+        ) {
+
+          archiveRankingEl.style.transition =
+            "transform 230ms cubic-bezier(.18,.82,.2,1), opacity 180ms ease";
+
+          archiveRankingEl.style.transform =
+            "translate3d(0, 0, 0)";
+
+          archiveRankingEl.style.opacity =
+            "1";
+
+          return;
+        }
+
+
+        /*
+          Сначала возвращаем элемент к логической точке,
+          затем выполняем полноценный анимированный переход.
+          Это убирает рывок после отпускания пальца.
+        */
+
+        archiveRankingEl.style.transition =
+          "transform 90ms linear, opacity 90ms linear";
+
+        archiveRankingEl.style.transform =
+          "translate3d(0, 0, 0)";
+
+        archiveRankingEl.style.opacity =
+          "1";
+
+
+        await new Promise(resolve =>
+          setTimeout(resolve, 92)
+        );
+
+
+        if (dx < 0) {
+          await animateArchiveSwipe(1);
+        } else {
+          await animateArchiveSwipe(-1);
+        }
+      },
+      { passive: true }
+    );
+
+
+    archiveDetail.addEventListener(
+      "touchcancel",
+      () => {
+
+        archiveRankingEl.style.transition =
+          "transform 220ms cubic-bezier(.18,.82,.2,1), opacity 180ms ease";
+
+        archiveRankingEl.style.transform =
+          "translate3d(0, 0, 0)";
+
+        archiveRankingEl.style.opacity =
+          "1";
       },
       { passive: true }
     );
