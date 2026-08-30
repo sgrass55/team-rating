@@ -1616,6 +1616,36 @@
       }
     }
 
+  
+    /* =====================================================
+       V14 — WHOLE CARD OPENS PERSON HISTORY
+       ===================================================== */
+
+    .rank-card {
+      cursor: pointer;
+    }
+
+    .rank-card:focus-visible {
+      outline:
+        2px solid
+        rgba(74, 195, 255, .9);
+
+      outline-offset:
+        2px;
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      .rank-card:hover {
+        border-color:
+          rgba(255,255,255,.22);
+      }
+    }
+
+    .rank-card:active {
+      transform:
+        scale(.992);
+    }
+
   </style>
 </head>
 
@@ -2759,6 +2789,70 @@
 
       card.className = "rank-card";
       card.dataset.personName = person.name;
+
+
+      /*
+        История человека теперь открывается по нажатию
+        на ЛЮБОЕ место карточки, а не только на шкалу.
+      */
+
+      card.setAttribute(
+        "role",
+        "button"
+      );
+
+      card.setAttribute(
+        "tabindex",
+        "0"
+      );
+
+      card.setAttribute(
+        "aria-label",
+        `Открыть историю: ${person.name}`
+      );
+
+
+      card.addEventListener(
+        "click",
+        event => {
+
+          /*
+            Если внутри карточки позже появятся отдельные кнопки,
+            не перехватываем их собственное действие.
+          */
+
+          if (
+            event.target.closest(
+              "button, a, input, label, select, textarea"
+            )
+          ) {
+            return;
+          }
+
+          openPersonDetails(
+            person.name
+          );
+        }
+      );
+
+
+      card.addEventListener(
+        "keydown",
+        event => {
+
+          if (
+            event.key === "Enter" ||
+            event.key === " "
+          ) {
+
+            event.preventDefault();
+
+            openPersonDetails(
+              person.name
+            );
+          }
+        }
+      );
       card.dataset.percent = String(
         clampPercent(person.percent)
       );
