@@ -2512,6 +2512,41 @@
     const RANKING_EASING =
       "cubic-bezier(.22,.72,.18,1)";
 
+    /*
+      Процент двигается с адаптивной скоростью.
+      Чем больше разница между старым и новым значением,
+      тем больше времени даём анимации, чтобы даже большой
+      скачок выглядел спокойно и плавно.
+    */
+    const PERCENT_ANIMATION_MIN_MS = 3000;
+    const PERCENT_ANIMATION_MAX_MS = 7500;
+
+    function getPercentAnimationDuration(from, to) {
+      const delta =
+        Math.abs(
+          Number(to) - Number(from)
+        );
+
+      if (!Number.isFinite(delta)) {
+        return PERCENT_ANIMATION_MIN_MS;
+      }
+
+      /*
+        До 4 процентных пунктов — стандартные 3 секунды.
+        Дальше постепенно добавляем время.
+        Примеры:
+        4 п.п.  → 3.0 с
+        10 п.п. → 3.7 с
+        20 п.п. → 4.9 с
+        40 п.п. → 7.3 с
+      */
+      return Math.min(
+        PERCENT_ANIMATION_MAX_MS,
+        PERCENT_ANIMATION_MIN_MS +
+          Math.max(0, delta - 4) * 120
+      );
+    }
+
 
     function buildAdjacentSwapPlan(
       currentNames,
@@ -3050,8 +3085,19 @@
       const newPercent =
         clampPercent(person.percent);
 
+      /*
+        Берём именно ТЕКУЩЕЕ визуальное значение.
+        Если новый ответ приходит во время незавершённой
+        анимации, новая анимация продолжится с текущей цифры,
+        а не прыгнет со старой цели.
+      */
+      const visualPercent =
+        Number(card.dataset.visualPercent);
+
       const oldPercent =
-        Number(card.dataset.percent);
+        Number.isFinite(visualPercent)
+          ? visualPercent
+          : Number(card.dataset.percent);
 
       card.dataset.personName = person.name;
 
@@ -3098,19 +3144,29 @@
         card.dataset.percent =
           String(newPercent);
 
+        card.dataset.visualPercent =
+          String(newPercent);
+
       } else if (
         Math.abs(oldPercent - newPercent) > 0.0001
       ) {
 
+        const percentAnimationMs =
+          getPercentAnimationDuration(
+            oldPercent,
+            newPercent
+          );
+
         if (fillEl) {
 
           /*
-            Шкала движется синхронно с числом и карточкой:
-            ровно 3 секунды.
+            Шкала использует ту же адаптивную длительность,
+            что и число. Большой диапазон больше не пролетает
+            слишком быстро.
           */
 
           fillEl.style.transition =
-            `width ${RANKING_ANIMATION_MS}ms ${RANKING_EASING}`;
+            `width ${percentAnimationMs}ms ${RANKING_EASING}`;
 
           fillEl.style.width =
             newPercent + "%";
@@ -3119,7 +3175,9 @@
         animatePercentValue(
           percentEl,
           oldPercent,
-          newPercent
+          newPercent,
+          percentAnimationMs,
+          card
         );
 
         if (percentEl) {
@@ -3153,7 +3211,9 @@
     function animatePercentValue(
       element,
       from,
-      to
+      to,
+      duration = PERCENT_ANIMATION_MIN_MS,
+      card = null
     ) {
 
       if (!element) {
@@ -3188,8 +3248,9 @@
         сколько перемещается карточка и заполняется шкала:
         3000 мс.
 
+        Длительность зависит от размера изменения.
         На каждом кадре значение округляется до сотых,
-        поэтому визуально видны 91,42 → 91,43 → 91,44...
+        поэтому движение остаётся непрерывным и мягким.
       */
 
       const startedAt =
@@ -3212,7 +3273,7 @@
             Math.max(
               0,
               (now - startedAt) /
-              RANKING_ANIMATION_MS
+              Math.max(1, duration)
             )
           );
 
@@ -3242,6 +3303,11 @@
         element.textContent =
           formatPercent(currentValue);
 
+        if (card) {
+          card.dataset.visualPercent =
+            String(currentValue);
+        }
+
 
         element.classList.toggle(
           "green",
@@ -3255,6 +3321,11 @@
           element.textContent =
             formatPercent(endValue);
 
+          if (card) {
+            card.dataset.visualPercent =
+              String(endValue);
+          }
+
           element.classList.toggle(
             "green",
             endValue >= 90
@@ -3265,6 +3336,11 @@
 
       element.textContent =
         formatPercent(startValue);
+
+      if (card) {
+        card.dataset.visualPercent =
+          String(startValue);
+      }
 
       requestAnimationFrame(frame);
     }
