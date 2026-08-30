@@ -803,11 +803,68 @@
           12px;
       }
 
+      /*
+        В архиве управление периодом всегда остаётся
+        в зоне досягаемости большого пальца. Вместо
+        высокой сетки месяцы и годы листаются по горизонтали.
+      */
+      #archiveModal .archive-controls-panel {
+        position: sticky;
+        bottom: 0;
+        z-index: 6;
+
+        margin-left: -5px;
+        margin-right: -5px;
+        margin-bottom: -5px;
+
+        padding-bottom:
+          max(12px, env(safe-area-inset-bottom));
+
+        background:
+          rgba(10, 22, 41, 0.985);
+
+        box-shadow:
+          0 -14px 34px rgba(0, 0, 0, 0.34);
+
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+      }
+
+      #archiveModal .archive-years,
+      #archiveModal .archive-months {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        overflow-y: hidden;
+
+        padding: 2px 1px 5px;
+
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        scroll-snap-type: x proximity;
+        touch-action: pan-x;
+      }
+
+      #archiveModal .archive-years::-webkit-scrollbar,
+      #archiveModal .archive-months::-webkit-scrollbar {
+        display: none;
+      }
+
+      #archiveModal .period-button {
+        flex: 0 0 auto;
+        min-height: 44px;
+        min-width: 72px;
+        scroll-snap-align: start;
+      }
+
+      #archiveModal .archive-months .period-button {
+        min-width: 88px;
+      }
+
       .modal {
         padding:
           max(46px, calc(env(safe-area-inset-top) + 28px))
           8px
-          8px;
+          max(8px, env(safe-area-inset-bottom));
       }
 
       .modal.visible {
@@ -1149,7 +1206,13 @@
         new Set(),
 
       currentMonthLoading:
-        false
+        false,
+
+      rankingAnimationRunning:
+        false,
+
+      pendingRankingPeople:
+        null
     };
 
 
@@ -1457,25 +1520,27 @@
         return;
       }
 
-      const existingCards = new Map();
-      const firstPositions = new Map();
+      /*
+        Храним только самое свежее положение рейтинга.
+        Если новый ответ API пришёл, пока карточки ещё
+        переставляются, после текущего шага анимация
+        продолжится уже к новому порядку.
+      */
+      state.pendingRankingPeople =
+        people.map(person => ({ ...person }));
+
+      const existingCards =
+        new Map();
 
       Array.from(
         rankingEl.querySelectorAll(".rank-card")
       ).forEach(card => {
-
         const name =
           card.dataset.personName || "";
 
-        if (!name) {
-          return;
+        if (name) {
+          existingCards.set(name, card);
         }
-
-        existingCards.set(name, card);
-        firstPositions.set(
-          name,
-          card.getBoundingClientRect()
-        );
       });
 
       const incomingNames =
@@ -1483,92 +1548,239 @@
           people.map(person => person.name)
         );
 
-      existingCards.forEach(
-        (card, name) => {
-          if (!incomingNames.has(name)) {
-            card.remove();
-          }
+      existingCards.forEach((card, name) => {
+        if (!incomingNames.has(name)) {
+          card.remove();
         }
-      );
-
-      people.forEach(
-        (person, index) => {
-
-          let card =
-            existingCards.get(person.name);
-
-          if (!card) {
-            card = createRankingCard(
-              person,
-              index,
-              true
-            );
-
-            card.classList.add("new-card");
-            rankingEl.appendChild(card);
-          } else {
-            updateRankingCard(
-              card,
-              person,
-              index
-            );
-          }
-
-          rankingEl.appendChild(card);
-        }
-      );
-
-      /*
-        После перестановки измеряем новые позиции
-        и визуально стартуем со старой позиции.
-      */
-      const movements = [];
-
-      Array.from(
-        rankingEl.querySelectorAll(".rank-card")
-      ).forEach(card => {
-
-        const name =
-          card.dataset.personName || "";
-
-        const first =
-          firstPositions.get(name);
-
-        if (!first) {
-          return;
-        }
-
-        const last =
-          card.getBoundingClientRect();
-
-        const deltaY =
-          first.top - last.top;
-
-        if (Math.abs(deltaY) < 1) {
-          return;
-        }
-
-        card.style.transition = "none";
-        card.style.transform =
-          `translateY(${deltaY}px)`;
-
-        movements.push(card);
       });
 
-      if (!movements.length) {
+      /*
+        Проценты меняем сразу и плавно, но место/медаль
+        пока оставляем соответствующими текущему визуальному
+        положению карточки.
+      */
+      people.forEach(person => {
+        let card =
+          existingCards.get(person.name);
+
+        if (!card) {
+          card = createRankingCard(
+            person,
+            rankingEl.querySelectorAll(".rank-card").length,
+            true
+          );
+
+          card.classList.add("new-card");
+          rankingEl.appendChild(card);
+          existingCards.set(person.name, card);
+        }
+
+        const currentCards =
+          Array.from(
+            rankingEl.querySelectorAll(".rank-card")
+          );
+
+        const currentIndex =
+          Math.max(
+            0,
+            currentCards.indexOf(card)
+          );
+
+        updateRankingCard(
+          card,
+          person,
+          currentIndex
+        );
+      });
+
+      refreshRankingPlaces();
+      runRankingReorderQueue();
+    }
+
+
+    async function runRankingReorderQueue() {
+
+      if (state.rankingAnimationRunning) {
         return;
       }
 
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
+      state.rankingAnimationRunning = true;
 
-          movements.forEach(card => {
-            card.style.transition =
-              "transform 0.65s cubic-bezier(.2,.8,.2,1), border-color .3s ease, box-shadow .3s ease, opacity .3s ease";
+      try {
+        while (state.pendingRankingPeople) {
 
-            card.style.transform = "";
-          });
-        });
+          const targetPeople =
+            state.pendingRankingPeople;
+
+          state.pendingRankingPeople =
+            null;
+
+          const targetNames =
+            targetPeople.map(person => person.name);
+
+          /*
+            Двигаем карточку не сразу через несколько мест,
+            а соседними обменами. Например с 5-го на 2-е:
+            5→4, затем 4→3, затем 3→2. Так каждый следующий
+            блок действительно освобождает/замещает место
+            предыдущего.
+          */
+          for (
+            let targetIndex = 0;
+            targetIndex < targetNames.length;
+            targetIndex++
+          ) {
+            const targetName =
+              targetNames[targetIndex];
+
+            let cards =
+              Array.from(
+                rankingEl.querySelectorAll(".rank-card")
+              );
+
+            let currentIndex =
+              cards.findIndex(
+                card =>
+                  card.dataset.personName === targetName
+              );
+
+            if (currentIndex < 0) {
+              continue;
+            }
+
+            while (currentIndex > targetIndex) {
+              cards =
+                Array.from(
+                  rankingEl.querySelectorAll(".rank-card")
+                );
+
+              const moving =
+                cards[currentIndex];
+
+              const displaced =
+                cards[currentIndex - 1];
+
+              if (!moving || !displaced) {
+                break;
+              }
+
+              await animateAdjacentRankingSwap(
+                moving,
+                displaced
+              );
+
+              refreshRankingPlaces();
+              currentIndex--;
+            }
+          }
+
+          refreshRankingPlaces();
+        }
+
+      } finally {
+        state.rankingAnimationRunning = false;
+
+        if (state.pendingRankingPeople) {
+          runRankingReorderQueue();
+        }
+      }
+    }
+
+
+    async function animateAdjacentRankingSwap(
+      moving,
+      displaced
+    ) {
+
+      const movingFirst =
+        moving.getBoundingClientRect();
+
+      const displacedFirst =
+        displaced.getBoundingClientRect();
+
+      /*
+        moving находится сразу ПОСЛЕ displaced.
+        Переставляем его перед displaced и инвертируем
+        визуальное смещение через Web Animations API.
+      */
+      rankingEl.insertBefore(
+        moving,
+        displaced
+      );
+
+      const movingLast =
+        moving.getBoundingClientRect();
+
+      const displacedLast =
+        displaced.getBoundingClientRect();
+
+      const movingDelta =
+        movingFirst.top - movingLast.top;
+
+      const displacedDelta =
+        displacedFirst.top - displacedLast.top;
+
+      const options = {
+        duration: 330,
+        easing: "cubic-bezier(.22,.75,.2,1)",
+        fill: "both"
+      };
+
+      const animations = [];
+
+      if (Math.abs(movingDelta) > 0.5) {
+        animations.push(
+          moving.animate(
+            [
+              { transform: `translateY(${movingDelta}px)` },
+              { transform: "translateY(0)" }
+            ],
+            options
+          )
+        );
+      }
+
+      if (Math.abs(displacedDelta) > 0.5) {
+        animations.push(
+          displaced.animate(
+            [
+              { transform: `translateY(${displacedDelta}px)` },
+              { transform: "translateY(0)" }
+            ],
+            options
+          )
+        );
+      }
+
+      if (!animations.length) {
+        return;
+      }
+
+      await Promise.all(
+        animations.map(animation =>
+          animation.finished.catch(() => {})
+        )
+      );
+    }
+
+
+    function refreshRankingPlaces() {
+
+      Array.from(
+        rankingEl.querySelectorAll(".rank-card")
+      ).forEach((card, index) => {
+
+        card.classList.toggle("first", index === 0);
+        card.classList.toggle("second", index === 1);
+        card.classList.toggle("third", index === 2);
+
+        const placeEl =
+          card.querySelector(".place");
+
+        if (placeEl) {
+          placeEl.textContent =
+            getPlaceIcon(index);
+        }
       });
     }
 
@@ -2132,6 +2344,19 @@
           );
         }
       );
+
+      requestAnimationFrame(() => {
+        const active =
+          archiveYearsEl.querySelector(".period-button.active");
+
+        if (active) {
+          active.scrollIntoView({
+            behavior: "smooth",
+            block: "nearest",
+            inline: "center"
+          });
+        }
+      });
     }
 
 
@@ -2233,6 +2458,19 @@
           );
         }
       );
+
+      requestAnimationFrame(() => {
+        const active =
+          archiveMonthsEl.querySelector(".period-button.active");
+
+        if (active) {
+          active.scrollIntoView({
+            behavior: "smooth",
+            block: "nearest",
+            inline: "center"
+          });
+        }
+      });
     }
 
 
@@ -2941,35 +3179,100 @@
     }
 
 
-    function getPersonChartColor(
-      name
-    ) {
+    const CHART_PERSON_COLORS = [
+      "#34D5FF",  // cyan
+      "#FF9F43",  // orange
+      "#A970FF",  // violet
+      "#FF5DA2",  // pink
+      "#65E572",  // green
+      "#FFD54A",  // yellow
+      "#FF646D",  // red
+      "#4F86FF",  // blue
+      "#2DE2B5",  // turquoise
+      "#D879FF",  // magenta
+      "#F5A65B",  // amber
+      "#8BE04E"   // lime
+    ];
 
-      const text =
-        String(name || "");
 
-      let hash = 0;
+    function hashPersonName(name) {
+      const text = String(name || "");
+      let hash = 2166136261;
 
-      for (
-        let i = 0;
-        i < text.length;
-        i++
-      ) {
-
-        hash =
-          (
-            hash * 31 +
-            text.charCodeAt(i)
-          ) >>> 0;
+      for (let i = 0; i < text.length; i++) {
+        hash ^= text.charCodeAt(i);
+        hash = Math.imul(hash, 16777619);
       }
 
-      const hue =
-        (
-          188 +
-          hash % 320
-        ) % 360;
+      return hash >>> 0;
+    }
 
-      return `hsl(${hue} 75% 62%)`;
+
+    function buildPersonChartColorMap() {
+
+      const map = new Map();
+
+      const names =
+        state.historyData &&
+        state.historyData.people
+          ? Object.keys(state.historyData.people)
+          : [];
+
+      names.sort((a, b) =>
+        a.localeCompare(b, "ru")
+      );
+
+      const used = new Set();
+
+      names.forEach(name => {
+        const start =
+          hashPersonName(name) %
+          CHART_PERSON_COLORS.length;
+
+        let index = start;
+
+        for (
+          let step = 0;
+          step < CHART_PERSON_COLORS.length;
+          step++
+        ) {
+          const candidate =
+            (start + step * 5) %
+            CHART_PERSON_COLORS.length;
+
+          if (!used.has(candidate)) {
+            index = candidate;
+            break;
+          }
+        }
+
+        used.add(index);
+        map.set(
+          name,
+          CHART_PERSON_COLORS[index]
+        );
+      });
+
+      return map;
+    }
+
+
+    function getPersonChartColor(
+      name,
+      colorMap
+    ) {
+
+      if (
+        colorMap &&
+        colorMap.has(name)
+      ) {
+        return colorMap.get(name);
+      }
+
+      return CHART_PERSON_COLORS[
+        hashPersonName(name) %
+        CHART_PERSON_COLORS.length
+      ];
     }
 
 
@@ -3144,16 +3447,9 @@
         line.setAttribute(
           "stroke-width",
           isTarget
-            ? "2.2"
+            ? "1.35"
             : "1"
         );
-
-        if (isTarget) {
-          line.setAttribute(
-            "stroke-dasharray",
-            "7 5"
-          );
-        }
 
         svg.appendChild(
           line
@@ -3369,6 +3665,10 @@
       );
 
 
+      const personColorMap =
+        buildPersonChartColorMap();
+
+
       selected.forEach(
         name => {
 
@@ -3410,7 +3710,8 @@
 
           const color =
             getPersonChartColor(
-              name
+              name,
+              personColorMap
             );
 
 
