@@ -2550,8 +2550,23 @@
 
     function buildAdjacentSwapPlan(
       currentNames,
-      targetNames
+      targetPeople
     ) {
+
+      const targetNames =
+        targetPeople.map(
+          person => person.name
+        );
+
+      const targetPercentByName =
+        new Map(
+          targetPeople.map(
+            person => [
+              person.name,
+              clampPercent(person.percent)
+            ]
+          )
+        );
 
       const working =
         currentNames.slice();
@@ -2560,9 +2575,16 @@
 
 
       /*
-        Формируем последовательность настоящих соседних обгонов.
-        Если человек идёт с 6-го на 2-е место:
-        6↔5, затем 5↔4, затем 4↔3, затем 3↔2.
+        Формируем последовательность соседних обгонов.
+
+        Дополнительно каждому обгону назначаем "расстояние
+        по процентной шкале". Чем дальше друг от друга
+        проценты двух соседних участников, тем медленнее
+        проходит этот участок движения. Если проценты рядом —
+        обгон происходит быстрее.
+
+        В итоге карточка движется не одинаковыми шагами
+        по списку, а словно по невидимой шкале процентов.
       */
 
       for (
@@ -2593,9 +2615,38 @@
           const displacedName =
             working[upperIndex];
 
+          const movingPercent =
+            targetPercentByName.get(
+              wantedName
+            );
+
+          const displacedPercent =
+            targetPercentByName.get(
+              displacedName
+            );
+
+          /*
+            Небольшой минимальный "метр" нужен, чтобы
+            равные или почти равные проценты всё равно
+            давали заметный, но короткий визуальный обгон.
+          */
+          const scaleGap =
+            Number.isFinite(movingPercent) &&
+            Number.isFinite(displacedPercent)
+              ? Math.max(
+                  0.35,
+                  Math.abs(
+                    movingPercent -
+                    displacedPercent
+                  )
+                )
+              : 1;
+
+
           plan.push({
             movingName: wantedName,
-            displacedName
+            displacedName,
+            scaleGap
           });
 
 
@@ -2611,6 +2662,81 @@
 
 
       return plan;
+    }
+
+
+    function getRankingScaleAnimationDuration(
+      targetPeople
+    ) {
+
+      /*
+        Общая длительность перемещения карточек берётся
+        из той же логики, что и анимация процентов.
+
+        Если кто-то изменился сильно — вся перестановка
+        получает больше времени. Это позволяет движению
+        карточек и изменению чисел ощущаться как одна шкала.
+      */
+
+      let maxDuration =
+        PERCENT_ANIMATION_MIN_MS;
+
+
+      targetPeople.forEach(person => {
+
+        const card =
+          Array.from(
+            rankingEl.querySelectorAll(
+              ".rank-card"
+            )
+          ).find(
+            item =>
+              item.dataset.personName ===
+              person.name
+          );
+
+        if (!card) {
+          return;
+        }
+
+        const visual =
+          Number(
+            card.dataset.visualPercent
+          );
+
+        const stored =
+          Number(
+            card.dataset.percent
+          );
+
+        const from =
+          Number.isFinite(visual)
+            ? visual
+            : stored;
+
+        const to =
+          clampPercent(person.percent);
+
+        if (
+          Number.isFinite(from) &&
+          Number.isFinite(to)
+        ) {
+          maxDuration =
+            Math.max(
+              maxDuration,
+              getPercentAnimationDuration(
+                from,
+                to
+              )
+            );
+        }
+      });
+
+
+      return Math.min(
+        PERCENT_ANIMATION_MAX_MS,
+        maxDuration
+      );
     }
 
 
@@ -2783,7 +2909,12 @@
           const swapPlan =
             buildAdjacentSwapPlan(
               currentNames,
-              targetNames
+              targetPeople
+            );
+
+          const rankingScaleDuration =
+            getRankingScaleAnimationDuration(
+              targetPeople
             );
 
 
@@ -2797,7 +2928,7 @@
             await new Promise(resolve =>
               setTimeout(
                 resolve,
-                RANKING_ANIMATION_MS
+                rankingScaleDuration
               )
             );
 
@@ -2808,19 +2939,28 @@
 
 
           /*
-            ВЕСЬ путь до нового места занимает ровно 3 секунды.
-            Время делится между всеми соседними обгонами.
+            ВРЕМЯ ДВИЖЕНИЯ ПО "НЕВИДИМОЙ ШКАЛЕ".
+
+            Раньше каждый соседний обгон занимал одинаковое
+            время. Теперь длительность каждого участка
+            зависит от разницы процентов между двумя
+            соседними карточками.
+
+            Большой разрыв процентов = более длинный участок.
+            Маленький разрыв = короткий участок.
+
+            Общая длительность сопоставима с анимацией
+            изменения процентов.
           */
 
-          const stepDuration =
-            Math.max(
-              90,
-              Math.floor(
-                RANKING_ANIMATION_MS /
-                swapPlan.length
-              )
-            );
+          const totalScaleGap =
+            swapPlan.reduce(
+              (sum, step) =>
+                sum + step.scaleGap,
+              0
+            ) || 1;
 
+          const minimumSwapMs = 150;
 
           const startedAt =
             performance.now();
@@ -2859,36 +2999,46 @@
 
 
             /*
-              Последний шаг получает остаток времени,
-              чтобы суммарная длительность была максимально
-              близка к ровным 3000 мс.
+              Длительность конкретного соседнего обгона
+              пропорциональна расстоянию процентов.
+
+              Например:
+              91,0 ↔ 91,4  — быстрый короткий шаг;
+              82,0 ↔ 91,0  — заметно более длинный шаг.
             */
 
             const elapsed =
               performance.now() -
               startedAt;
 
-            const remainingSteps =
-              swapPlan.length - i;
-
             const remainingTime =
               Math.max(
-                90,
-                RANKING_ANIMATION_MS -
+                minimumSwapMs,
+                rankingScaleDuration -
                 elapsed
               );
 
+            const remainingWeight =
+              swapPlan
+                .slice(i)
+                .reduce(
+                  (sum, item) =>
+                    sum + item.scaleGap,
+                  0
+                ) || step.scaleGap;
+
+            const proportionalDuration =
+              remainingTime *
+              (
+                step.scaleGap /
+                remainingWeight
+              );
+
             const duration =
-              i === swapPlan.length - 1
-                ? remainingTime
-                : Math.max(
-                    90,
-                    Math.min(
-                      stepDuration,
-                      remainingTime /
-                      remainingSteps
-                    )
-                  );
+              Math.max(
+                minimumSwapMs,
+                proportionalDuration
+              );
 
 
             await animateAdjacentRankingSwap(
