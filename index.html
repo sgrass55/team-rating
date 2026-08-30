@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,25 +13,33 @@
     }
 
     :root {
-      --bg1: #07101f;
-      --bg2: #0d1830;
-      --card: rgba(21, 34, 60, 0.86);
-      --card2: rgba(26, 41, 71, 0.9);
-      --border: rgba(255,255,255,0.13);
+      --bg: #06101f;
+      --bg2: #0c1730;
+      --card: rgba(22, 36, 63, 0.9);
+      --border: rgba(255, 255, 255, 0.12);
+
       --text: #f5f7ff;
-      --muted: #8997b4;
-      --blue: #3dbaf5;
+      --muted: #8e9bb7;
+
+      --blue: #37bff5;
       --green: #31d879;
+
       --gold: #f6c626;
-      --silver: #b7c1ce;
-      --bronze: #d07a29;
-      --danger: #ff5f70;
+      --silver: #bac4d1;
+      --bronze: #cf7b30;
+
+      --danger: #ff6174;
     }
 
     html,
     body {
       margin: 0;
       min-height: 100%;
+    }
+
+    body {
+      min-height: 100vh;
+
       font-family:
         -apple-system,
         BlinkMacSystemFont,
@@ -44,170 +53,163 @@
       background:
         radial-gradient(
           circle at 50% 0%,
-          #162857 0,
-          #0a1427 32%,
-          #050c18 70%
+          #172959 0%,
+          #0b162b 32%,
+          #050c18 72%
         );
 
       background-attachment: fixed;
     }
 
-    body {
-      min-height: 100vh;
-    }
-
-    button {
+    button,
+    select {
       font: inherit;
     }
 
+    button {
+      -webkit-tap-highlight-color: transparent;
+    }
+
     .page {
-      width: 100%;
       min-height: 100vh;
-      padding:
-        22px
-        18px
-        60px;
+      padding: 22px 16px 60px;
     }
 
     .container {
-      width: min(
-        900px,
-        100%
-      );
+      width: min(920px, 100%);
       margin: 0 auto;
     }
 
+    /* HEADER */
+
     .header {
       text-align: center;
-      margin-bottom: 16px;
+      margin-bottom: 18px;
     }
 
     .title {
       margin: 0;
-      font-size: 33px;
+
+      font-size: 34px;
       line-height: 1.1;
+
       font-weight: 850;
       letter-spacing: -1px;
     }
 
     .subtitle {
       margin-top: 7px;
-      font-size: 14px;
+
       color: var(--muted);
+      font-size: 14px;
     }
 
     .current-period {
       margin-top: 12px;
-      font-size: 24px;
-      font-weight: 800;
+
+      font-size: 25px;
+      font-weight: 850;
     }
 
     .status {
-      min-height: 19px;
+      min-height: 18px;
       margin-top: 7px;
-      color: var(--muted);
+
       font-size: 12px;
+      color: var(--muted);
     }
 
     .status.error {
       color: var(--danger);
     }
 
-
-    /* =====================================================
-       RANKING
-       ===================================================== */
+    /* RANKING */
 
     .ranking {
-      margin-top: 12px;
       display: grid;
       gap: 9px;
+
+      margin-top: 15px;
     }
 
     .rank-card {
-      position: relative;
-
       display: grid;
 
       grid-template-columns:
-        42px
-        minmax(150px, 1fr)
-        minmax(240px, 4fr)
+        44px
+        minmax(150px, 1.2fr)
+        minmax(220px, 4fr)
         auto;
 
       align-items: center;
 
-      min-height: 64px;
+      min-height: 66px;
 
-      padding:
-        10px
-        15px;
-
-      border-radius: 17px;
+      padding: 10px 15px;
 
       border:
         1px solid
         var(--border);
 
+      border-radius: 17px;
+
       background:
         linear-gradient(
           90deg,
-          rgba(28,42,69,.92),
-          rgba(15,26,47,.9)
+          rgba(30, 45, 74, 0.94),
+          rgba(15, 26, 47, 0.92)
         );
 
       transition:
-        transform .16s ease,
-        border-color .16s ease,
-        opacity .16s ease;
+        transform 0.15s ease,
+        border-color 0.15s ease;
     }
 
     .rank-card:hover {
-      transform:
-        translateY(-1px);
+      transform: translateY(-1px);
     }
 
     .rank-card.first {
       border-color:
-        rgba(246,198,38,.72);
+        rgba(246, 198, 38, 0.75);
     }
 
     .rank-card.second {
       border-color:
-        rgba(183,193,206,.45);
+        rgba(186, 196, 209, 0.55);
     }
 
     .rank-card.third {
       border-color:
-        rgba(208,122,41,.7);
+        rgba(207, 123, 48, 0.7);
     }
 
     .place {
-      font-size: 19px;
       text-align: center;
+      font-size: 20px;
     }
 
     .person-name {
       min-width: 0;
 
-      font-size: 16px;
-      font-weight: 780;
+      overflow: hidden;
 
       white-space: nowrap;
-      overflow: hidden;
       text-overflow: ellipsis;
+
+      font-size: 16px;
+      font-weight: 780;
     }
 
     .percent {
-      padding-left: 12px;
+      padding-left: 13px;
+
+      white-space: nowrap;
 
       font-size: 21px;
       line-height: 1;
 
       font-weight: 850;
-
-      white-space: nowrap;
-
       color: var(--blue);
     }
 
@@ -215,15 +217,10 @@
       color: var(--green);
     }
 
-
-    /* =====================================================
-       BAR
-       ===================================================== */
+    /* PROGRESS */
 
     .bar-wrap {
-      padding:
-        0
-        5px;
+      padding: 0 7px;
     }
 
     .bar {
@@ -236,8 +233,12 @@
       border-radius: 999px;
 
       background:
-        rgba(255,255,255,.08);
+        rgba(255, 255, 255, 0.08);
     }
+
+    /*
+      Деления каждые 5%
+    */
 
     .bar::after {
       content: "";
@@ -252,9 +253,10 @@
           to right,
           transparent 0,
           transparent calc(5% - 1px),
-          rgba(255,255,255,.18)
+          rgba(255, 255, 255, 0.18)
             calc(5% - 1px),
-          rgba(255,255,255,.18) 5%
+          rgba(255, 255, 255, 0.18)
+            5%
         );
     }
 
@@ -271,43 +273,40 @@
         linear-gradient(
           90deg,
           #37bff5,
-          #2fd67b
+          #31d879
         );
 
       transition:
-        width .3s ease;
+        width 0.25s ease;
     }
 
-
-    /* =====================================================
-       PERIOD CONTROLS
-       ===================================================== */
+    /* PERIODS */
 
     .period-panel {
-      margin-top: 18px;
-
-      padding-top: 16px;
+      margin-top: 19px;
+      padding-top: 17px;
 
       border-top:
         1px solid
-        rgba(255,255,255,.08);
+        rgba(255, 255, 255, 0.08);
 
       text-align: center;
     }
 
     .period-label {
-      margin-bottom: 9px;
-
-      color: var(--muted);
+      margin-bottom: 10px;
 
       font-size: 12px;
+      color: var(--muted);
     }
 
     .years,
     .months {
       display: flex;
-      flex-wrap: wrap;
+
       justify-content: center;
+      flex-wrap: wrap;
+
       gap: 7px;
     }
 
@@ -318,114 +317,97 @@
     .period-button {
       appearance: none;
 
+      padding: 9px 14px;
+
       border:
         1px solid
-        rgba(255,255,255,.12);
+        rgba(255, 255, 255, 0.13);
 
       border-radius: 11px;
 
-      padding:
-        9px
-        14px;
-
       color: var(--text);
+
+      background:
+        rgba(255, 255, 255, 0.07);
 
       cursor: pointer;
 
-      background:
-        rgba(255,255,255,.07);
-
       transition:
-        background .15s ease,
-        border-color .15s ease,
-        transform .15s ease;
+        transform 0.15s ease,
+        background 0.15s ease,
+        border-color 0.15s ease;
     }
 
-    .period-button:hover:not(:disabled) {
-      transform:
-        translateY(-1px);
+    .period-button:hover {
+      transform: translateY(-1px);
 
       background:
-        rgba(255,255,255,.11);
+        rgba(255, 255, 255, 0.11);
     }
 
     .period-button.active {
-      border-color:
-        var(--blue);
+      border-color: var(--blue);
 
       background:
-        rgba(52,181,246,.16);
+        rgba(55, 191, 245, 0.17);
 
       box-shadow:
         inset 0 0 0 1px
-        rgba(52,181,246,.12);
+        rgba(55, 191, 245, 0.12);
     }
 
-    .period-button:disabled {
-      cursor: default;
-
-      opacity: .24;
-    }
-
-
-    /* =====================================================
-       EXTRA
-       ===================================================== */
+    /* EXTRA */
 
     .extra-actions {
       display: flex;
+
       justify-content: center;
-      gap: 8px;
       flex-wrap: wrap;
 
-      margin-top: 18px;
+      gap: 8px;
+
+      margin-top: 20px;
     }
 
     .secondary-btn {
+      padding: 9px 15px;
+
       border:
         1px solid
-        rgba(255,255,255,.12);
+        rgba(255, 255, 255, 0.13);
 
       border-radius: 11px;
-
-      padding:
-        9px
-        14px;
 
       color: var(--text);
 
       background:
-        rgba(255,255,255,.06);
+        rgba(255, 255, 255, 0.06);
 
       cursor: pointer;
     }
 
     .secondary-btn:hover {
       background:
-        rgba(255,255,255,.1);
+        rgba(255, 255, 255, 0.1);
     }
 
-
-    /* =====================================================
-       HISTORY
-       ===================================================== */
+    /* SECTIONS */
 
     .section {
       display: none;
 
       margin-top: 22px;
 
-      padding:
-        17px;
-
-      border-radius: 18px;
+      padding: 17px;
 
       border:
         1px solid
-        rgba(255,255,255,.1);
+        rgba(255, 255, 255, 0.1);
+
+      border-radius: 18px;
 
       background:
-        rgba(13,24,44,.78);
+        rgba(12, 23, 43, 0.82);
     }
 
     .section.visible {
@@ -433,34 +415,30 @@
     }
 
     .section-title {
-      margin:
-        0
-        0
-        13px;
+      margin: 0 0 13px;
 
       font-size: 20px;
       font-weight: 800;
     }
 
+    /* HISTORY */
+
     .person-select {
       width: 100%;
 
-      padding:
-        11px
-        12px;
-
-      border:
-        1px solid
-        rgba(255,255,255,.12);
-
-      border-radius: 11px;
+      padding: 11px 12px;
 
       outline: none;
 
+      border:
+        1px solid
+        rgba(255, 255, 255, 0.13);
+
+      border-radius: 11px;
+
       color: var(--text);
 
-      background:
-        #15213b;
+      background: #15213b;
     }
 
     .history-list {
@@ -472,27 +450,26 @@
 
     .history-row {
       display: flex;
+
       justify-content: space-between;
       align-items: center;
 
-      gap: 15px;
+      gap: 14px;
 
-      padding:
-        9px
-        12px;
+      padding: 9px 12px;
 
       border-radius: 11px;
 
       background:
-        rgba(255,255,255,.05);
+        rgba(255, 255, 255, 0.05);
     }
 
     .history-period {
-      color: #dce4f7;
+      color: #dbe4f7;
     }
 
     .history-percent {
-      font-weight: 800;
+      font-weight: 850;
       color: var(--blue);
     }
 
@@ -500,32 +477,30 @@
       color: var(--green);
     }
 
-
-    /* =====================================================
-       COMPARISON
-       ===================================================== */
+    /* COMPARE */
 
     .compare-options {
       display: flex;
       flex-wrap: wrap;
+
       gap: 8px;
 
-      margin-bottom: 16px;
+      margin-bottom: 17px;
     }
 
     .compare-option {
       display: flex;
-      align-items: center;
-      gap: 6px;
 
-      padding:
-        8px
-        10px;
+      align-items: center;
+
+      gap: 7px;
+
+      padding: 8px 10px;
 
       border-radius: 10px;
 
       background:
-        rgba(255,255,255,.05);
+        rgba(255, 255, 255, 0.05);
 
       cursor: pointer;
     }
@@ -535,24 +510,20 @@
     }
 
     #compareChart {
-      min-width: 690px;
+      min-width: 720px;
     }
 
-
-    /* =====================================================
-       LOADER
-       ===================================================== */
+    /* LOADER */
 
     .loader {
-      margin:
-        32px auto;
+      width: 32px;
+      height: 32px;
 
-      width: 31px;
-      height: 31px;
+      margin: 35px auto;
 
       border:
         3px solid
-        rgba(255,255,255,.14);
+        rgba(255, 255, 255, 0.14);
 
       border-top-color:
         var(--blue);
@@ -560,35 +531,26 @@
       border-radius: 50%;
 
       animation:
-        spin .8s linear infinite;
+        spin 0.8s linear infinite;
     }
 
     @keyframes spin {
       to {
-        transform:
-          rotate(360deg);
+        transform: rotate(360deg);
       }
     }
 
     .empty {
-      padding:
-        30px
-        15px;
+      padding: 30px 15px;
 
       text-align: center;
 
-      color:
-        var(--muted);
+      color: var(--muted);
     }
 
+    /* MOBILE */
 
-    /* =====================================================
-       MOBILE
-       ===================================================== */
-
-    @media (
-      max-width: 700px
-    ) {
+    @media (max-width: 700px) {
 
       .page {
         padding:
@@ -598,7 +560,7 @@
       }
 
       .title {
-        font-size: 27px;
+        font-size: 28px;
       }
 
       .current-period {
@@ -615,13 +577,9 @@
           "place name percent"
           ". bar bar";
 
-        gap:
-          7px
-          8px;
+        gap: 8px;
 
-        padding:
-          10px
-          12px;
+        padding: 10px 12px;
       }
 
       .place {
@@ -635,30 +593,25 @@
       .percent {
         grid-area: percent;
 
+        padding-left: 5px;
+
         font-size: 18px;
       }
 
       .bar-wrap {
         grid-area: bar;
 
-        padding:
-          0
-          0
-          2px;
+        padding: 0 0 2px;
       }
 
       .period-button {
-        padding:
-          8px
-          10px;
+        padding: 8px 10px;
 
         font-size: 13px;
       }
     }
-
   </style>
 </head>
-
 
 <body>
 
@@ -718,16 +671,16 @@
       <div class="extra-actions">
 
         <button
+          type="button"
           class="secondary-btn"
-          id="historyBtn"
-          type="button">
+          id="historyBtn">
           История участника
         </button>
 
         <button
+          type="button"
           class="secondary-btn"
-          id="compareBtn"
-          type="button">
+          id="compareBtn">
           Сравнение
         </button>
 
@@ -773,8 +726,8 @@
           <svg
             id="compareChart"
             width="100%"
-            height="360"
-            viewBox="0 0 900 360"
+            height="370"
+            viewBox="0 0 900 370"
             preserveAspectRatio="none">
           </svg>
 
@@ -797,10 +750,6 @@
       "https://script.google.com/macros/s/AKfycbwYcG1OIZ_y2E3OZQw8oH0IuDMyk06lxL41oM6K1TtXN0Noxa5bV7kC_hsWOXTsTde_IA/exec";
 
 
-    /* =====================================================
-       MONTHS
-       ===================================================== */
-
     const MONTH_NAMES = [
       "Январь",
       "Февраль",
@@ -819,14 +768,6 @@
 
     /* =====================================================
        STATE
-
-       ВАЖНО:
-       выбранный пользователем год
-       хранится отдельно.
-
-       Обновление списка периодов
-       больше не имеет права
-       его менять.
        ===================================================== */
 
     const state = {
@@ -837,9 +778,9 @@
 
       selectedPeriod: null,
 
-      rankingRequestId: 0,
-
       periodsLoaded: false,
+
+      rankingRequestId: 0,
 
       historyData: null,
 
@@ -849,7 +790,6 @@
 
       selectedComparePeople:
         new Set()
-
     };
 
 
@@ -924,7 +864,7 @@
 
 
     /* =====================================================
-       FETCH
+       API FETCH
        ===================================================== */
 
     async function api(params) {
@@ -942,17 +882,19 @@
               key,
               value
             );
-
           }
         );
 
 
       /*
-        cache:no-store важен,
-        чтобы браузер не показывал
-        старый JSON после обновления
-        Apps Script.
+        Защита от кеша браузера.
       */
+
+      url.searchParams.set(
+        "_",
+        Date.now()
+      );
+
 
       const response =
         await fetch(
@@ -976,10 +918,14 @@
         await response.json();
 
 
-      if (data.error) {
+      if (
+        data &&
+        data.ok === false
+      ) {
 
         throw new Error(
-          data.error
+          data.error ||
+          "Ошибка API"
         );
       }
 
@@ -989,7 +935,7 @@
 
 
     /* =====================================================
-       START
+       INIT
        ===================================================== */
 
     async function init() {
@@ -1027,12 +973,8 @@
 
 
       /*
-        Список существующих месяцев
-        обновляем раз в минуту.
-
-        НО selectedYear
-        и selectedPeriod
-        здесь НЕ сбрасываются.
+        Проверяем появление
+        новых месяцев раз в минуту.
       */
 
       setInterval(
@@ -1040,6 +982,8 @@
 
           refreshPeriods(
             false
+          ).catch(
+            console.error
           );
 
         },
@@ -1048,30 +992,16 @@
 
 
       /*
-        Сам рейтинг текущего выбранного
-        периода обновляем раз в 20 секунд.
-
-        Эта функция также НЕ меняет
-        выбранный год.
+        Обновляем выбранный рейтинг
+        раз в 20 секунд.
       */
 
       setInterval(
         () => {
 
           if (
+            document.hidden ||
             !state.selectedPeriod
-          ) {
-            return;
-          }
-
-
-          /*
-            Когда вкладка браузера
-            неактивна, запросы не делаем.
-          */
-
-          if (
-            document.hidden
           ) {
             return;
           }
@@ -1098,38 +1028,92 @@
 
       const data =
         await api({
-          mode: "months",
-          _: Date.now()
+          mode: "months"
         });
 
 
-      const periods =
-        Array.isArray(data.months)
-          ? data.months
-          : [];
+      /*
+        Поддерживаем оба формата API:
+        months
+        periods
+      */
+
+      let periods = [];
+
+
+      if (
+        Array.isArray(
+          data.months
+        )
+      ) {
+
+        periods =
+          data.months;
+
+      } else if (
+        Array.isArray(
+          data.periods
+        )
+      ) {
+
+        periods =
+          data.periods;
+      }
 
 
       state.periods =
         periods
-          .filter(
-            item =>
-              item &&
-              item.key &&
-              Number.isFinite(
+          .map(
+            item => ({
+              key:
+                String(
+                  item.key || ""
+                ),
+
+              year:
                 Number(
                   item.year
-                )
-              ) &&
-              Number.isFinite(
+                ),
+
+              month:
                 Number(
                   item.month
+                ),
+
+              sort:
+                Number(
+                  item.sort ||
+                  (
+                    Number(item.year) *
+                    100 +
+                    Number(item.month)
+                  )
+                ),
+
+              label:
+                item.label ||
+                makePeriodLabel(
+                  Number(item.month),
+                  Number(item.year)
                 )
-              )
+            })
+          )
+          .filter(
+            item =>
+              item.key &&
+              Number.isFinite(
+                item.year
+              ) &&
+              Number.isFinite(
+                item.month
+              ) &&
+              item.month >= 1 &&
+              item.month <= 12
           )
           .sort(
             (a, b) =>
-              Number(a.sort) -
-              Number(b.sort)
+              a.sort -
+              b.sort
           );
 
 
@@ -1154,10 +1138,7 @@
 
 
       /*
-        =================================
-        ТОЛЬКО ПРИ ПЕРВОМ ЗАПУСКЕ
-        выбираем стартовый период.
-        =================================
+        Первый запуск.
       */
 
       if (
@@ -1171,15 +1152,11 @@
           );
 
 
+        state.selectedYear =
+          start.year;
+
         state.selectedPeriod =
           start.key;
-
-
-        state.selectedYear =
-          Number(
-            start.year
-          );
-
 
         state.periodsLoaded =
           true;
@@ -1187,15 +1164,13 @@
 
 
       /*
-        =================================
-        ПРИ ОБЫЧНОМ АВТООБНОВЛЕНИИ
-        НИЧЕГО НЕ СБРАСЫВАЕМ
-        =================================
+        Если выбранный месяц
+        вдруг исчез из API.
       */
 
       else {
 
-        const stillExists =
+        const exists =
           state.periods.some(
             item =>
               item.key ===
@@ -1203,18 +1178,7 @@
           );
 
 
-        /*
-          Только если выбранный лист
-          реально исчез из всех таблиц,
-          выбираем другой.
-
-          Обычное обновление API
-          не должно менять выбор.
-        */
-
-        if (
-          !stillExists
-        ) {
+        if (!exists) {
 
           const sameYear =
             getPeriodsForYear(
@@ -1231,27 +1195,21 @@
                 sameYear.length - 1
               ];
 
-
             state.selectedPeriod =
               latest.key;
-          }
 
-          else {
+          } else {
 
             const latest =
               state.periods[
                 state.periods.length - 1
               ];
 
+            state.selectedYear =
+              latest.year;
 
             state.selectedPeriod =
               latest.key;
-
-
-            state.selectedYear =
-              Number(
-                latest.year
-              );
           }
         }
       }
@@ -1263,11 +1221,6 @@
 
     /* =====================================================
        INITIAL PERIOD
-
-       Если есть текущий месяц —
-       выбираем его.
-
-       Иначе последний доступный.
        ===================================================== */
 
     function chooseInitialPeriod(
@@ -1278,21 +1231,13 @@
         new Date();
 
 
-      const currentYear =
-        now.getFullYear();
-
-
-      const currentMonth =
-        now.getMonth() + 1;
-
-
       const current =
         periods.find(
           item =>
-            Number(item.year) ===
-              currentYear &&
-            Number(item.month) ===
-              currentMonth
+            item.year ===
+              now.getFullYear() &&
+            item.month ===
+              now.getMonth() + 1
         );
 
 
@@ -1308,7 +1253,7 @@
 
 
     /* =====================================================
-       YEARS + MONTHS
+       PERIOD UI
        ===================================================== */
 
     function renderPeriodControls() {
@@ -1323,85 +1268,81 @@
 
     function renderYears() {
 
+      yearsEl.innerHTML =
+        "";
+
+
       const years =
         [
           ...new Set(
             state.periods.map(
               item =>
-                Number(item.year)
+                item.year
             )
           )
         ]
-          .filter(
-            Number.isFinite
-          )
           .sort(
             (a, b) =>
               b - a
           );
 
 
-      yearsEl.innerHTML =
-        "";
+      years.forEach(
+        year => {
+
+          const button =
+            document.createElement(
+              "button"
+            );
 
 
-      years.forEach(year => {
+          button.type =
+            "button";
 
-        const button =
-          document.createElement(
-            "button"
+          button.className =
+            "period-button";
+
+          button.textContent =
+            String(year);
+
+
+          if (
+            year ===
+            state.selectedYear
+          ) {
+
+            button.classList.add(
+              "active"
+            );
+          }
+
+
+          button.addEventListener(
+            "click",
+            () => {
+
+              selectYear(
+                year
+              );
+            }
           );
 
 
-        button.type =
-          "button";
-
-
-        button.className =
-          "period-button";
-
-
-        button.textContent =
-          String(year);
-
-
-        if (
-          year ===
-          state.selectedYear
-        ) {
-
-          button.classList.add(
-            "active"
+          yearsEl.appendChild(
+            button
           );
         }
-
-
-        button.addEventListener(
-          "click",
-          () => {
-
-            selectYear(year);
-
-          }
-        );
-
-
-        yearsEl.appendChild(
-          button
-        );
-
-      });
+      );
     }
 
 
     function selectYear(year) {
 
-      /*
-        КЛЮЧЕВОЕ ИСПРАВЛЕНИЕ:
+      const oldPeriod =
+        getPeriodByKey(
+          state.selectedPeriod
+        );
 
-        Год меняется ТОЛЬКО здесь,
-        когда его нажал пользователь.
-      */
 
       state.selectedYear =
         Number(year);
@@ -1413,36 +1354,35 @@
         );
 
 
-      /*
-        Если текущий выбранный месяц
-        существует и в новом году,
-        выбираем тот же номер месяца.
-      */
-
-      const oldPeriod =
-        getPeriodByKey(
-          state.selectedPeriod
-        );
+      if (
+        available.length === 0
+      ) {
+        return;
+      }
 
 
       let next = null;
 
+
+      /*
+        Стараемся оставить
+        тот же месяц.
+      */
 
       if (oldPeriod) {
 
         next =
           available.find(
             item =>
-              Number(item.month) ===
-              Number(oldPeriod.month)
+              item.month ===
+              oldPeriod.month
           );
       }
 
 
       /*
-        Если такого месяца нет,
-        выбираем последний доступный
-        месяц выбранного года.
+        Если такого месяца нет —
+        выбираем последний существующий.
       */
 
       if (!next) {
@@ -1454,117 +1394,30 @@
       }
 
 
-      if (next) {
-
-        state.selectedPeriod =
-          next.key;
-      }
+      state.selectedPeriod =
+        next.key;
 
 
       renderPeriodControls();
 
 
-      if (
-        state.selectedPeriod
-      ) {
-
-        loadRanking(
-          state.selectedPeriod
-        );
-      }
+      loadRanking(
+        next.key
+      );
     }
 
+
+    /*
+      ВАЖНО:
+
+      Показываем только
+      реально существующие месяцы.
+
+      Неактивных будущих блоков
+      здесь вообще нет.
+    */
 
     function renderMonths() {
-
-  monthsEl.innerHTML = "";
-
-  if (!state.selectedYear) {
-    return;
-  }
-
-  const periodsForYear =
-    getPeriodsForYear(
-      state.selectedYear
-    );
-
-  /*
-    Показываем ТОЛЬКО реально
-    существующие месяцы.
-
-    Будущие / отсутствующие месяцы
-    вообще не создаём.
-  */
-
-  periodsForYear.forEach(period => {
-
-    const month =
-      Number(period.month);
-
-    if (
-      !Number.isFinite(month) ||
-      month < 1 ||
-      month > 12
-    ) {
-      return;
-    }
-
-
-    const button =
-      document.createElement(
-        "button"
-      );
-
-    button.type =
-      "button";
-
-    button.className =
-      "period-button";
-
-    button.textContent =
-      MONTH_NAMES[
-        month - 1
-      ];
-
-
-    if (
-      period.key ===
-      state.selectedPeriod
-    ) {
-
-      button.classList.add(
-        "active"
-      );
-    }
-
-
-    button.addEventListener(
-      "click",
-      () => {
-
-        state.selectedPeriod =
-          period.key;
-
-        /*
-          Год не меняем.
-          Пользователь остаётся
-          в выбранном году.
-        */
-
-        renderPeriodControls();
-
-        loadRanking(
-          period.key
-        );
-      }
-    );
-
-
-    monthsEl.appendChild(
-      button
-    );
-  });
-} {
 
       monthsEl.innerHTML =
         "";
@@ -1573,106 +1426,55 @@
       if (
         !state.selectedYear
       ) {
-
         return;
       }
 
 
-      const periodsForYear =
+      const periods =
         getPeriodsForYear(
           state.selectedYear
         );
 
 
-      const map = {};
+      periods.forEach(
+        period => {
+
+          const button =
+            document.createElement(
+              "button"
+            );
 
 
-      periodsForYear.forEach(
-        item => {
+          button.type =
+            "button";
 
-          map[
-            Number(item.month)
-          ] = item;
-
-        }
-      );
+          button.className =
+            "period-button";
 
 
-      /*
-        Показываем 12 месяцев.
-
-        Существующие — активны.
-        Несуществующие — disabled.
-      */
-
-      for (
-        let month = 1;
-        month <= 12;
-        month++
-      ) {
-
-        const period =
-          map[month];
+          button.textContent =
+            MONTH_NAMES[
+              period.month - 1
+            ];
 
 
-        const button =
-          document.createElement(
-            "button"
-          );
-
-
-        button.type =
-          "button";
-
-
-        button.className =
-          "period-button";
-
-
-        button.textContent =
-          MONTH_NAMES[
-            month - 1
-          ];
-
-
-        if (!period) {
-
-          button.disabled =
-            true;
-        }
-
-
-        if (
-          period &&
-          period.key ===
+          if (
+            period.key ===
             state.selectedPeriod
-        ) {
+          ) {
 
-          button.classList.add(
-            "active"
-          );
-        }
+            button.classList.add(
+              "active"
+            );
+          }
 
-
-        if (period) {
 
           button.addEventListener(
             "click",
             () => {
 
-              /*
-                Месяц выбирается только
-                из текущего selectedYear.
-              */
-
               state.selectedPeriod =
                 period.key;
-
-
-              /*
-                selectedYear здесь
-                специально не меняем.
-              */
 
 
               renderPeriodControls();
@@ -1681,36 +1483,39 @@
               loadRanking(
                 period.key
               );
-
             }
           );
+
+
+          monthsEl.appendChild(
+            button
+          );
         }
-
-
-        monthsEl.appendChild(
-          button
-        );
-      }
+      );
     }
 
 
-    function getPeriodsForYear(year) {
+    function getPeriodsForYear(
+      year
+    ) {
 
       return state.periods
         .filter(
           item =>
-            Number(item.year) ===
+            item.year ===
             Number(year)
         )
         .sort(
           (a, b) =>
-            Number(a.month) -
-            Number(b.month)
+            a.month -
+            b.month
         );
     }
 
 
-    function getPeriodByKey(key) {
+    function getPeriodByKey(
+      key
+    ) {
 
       if (!key) {
         return null;
@@ -1720,9 +1525,10 @@
       return (
         state.periods.find(
           item =>
-            item.key === key
-        )
-        || null
+            item.key ===
+            key
+        ) ||
+        null
       );
     }
 
@@ -1742,6 +1548,29 @@
     }
 
 
+    function makePeriodLabel(
+      month,
+      year
+    ) {
+
+      if (
+        !month ||
+        !year
+      ) {
+        return "—";
+      }
+
+
+      return (
+        MONTH_NAMES[
+          month - 1
+        ] +
+        " " +
+        year
+      );
+    }
+
+
     /* =====================================================
        RANKING
        ===================================================== */
@@ -1755,15 +1584,6 @@
         return;
       }
 
-
-      /*
-        Каждому запросу свой номер.
-
-        Если пользователь успел
-        нажать другой месяц,
-        результат старого запроса
-        будет проигнорирован.
-      */
 
       const requestId =
         ++state.rankingRequestId;
@@ -1784,44 +1604,47 @@
         const data =
           await api({
             mode: "month",
-            period: period,
-            _: Date.now()
+            period: period
           });
 
-
-        /*
-          Пока запрос шёл,
-          пользователь уже мог
-          выбрать другой месяц.
-        */
 
         if (
           requestId !==
           state.rankingRequestId
         ) {
-
           return;
         }
 
-
-        /*
-          Ещё одна защита:
-          ответ должен относиться
-          именно к текущему периоду.
-        */
 
         if (
           period !==
           state.selectedPeriod
         ) {
-
           return;
         }
 
 
+        /*
+          Поддерживаем:
+          people
+          ranking
+        */
+
+        const source =
+          Array.isArray(
+            data.people
+          )
+            ? data.people
+            : Array.isArray(
+                data.ranking
+              )
+              ? data.ranking
+              : [];
+
+
         const people =
           sanitizePeople(
-            data.people
+            source
           );
 
 
@@ -1841,7 +1664,6 @@
           requestId !==
           state.rankingRequestId
         ) {
-
           return;
         }
 
@@ -1856,22 +1678,15 @@
     }
 
 
-    /* =====================================================
-       CLIENT-SIDE PROTECTION
-
-       Даже если API вдруг прислал
-       мусор > 100, сайт его
-       физически не покажет.
-       ===================================================== */
-
     function sanitizePeople(
       people
     ) {
 
       if (
-        !Array.isArray(people)
+        !Array.isArray(
+          people
+        )
       ) {
-
         return [];
       }
 
@@ -1891,6 +1706,7 @@
                 String(
                   item.name || ""
                 ).trim(),
+
               percent:
                 percent
             };
@@ -1952,25 +1768,17 @@
             );
           }
 
-
           if (index === 1) {
             card.classList.add(
               "second"
             );
           }
 
-
           if (index === 2) {
             card.classList.add(
               "third"
             );
           }
-
-
-          const place =
-            getPlaceIcon(
-              index
-            );
 
 
           const percent =
@@ -1988,7 +1796,7 @@
           card.innerHTML = `
 
             <div class="place">
-              ${place}
+              ${getPlaceIcon(index)}
             </div>
 
             <div
@@ -2010,11 +1818,9 @@
 
             </div>
 
-            <div
-              class="${percentClass}">
+            <div class="${percentClass}">
               ${formatPercent(percent)}
             </div>
-
           `;
 
 
@@ -2026,17 +1832,17 @@
     }
 
 
-    function getPlaceIcon(index) {
+    function getPlaceIcon(
+      index
+    ) {
 
       if (index === 0) {
         return "🥇";
       }
 
-
       if (index === 1) {
         return "🥈";
       }
-
 
       if (index === 2) {
         return "🥉";
@@ -2050,14 +1856,320 @@
 
 
     /* =====================================================
-       HISTORY
+       HISTORY DATA
+       ===================================================== */
+
+    async function ensureHistoryData() {
+
+      if (
+        state.historyData &&
+        Date.now() -
+          state.historyLoadedAt <
+          60000
+      ) {
+        return;
+      }
+
+
+      if (
+        state.historyLoading
+      ) {
+        return;
+      }
+
+
+      state.historyLoading =
+        true;
+
+
+      try {
+
+        const data =
+          await api({
+            mode: "all"
+          });
+
+
+        state.historyData =
+          normalizeHistoryData(
+            data
+          );
+
+
+        state.historyLoadedAt =
+          Date.now();
+
+
+      } finally {
+
+        state.historyLoading =
+          false;
+      }
+    }
+
+
+    /*
+      Приводим новый Apps Script
+      к удобной структуре:
+
+      {
+        people: {
+          "Имя": [...]
+        },
+        periods: [...]
+      }
+    */
+
+    function normalizeHistoryData(
+      data
+    ) {
+
+      const result = {
+        people: {},
+        periods: []
+      };
+
+
+      const periodMap =
+        new Map();
+
+
+      /*
+        Новый формат:
+        people = [
+          {
+            name,
+            history:[]
+          }
+        ]
+      */
+
+      if (
+        Array.isArray(
+          data.people
+        )
+      ) {
+
+        data.people.forEach(
+          person => {
+
+            const name =
+              String(
+                person.name || ""
+              ).trim();
+
+
+            if (!name) {
+              return;
+            }
+
+
+            const history =
+              Array.isArray(
+                person.history
+              )
+                ? person.history
+                : [];
+
+
+            result.people[name] =
+              normalizeHistoryRows(
+                history
+              );
+
+
+            result.people[name]
+              .forEach(
+                row => {
+
+                  periodMap.set(
+                    row.period,
+                    {
+                      key:
+                        row.period,
+
+                      year:
+                        row.year,
+
+                      month:
+                        row.month,
+
+                      sort:
+                        row.sort
+                    }
+                  );
+                }
+              );
+          }
+        );
+      }
+
+
+      /*
+        Поддержка старого формата:
+        people = {
+          Имя:[...]
+        }
+      */
+
+      else if (
+        data.people &&
+        typeof data.people ===
+          "object"
+      ) {
+
+        Object
+          .entries(
+            data.people
+          )
+          .forEach(
+            ([name, rows]) => {
+
+              result.people[name] =
+                normalizeHistoryRows(
+                  rows
+                );
+
+
+              result.people[name]
+                .forEach(
+                  row => {
+
+                    periodMap.set(
+                      row.period,
+                      {
+                        key:
+                          row.period,
+
+                        year:
+                          row.year,
+
+                        month:
+                          row.month,
+
+                        sort:
+                          row.sort
+                      }
+                    );
+                  }
+                );
+            }
+          );
+      }
+
+
+      result.periods =
+        [
+          ...periodMap.values()
+        ]
+          .sort(
+            (a, b) =>
+              a.sort -
+              b.sort
+          );
+
+
+      return result;
+    }
+
+
+    function normalizeHistoryRows(
+      rows
+    ) {
+
+      if (
+        !Array.isArray(
+          rows
+        )
+      ) {
+        return [];
+      }
+
+
+      return rows
+        .map(
+          row => {
+
+            const year =
+              Number(
+                row.year
+              );
+
+            const month =
+              Number(
+                row.month
+              );
+
+            const percent =
+              Number(
+                row.percent
+              );
+
+
+            return {
+              period:
+                String(
+                  row.period || ""
+                ),
+
+              year:
+                year,
+
+              month:
+                month,
+
+              sort:
+                Number(
+                  row.sort ||
+                  (
+                    year *
+                    100 +
+                    month
+                  )
+                ),
+
+              percent:
+                percent,
+
+              label:
+                row.label ||
+                makePeriodLabel(
+                  month,
+                  year
+                )
+            };
+          }
+        )
+        .filter(
+          row =>
+            row.period &&
+            Number.isFinite(
+              row.year
+            ) &&
+            Number.isFinite(
+              row.month
+            ) &&
+            isSafePercent(
+              row.percent
+            )
+        )
+        .sort(
+          (a, b) =>
+            a.sort -
+            b.sort
+        );
+    }
+
+
+    /* =====================================================
+       HISTORY UI
        ===================================================== */
 
     historyBtn.addEventListener(
       "click",
       async () => {
 
-        const willOpen =
+        const opening =
           !historySection
             .classList
             .contains(
@@ -2072,7 +2184,7 @@
           );
 
 
-        if (!willOpen) {
+        if (!opening) {
           return;
         }
 
@@ -2084,140 +2196,41 @@
           );
 
 
-        await ensureHistoryData();
+        historyListEl.innerHTML =
+          '<div class="loader"></div>';
 
 
-        renderHistoryPeople();
+        try {
 
-      }
-    );
+          await ensureHistoryData();
 
-
-    /* =====================================================
-       COMPARE
-       ===================================================== */
-
-    compareBtn.addEventListener(
-      "click",
-      async () => {
-
-        const willOpen =
-          !compareSection
-            .classList
-            .contains(
-              "visible"
-            );
+          renderHistoryPeople();
 
 
-        compareSection
-          .classList
-          .toggle(
-            "visible"
-          );
+        } catch (error) {
 
-
-        if (!willOpen) {
-          return;
+          historyListEl.innerHTML =
+            '<div class="empty">Не удалось загрузить историю</div>';
         }
-
-
-        historySection
-          .classList
-          .remove(
-            "visible"
-          );
-
-
-        await ensureHistoryData();
-
-
-        renderCompareOptions();
-
-        renderCompareChart();
-
       }
     );
 
-
-    /* =====================================================
-       LOAD HISTORY LAZILY
-       ===================================================== */
-
-    async function ensureHistoryData() {
-
-      /*
-        Историю не перезагружаем
-        чаще раза в минуту.
-      */
-
-      if (
-        state.historyData &&
-        Date.now() -
-          state.historyLoadedAt <
-          60000
-      ) {
-
-        return;
-      }
-
-
-      if (
-        state.historyLoading
-      ) {
-
-        return;
-      }
-
-
-      state.historyLoading =
-        true;
-
-
-      try {
-
-        const data =
-          await api({
-            mode: "all",
-            _: Date.now()
-          });
-
-
-        state.historyData =
-          data;
-
-
-        state.historyLoadedAt =
-          Date.now();
-
-
-      } catch (error) {
-
-        console.error(error);
-
-      } finally {
-
-        state.historyLoading =
-          false;
-      }
-    }
-
-
-    /* =====================================================
-       HISTORY UI
-       ===================================================== */
 
     function renderHistoryPeople() {
+
+      historyPersonEl.innerHTML =
+        "";
+
+      historyListEl.innerHTML =
+        "";
+
 
       if (
         !state.historyData ||
         !state.historyData.people
       ) {
 
-        historyPersonEl.innerHTML =
-          "";
-
-        historyListEl.innerHTML =
-          '<div class="empty">Не удалось загрузить историю</div>';
+        showHistoryEmpty();
 
         return;
       }
@@ -2229,30 +2242,37 @@
         );
 
 
-      historyPersonEl.innerHTML =
-        "";
+      if (
+        names.length === 0
+      ) {
+
+        showHistoryEmpty();
+
+        return;
+      }
 
 
-      names.forEach(name => {
+      names.forEach(
+        name => {
 
-        const option =
-          document.createElement(
-            "option"
+          const option =
+            document.createElement(
+              "option"
+            );
+
+
+          option.value =
+            name;
+
+          option.textContent =
+            name;
+
+
+          historyPersonEl.appendChild(
+            option
           );
-
-
-        option.value =
-          name;
-
-
-        option.textContent =
-          name;
-
-
-        historyPersonEl.appendChild(
-          option
-        );
-      });
+        }
+      );
 
 
       historyPersonEl.onchange =
@@ -2261,24 +2281,22 @@
           renderPersonHistory(
             historyPersonEl.value
           );
-
         };
 
 
-      if (
-        names.length
-      ) {
-
-        renderPersonHistory(
-          names[0]
-        );
-      }
+      renderPersonHistory(
+        names[0]
+      );
     }
 
 
     function renderPersonHistory(
       name
     ) {
+
+      historyListEl.innerHTML =
+        "";
+
 
       const rows =
         state.historyData &&
@@ -2294,83 +2312,129 @@
           : [];
 
 
-      historyListEl.innerHTML =
-        "";
-
-
-      const safeRows =
-        rows.filter(
-          item =>
-            isSafePercent(
-              item.percent
-            )
-        );
-
-
       if (
-        safeRows.length === 0
+        rows.length === 0
       ) {
 
-        historyListEl.innerHTML =
-          '<div class="empty">История отсутствует</div>';
+        showHistoryEmpty();
 
         return;
       }
 
 
-      safeRows
+      rows
         .slice()
         .sort(
           (a, b) =>
-            Number(b.sort) -
-            Number(a.sort)
+            b.sort -
+            a.sort
         )
-        .forEach(item => {
+        .forEach(
+          item => {
 
-          const row =
-            document.createElement(
-              "div"
-            );
-
-
-          row.className =
-            "history-row";
+            const percent =
+              Number(
+                item.percent
+              );
 
 
-          const percent =
-            Number(
-              item.percent
-            );
+            const row =
+              document.createElement(
+                "div"
+              );
 
 
-          row.innerHTML = `
+            row.className =
+              "history-row";
 
-            <span class="history-period">
-              ${escapeHtml(item.label)}
-            </span>
 
-            <span
-              class="${
+            row.innerHTML = `
+
+              <span class="history-period">
+                ${escapeHtml(item.label)}
+              </span>
+
+              <span class="${
                 percent >= 90
                   ? "history-percent green"
                   : "history-percent"
               }">
-              ${formatPercent(percent)}
-            </span>
+                ${formatPercent(percent)}
+              </span>
+            `;
 
-          `;
+
+            historyListEl.appendChild(
+              row
+            );
+          }
+        );
+    }
 
 
-          historyListEl.appendChild(
-            row
-          );
-        });
+    function showHistoryEmpty() {
+
+      historyListEl.innerHTML =
+        '<div class="empty">История отсутствует</div>';
     }
 
 
     /* =====================================================
-       COMPARE OPTIONS
+       COMPARISON
        ===================================================== */
+
+    compareBtn.addEventListener(
+      "click",
+      async () => {
+
+        const opening =
+          !compareSection
+            .classList
+            .contains(
+              "visible"
+            );
+
+
+        compareSection
+          .classList
+          .toggle(
+            "visible"
+          );
+
+
+        if (!opening) {
+          return;
+        }
+
+
+        historySection
+          .classList
+          .remove(
+            "visible"
+          );
+
+
+        compareOptionsEl.innerHTML =
+          '<div class="loader"></div>';
+
+
+        try {
+
+          await ensureHistoryData();
+
+          renderCompareOptions();
+
+          renderCompareChart();
+
+
+        } catch (error) {
+
+          compareOptionsEl.innerHTML =
+            '<div class="empty">Не удалось загрузить данные</div>';
+        }
+      }
+    );
+
 
     function renderCompareOptions() {
 
@@ -2382,7 +2446,6 @@
         !state.historyData ||
         !state.historyData.people
       ) {
-
         return;
       }
 
@@ -2393,89 +2456,89 @@
         );
 
 
-      names.forEach(name => {
+      names.forEach(
+        name => {
 
-        const label =
-          document.createElement(
-            "label"
-          );
-
-
-        label.className =
-          "compare-option";
+          const label =
+            document.createElement(
+              "label"
+            );
 
 
-        const checkbox =
-          document.createElement(
-            "input"
-          );
+          label.className =
+            "compare-option";
 
 
-        checkbox.type =
-          "checkbox";
+          const checkbox =
+            document.createElement(
+              "input"
+            );
 
 
-        checkbox.checked =
-          state.selectedComparePeople
-            .has(name);
+          checkbox.type =
+            "checkbox";
 
 
-        checkbox.addEventListener(
-          "change",
-          () => {
+          checkbox.checked =
+            state
+              .selectedComparePeople
+              .has(name);
 
-            if (
-              checkbox.checked
-            ) {
 
-              state
-                .selectedComparePeople
-                .add(name);
+          checkbox.addEventListener(
+            "change",
+            () => {
 
-            } else {
+              if (
+                checkbox.checked
+              ) {
 
-              state
-                .selectedComparePeople
-                .delete(name);
+                state
+                  .selectedComparePeople
+                  .add(name);
+
+              } else {
+
+                state
+                  .selectedComparePeople
+                  .delete(name);
+              }
+
+
+              renderCompareChart();
             }
-
-
-            renderCompareChart();
-
-          }
-        );
-
-
-        const text =
-          document.createElement(
-            "span"
           );
 
 
-        text.textContent =
-          name;
+          const span =
+            document.createElement(
+              "span"
+            );
 
 
-        label.appendChild(
-          checkbox
-        );
+          span.textContent =
+            name;
 
 
-        label.appendChild(
-          text
-        );
+          label.appendChild(
+            checkbox
+          );
+
+          label.appendChild(
+            span
+          );
 
 
-        compareOptionsEl.appendChild(
-          label
-        );
-
-      });
+          compareOptionsEl.appendChild(
+            label
+          );
+        }
+      );
     }
 
 
     /* =====================================================
-       SVG COMPARISON
+       SVG CHART
        ===================================================== */
 
     function renderCompareChart() {
@@ -2509,13 +2572,12 @@
 
           <text
             x="450"
-            y="180"
+            y="185"
             text-anchor="middle"
-            fill="#8997b4"
+            fill="#8e9bb7"
             font-size="15">
             Выберите участников для сравнения
           </text>
-
         `;
 
         return;
@@ -2527,19 +2589,12 @@
           state.historyData.periods
         )
           ? state.historyData.periods
-              .slice()
-              .sort(
-                (a, b) =>
-                  Number(a.sort) -
-                  Number(b.sort)
-              )
           : [];
 
 
       if (
         periods.length === 0
       ) {
-
         return;
       }
 
@@ -2547,32 +2602,25 @@
       const width =
         900;
 
-
       const height =
-        360;
-
+        370;
 
       const left =
-        50;
-
+        55;
 
       const right =
-        20;
-
+        22;
 
       const top =
-        25;
-
+        30;
 
       const bottom =
-        50;
-
+        55;
 
       const chartWidth =
         width -
         left -
         right;
-
 
       const chartHeight =
         height -
@@ -2580,17 +2628,21 @@
         bottom;
 
 
+      /*
+        Масштаб 70–100%
+      */
+
       const minY =
         70;
-
 
       const maxY =
         100;
 
 
-      /* -----------------------------
-         GRID Y
-         ----------------------------- */
+      /*
+        Горизонтальные линии
+        каждые 5%.
+      */
 
       for (
         let value = 70;
@@ -2601,17 +2653,17 @@
         const y =
           top +
           chartHeight *
+          (
+            1 -
             (
-              1 -
-              (
-                value -
-                minY
-              ) /
-              (
-                maxY -
-                minY
-              )
-            );
+              value -
+              minY
+            ) /
+            (
+              maxY -
+              minY
+            )
+          );
 
 
         addSvgLine(
@@ -2626,52 +2678,49 @@
 
         addSvgText(
           svg,
-          42,
+          46,
           y + 4,
           value + "%",
-          "#8997b4",
+          "#8e9bb7",
           "end",
           11
         );
       }
 
 
-      /* -----------------------------
-         X LABELS
-         ----------------------------- */
+      /*
+        Подписи месяцев.
+      */
 
       periods.forEach(
         (period, index) => {
 
           if (
-            periods.length > 12 &&
+            periods.length > 14 &&
             index % 2 !== 0 &&
             index !==
-              periods.length - 1
+            periods.length - 1
           ) {
-
             return;
           }
 
 
           const x =
-            periods.length === 1
-              ? left +
-                chartWidth / 2
-              : left +
-                chartWidth *
-                index /
-                (
-                  periods.length - 1
-                );
+            getChartX(
+              index,
+              periods.length,
+              left,
+              chartWidth
+            );
 
 
           const label =
             MONTH_NAMES[
-              Number(period.month) - 1
-            ]
-              .slice(0, 3) +
-            " " +
+              period.month - 1
+            ].slice(0, 3)
+            +
+            " "
+            +
             String(
               period.year
             ).slice(-2);
@@ -2682,23 +2731,13 @@
             x,
             height - 18,
             label,
-            "#8997b4",
+            "#8e9bb7",
             "middle",
             10
           );
         }
       );
 
-
-      /* -----------------------------
-         SERIES
-
-         Цвет не задаём вручную
-         массивом.
-
-         Берём текущийColor через CSS
-         stroke HSL по индексу.
-         ----------------------------- */
 
       selected.forEach(
         (name, seriesIndex) => {
@@ -2713,39 +2752,41 @@
             new Map();
 
 
-          rows.forEach(row => {
+          rows.forEach(
+            row => {
 
-            if (
-              isSafePercent(
-                row.percent
-              )
-            ) {
-
-              map.set(
-                row.period,
-                Number(
+              if (
+                isSafePercent(
                   row.percent
                 )
-              );
+              ) {
+
+                map.set(
+                  row.period,
+                  Number(
+                    row.percent
+                  )
+                );
+              }
             }
-          });
+          );
 
 
           const hue =
             (
-              seriesIndex * 73 +
-              190
+              seriesIndex *
+              71 +
+              188
             ) %
             360;
 
 
-          const stroke =
+          const color =
             `hsl(${hue} 75% 62%)`;
 
 
           let path =
             "";
-
 
           let started =
             false;
@@ -2772,16 +2813,12 @@
 
 
               const x =
-                periods.length === 1
-                  ? left +
-                    chartWidth / 2
-                  : left +
-                    chartWidth *
-                    index /
-                    (
-                      periods.length -
-                      1
-                    );
+                getChartX(
+                  index,
+                  periods.length,
+                  left,
+                  chartWidth
+                );
 
 
               const clamped =
@@ -2797,17 +2834,17 @@
               const y =
                 top +
                 chartHeight *
+                (
+                  1 -
                   (
-                    1 -
-                    (
-                      clamped -
-                      minY
-                    ) /
-                    (
-                      maxY -
-                      minY
-                    )
-                  );
+                    clamped -
+                    minY
+                  ) /
+                  (
+                    maxY -
+                    minY
+                  )
+                );
 
 
               if (!started) {
@@ -2826,11 +2863,10 @@
 
 
               const circle =
-                document
-                  .createElementNS(
-                    "http://www.w3.org/2000/svg",
-                    "circle"
-                  );
+                document.createElementNS(
+                  "http://www.w3.org/2000/svg",
+                  "circle"
+                );
 
 
               circle.setAttribute(
@@ -2838,39 +2874,34 @@
                 x
               );
 
-
               circle.setAttribute(
                 "cy",
                 y
               );
-
 
               circle.setAttribute(
                 "r",
                 "3.5"
               );
 
-
               circle.setAttribute(
                 "fill",
-                stroke
+                color
               );
 
 
               svg.appendChild(
                 circle
               );
-
             }
           );
 
 
           const pathEl =
-            document
-              .createElementNS(
-                "http://www.w3.org/2000/svg",
-                "path"
-              );
+            document.createElementNS(
+              "http://www.w3.org/2000/svg",
+              "path"
+            );
 
 
           pathEl.setAttribute(
@@ -2878,30 +2909,25 @@
             path
           );
 
-
           pathEl.setAttribute(
             "fill",
             "none"
           );
 
-
           pathEl.setAttribute(
             "stroke",
-            stroke
+            color
           );
-
 
           pathEl.setAttribute(
             "stroke-width",
             "2.5"
           );
 
-
           pathEl.setAttribute(
             "stroke-linecap",
             "round"
           );
-
 
           pathEl.setAttribute(
             "stroke-linejoin",
@@ -2916,23 +2942,47 @@
 
           addSvgText(
             svg,
-            left + 10,
-            18 +
-              seriesIndex * 16,
+            left + 8,
+            17 +
+            seriesIndex * 16,
             name,
-            stroke,
+            color,
             "start",
             10
           );
-
         }
       );
     }
 
 
-    /* =====================================================
-       SVG HELPERS
-       ===================================================== */
+    function getChartX(
+      index,
+      count,
+      left,
+      width
+    ) {
+
+      if (
+        count <= 1
+      ) {
+
+        return (
+          left +
+          width / 2
+        );
+      }
+
+
+      return (
+        left +
+        width *
+        index /
+        (
+          count - 1
+        )
+      );
+    }
+
 
     function addSvgLine(
       svg,
@@ -2944,11 +2994,10 @@
     ) {
 
       const line =
-        document
-          .createElementNS(
-            "http://www.w3.org/2000/svg",
-            "line"
-          );
+        document.createElementNS(
+          "http://www.w3.org/2000/svg",
+          "line"
+        );
 
 
       line.setAttribute(
@@ -2956,30 +3005,25 @@
         x1
       );
 
-
       line.setAttribute(
         "y1",
         y1
       );
-
 
       line.setAttribute(
         "x2",
         x2
       );
 
-
       line.setAttribute(
         "y2",
         y2
       );
 
-
       line.setAttribute(
         "stroke",
         stroke
       );
-
 
       line.setAttribute(
         "stroke-width",
@@ -3004,11 +3048,10 @@
     ) {
 
       const el =
-        document
-          .createElementNS(
-            "http://www.w3.org/2000/svg",
-            "text"
-          );
+        document.createElementNS(
+          "http://www.w3.org/2000/svg",
+          "text"
+        );
 
 
       el.setAttribute(
@@ -3016,24 +3059,20 @@
         x
       );
 
-
       el.setAttribute(
         "y",
         y
       );
-
 
       el.setAttribute(
         "fill",
         fill
       );
 
-
       el.setAttribute(
         "text-anchor",
         anchor
       );
-
 
       el.setAttribute(
         "font-size",
@@ -3052,7 +3091,7 @@
 
 
     /* =====================================================
-       UI HELPERS
+       HELPERS
        ===================================================== */
 
     function showRankingLoader() {
@@ -3062,7 +3101,9 @@
     }
 
 
-    function showEmptyRanking(text) {
+    function showEmptyRanking(
+      text
+    ) {
 
       rankingEl.innerHTML =
         `<div class="empty">${escapeHtml(text)}</div>`;
@@ -3078,16 +3119,22 @@
         text || "";
 
 
-      statusEl.classList.toggle(
-        "error",
-        Boolean(error)
-      );
+      statusEl
+        .classList
+        .toggle(
+          "error",
+          Boolean(error)
+        );
     }
 
 
-    function showMainError(error) {
+    function showMainError(
+      error
+    ) {
 
-      console.error(error);
+      console.error(
+        error
+      );
 
 
       setStatus(
@@ -3102,30 +3149,37 @@
     }
 
 
-    function isSafePercent(value) {
+    function isSafePercent(
+      value
+    ) {
 
       const number =
         Number(value);
 
 
       return (
-        Number.isFinite(number) &&
+        Number.isFinite(
+          number
+        ) &&
         number >= 0 &&
         number <= 100
       );
     }
 
 
-    function clampPercent(value) {
+    function clampPercent(
+      value
+    ) {
 
       const number =
         Number(value);
 
 
       if (
-        !Number.isFinite(number)
+        !Number.isFinite(
+          number
+        )
       ) {
-
         return 0;
       }
 
@@ -3140,16 +3194,19 @@
     }
 
 
-    function formatPercent(value) {
+    function formatPercent(
+      value
+    ) {
 
       const number =
         Number(value);
 
 
       if (
-        !isSafePercent(number)
+        !isSafePercent(
+          number
+        )
       ) {
-
         return "—";
       }
 
@@ -3167,7 +3224,9 @@
     }
 
 
-    function escapeHtml(value) {
+    function escapeHtml(
+      value
+    ) {
 
       return String(
         value || ""
@@ -3196,11 +3255,7 @@
 
 
     /* =====================================================
-       VISIBILITY
-
-       Когда возвращаемся на вкладку
-       браузера, один раз обновляем
-       выбранный период.
+       PAGE VISIBILITY
        ===================================================== */
 
     document.addEventListener(
@@ -3222,7 +3277,7 @@
 
 
     /* =====================================================
-       RUN
+       START
        ===================================================== */
 
     init();
@@ -3230,4 +3285,5 @@
   </script>
 
 </body>
+
 </html>
