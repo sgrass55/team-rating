@@ -1249,6 +1249,191 @@
       }
     }
 
+  
+    /* =====================================================
+       ARCHIVE V11 — MONTH ARROWS + CENTERING
+       ===================================================== */
+
+    #archiveModal .archive-detail {
+      width: 100%;
+      max-width: 760px;
+      margin: 0 auto;
+    }
+
+    #archiveModal .archive-ranking {
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    #archiveModal .archive-view-header {
+      width: 100%;
+      margin:
+        34px
+        auto
+        26px;
+
+      padding:
+        0
+        4px;
+
+      box-sizing: border-box;
+    }
+
+    .archive-period-nav {
+      display: grid;
+      grid-template-columns:
+        52px
+        minmax(0, 1fr)
+        52px;
+
+      align-items: center;
+
+      gap: 12px;
+
+      width: 100%;
+    }
+
+    .archive-period-center {
+      min-width: 0;
+      text-align: center;
+    }
+
+    .archive-period-center .subtitle {
+      margin: 0;
+      text-align: center;
+    }
+
+    .archive-period-center .current-period {
+      margin-top: 10px;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .archive-month-arrow {
+      appearance: none;
+
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+
+      width: 48px;
+      height: 48px;
+
+      padding: 0;
+
+      border:
+        1px solid
+        rgba(255,255,255,.13);
+
+      border-radius: 50%;
+
+      color: var(--text);
+
+      background:
+        rgba(255,255,255,.065);
+
+      cursor: pointer;
+
+      font-size: 28px;
+      line-height: 1;
+
+      transition:
+        transform 150ms ease,
+        background 150ms ease,
+        opacity 150ms ease;
+    }
+
+    .archive-month-arrow:active {
+      transform: scale(.92);
+      background:
+        rgba(255,255,255,.12);
+    }
+
+    .archive-month-arrow:disabled {
+      opacity: .26;
+      cursor: default;
+    }
+
+    .archive-month-arrow:disabled:active {
+      transform: none;
+    }
+
+    #archiveModal .archive-swipe-hint {
+      margin-top: 20px;
+    }
+
+    @media (max-width: 700px) {
+
+      #archiveModal .modal-body {
+        padding-left: 16px;
+        padding-right: 16px;
+      }
+
+      #archiveModal .archive-detail {
+        width: 100%;
+        max-width: none;
+        margin: 0 auto;
+      }
+
+      #archiveModal .archive-ranking {
+        width: 100%;
+        max-width: none;
+        margin: 0 auto;
+      }
+
+      #archiveModal .archive-view-header {
+        margin-top: 42px;
+        margin-bottom: 28px;
+        padding-left: 0;
+        padding-right: 0;
+      }
+
+      .archive-period-nav {
+        grid-template-columns:
+          46px
+          minmax(0, 1fr)
+          46px;
+
+        gap: 9px;
+      }
+
+      .archive-month-arrow {
+        width: 44px;
+        height: 44px;
+        font-size: 26px;
+      }
+
+      .archive-period-center .subtitle {
+        font-size: 12px;
+      }
+
+      .archive-period-center .current-period {
+        margin-top: 10px;
+        font-size: clamp(27px, 7.2vw, 36px);
+        line-height: 1.03;
+      }
+
+      #archiveModal .ranking {
+        width: 100%;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      #archiveModal .rank-card {
+        width: 100%;
+        box-sizing: border-box;
+        margin-left: auto;
+        margin-right: auto;
+      }
+    }
+
+  
+    @media (min-width: 701px) {
+      #archiveModal .archive-detail {
+        padding-bottom: 8px;
+      }
+    }
+
   </style>
 </head>
 
@@ -2974,7 +3159,7 @@
         requestAnimationFrame(() => {
 
           archiveRankingEl.style.transition =
-            "transform 420ms cubic-bezier(.18,.82,.2,1), opacity 380ms ease";
+            "transform 520ms cubic-bezier(.16,.82,.18,1), opacity 430ms ease";
 
           archiveRankingEl.style.transform =
             `translate3d(${exitX}px, 0, 0)`;
@@ -2982,7 +3167,7 @@
           archiveRankingEl.style.opacity =
             "0";
 
-          setTimeout(resolve, 430);
+          setTimeout(resolve, 530);
         });
       });
 
@@ -3021,7 +3206,7 @@
           requestAnimationFrame(() => {
 
             archiveRankingEl.style.transition =
-              "transform 460ms cubic-bezier(.16,.82,.18,1), opacity 360ms ease";
+              "transform 540ms cubic-bezier(.16,.82,.18,1), opacity 430ms ease";
 
             archiveRankingEl.style.transform =
               "translate3d(0, 0, 0)";
@@ -3029,7 +3214,7 @@
             archiveRankingEl.style.opacity =
               "1";
 
-            setTimeout(resolve, 470);
+            setTimeout(resolve, 550);
           });
         });
       });
@@ -3372,16 +3557,50 @@
         "archive-view-header";
 
 
+      const previousPeriod =
+        getShiftedArchivePeriod(-1);
+
+      const nextPeriod =
+        getShiftedArchivePeriod(1);
+
+
       header.innerHTML = `
-        <div class="subtitle">Просматриваемый месяц</div>
-        <div class="current-period">
-          ${escapeHtml(
-            MONTH_NAMES[
-              period.month - 1
-            ] +
-            " " +
-            period.year
-          )}
+        <div class="archive-period-nav">
+
+          <button
+            class="archive-month-arrow archive-month-arrow-prev"
+            type="button"
+            aria-label="Предыдущий месяц"
+            ${previousPeriod ? "" : "disabled"}>
+            ←
+          </button>
+
+          <div class="archive-period-center">
+
+            <div class="subtitle">
+              Просматриваемый месяц
+            </div>
+
+            <div class="current-period">
+              ${escapeHtml(
+                MONTH_NAMES[
+                  period.month - 1
+                ] +
+                " " +
+                period.year
+              )}
+            </div>
+
+          </div>
+
+          <button
+            class="archive-month-arrow archive-month-arrow-next"
+            type="button"
+            aria-label="Следующий месяц"
+            ${nextPeriod ? "" : "disabled"}>
+            →
+          </button>
+
         </div>
       `;
 
@@ -3389,6 +3608,65 @@
       archiveRankingEl.appendChild(
         header
       );
+
+
+      const previousButton =
+        header.querySelector(
+          ".archive-month-arrow-prev"
+        );
+
+      const nextButton =
+        header.querySelector(
+          ".archive-month-arrow-next"
+        );
+
+
+      if (previousButton) {
+
+        previousButton.addEventListener(
+          "click",
+          async event => {
+
+            event.stopPropagation();
+
+            if (
+              previousButton.disabled ||
+              archiveSwipeAnimating
+            ) {
+              return;
+            }
+
+            await animateArchiveSwipe(
+              -1,
+              0
+            );
+          }
+        );
+      }
+
+
+      if (nextButton) {
+
+        nextButton.addEventListener(
+          "click",
+          async event => {
+
+            event.stopPropagation();
+
+            if (
+              nextButton.disabled ||
+              archiveSwipeAnimating
+            ) {
+              return;
+            }
+
+            await animateArchiveSwipe(
+              1,
+              0
+            );
+          }
+        );
+      }
 
 
       const ranking =
