@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>Статистика</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    :root{
+      --bg:#0f0f10;--card:#1c1c1e;--card2:#2a2a2d;--text:#fff;
+      --muted:#aaa;--accent:#34c759;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    body{min-height:100vh;padding:calc(18px + env(safe-area-inset-top)) 16px calc(26px + env(safe-area-inset-bottom))}
+    .wrap{max-width:560px;margin:0 auto}
+    .head{padding:10px 4px 22px}
+    h1{font-size:30px;line-height:1.1;margin:0 0 7px}
+    .sub{color:var(--muted);font-size:15px}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    button,a.btn{
+      width:100%;border:0;text-decoration:none;color:var(--text);background:var(--card);
+      border-radius:18px;padding:20px 16px;font-size:17px;font-weight:650;text-align:left;
+      display:flex;align-items:center;gap:12px;min-height:84px;-webkit-tap-highlight-color:transparent
+    }
+    button:active,a.btn:active{transform:scale(.985);background:var(--card2)}
+    .wide{grid-column:1/-1}
+    .ico{font-size:27px;min-width:32px}
+    .label small{display:block;color:var(--muted);font-size:12px;font-weight:500;margin-top:5px}
+    .foot{color:#6e6e73;font-size:12px;text-align:center;margin-top:22px}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <div class="head">
+    <h1>Статистика</h1>
+    <div class="sub">Выбери действие</div>
+  </div>
+
+  <div class="grid">
+    <button class="wide" onclick="go('report')">
+      <span class="ico">📝</span>
+      <span class="label">Заполнить отчёт<small>Выбрать день и внести данные</small></span>
+    </button>
+
+    <button onclick="go('addbuy')">
+      <span class="ico">➕</span>
+      <span class="label">Докуп<small>Добавить съёмки</small></span>
+    </button>
+
+    <button onclick="go('stats')">
+      <span class="ico">📊</span>
+      <span class="label">Статистика<small>Мои показатели</small></span>
+    </button>
+
+    <a class="btn wide" href="https://sgrass55.github.io/team-rating/">
+      <span class="ico">🏆</span>
+      <span class="label">Рейтинг команды<small>Открыть общий рейтинг</small></span>
+    </a>
+  </div>
+
+  <div class="foot">Меню работает внутри Telegram Mini App</div>
+</div>
+
+<script>
+  const tg = window.Telegram && Telegram.WebApp ? Telegram.WebApp : null;
+  if (tg) {
+    tg.ready();
+    tg.expand();
+    const p = tg.themeParams || {};
+    if (p.bg_color) document.documentElement.style.setProperty('--bg', p.bg_color);
+    if (p.secondary_bg_color) document.documentElement.style.setProperty('--card', p.secondary_bg_color);
+    if (p.text_color) document.documentElement.style.setProperty('--text', p.text_color);
+    if (p.hint_color) document.documentElement.style.setProperty('--muted', p.hint_color);
+  }
+
+  function go(action) {
+    const url = 'https://t.me/modernraiting_bot?start=' + encodeURIComponent(action);
+    if (tg && tg.openTelegramLink) {
+      tg.openTelegramLink(url);
+      setTimeout(() => tg.close(), 250);
+    } else {
+      location.href = url;
+    }
+  }
+</script>
+</body>
+</html>
