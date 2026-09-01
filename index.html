@@ -1772,78 +1772,21 @@
     }
 
   
-    /* =========================================================
-       TELEGRAM WEBAPP ONLY — MOBILE LAYOUT FIX
-       Браузерная версия не затрагивается.
-       ========================================================= */
-    html.telegram-webapp,
-    body.telegram-webapp {
-      width: 100%;
-      min-height: 100%;
-      overflow-x: hidden;
-    }
-
-    body.telegram-webapp {
-      padding-top: max(8px, env(safe-area-inset-top));
-      padding-bottom: max(12px, env(safe-area-inset-bottom));
-    }
-
-    body.telegram-webapp .app,
-    body.telegram-webapp .container,
-    body.telegram-webapp main {
-      width: 100%;
-      max-width: 100%;
-      min-height: 100dvh;
-      margin: 0 auto;
-      box-sizing: border-box;
-    }
-
-    /* В Telegram уменьшаем лишнюю высоту верхнего блока */
-    body.telegram-webapp .hero,
-    body.telegram-webapp .header,
-    body.telegram-webapp .topbar,
-    body.telegram-webapp .current-header {
+    /* =====================================================
+       TELEGRAM ONLY
+       Обычная браузерная версия не затрагивается.
+       ===================================================== */
+    body.telegram-webapp .header {
       margin-top: 0 !important;
-      padding-top: 4px !important;
+      padding-top: 10px !important;
     }
 
-    /* Карточки рейтинга чуть компактнее только внутри Telegram */
-    body.telegram-webapp .ranking-card,
-    body.telegram-webapp .person-card,
-    body.telegram-webapp .rank-card,
-    body.telegram-webapp .card {
-      box-sizing: border-box;
-      max-width: 100%;
+    body.telegram-webapp .container {
+      padding-top: 0 !important;
     }
 
-    /* Нижнюю пустоту убираем: контент занимает естественную высоту */
-    body.telegram-webapp .screen,
-    body.telegram-webapp .page,
-    body.telegram-webapp .content {
-      min-height: auto !important;
-      height: auto !important;
-    }
-
-    /* На узких iPhone в Telegram */
-    @media (max-width: 480px) {
-      body.telegram-webapp {
-        font-size: 0.96em;
-      }
-
-      body.telegram-webapp .app,
-      body.telegram-webapp .container,
-      body.telegram-webapp main {
-        padding-left: 10px !important;
-        padding-right: 10px !important;
-      }
-
-      body.telegram-webapp .ranking-card,
-      body.telegram-webapp .person-card,
-      body.telegram-webapp .rank-card,
-      body.telegram-webapp .card {
-        margin-left: 0 !important;
-        margin-right: 0 !important;
-      }
+    body.telegram-webapp .page {
+      min-height: 100dvh;
     }
 
   </style>
@@ -1851,32 +1794,19 @@
 
 <body>
   <script>
-    (function () {
-      try {
-        var tg = window.Telegram && window.Telegram.WebApp;
-        if (tg && tg.initData !== undefined) {
-          document.documentElement.classList.add("telegram-webapp");
-          document.body.classList.add("telegram-webapp");
-        }
-      } catch (e) {}
-    })();
-  </script>
-
-  <script>
-    // Если страница открыта из Telegram, разворачиваем её сразу.
+    // Telegram-only режим:
+    // разворачиваем WebApp, но НЕ включаем requestFullscreen().
+    // На iPhone полноэкранный режим перекрывает заголовок нативной панелью Telegram.
     (function () {
       try {
         const tg = window.Telegram && window.Telegram.WebApp;
         if (!tg) return;
 
+        document.documentElement.classList.add('telegram-webapp');
+        document.body.classList.add('telegram-webapp');
+
         tg.ready();
         tg.expand();
-
-        // В новых версиях Telegram просим настоящий полноэкранный режим.
-        // В старых клиентах expand() всё равно откроет приложение максимально высоко.
-        if (typeof tg.requestFullscreen === 'function') {
-          try { tg.requestFullscreen(); } catch (e) {}
-        }
       } catch (e) {}
     })();
   </script>
