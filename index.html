@@ -6481,12 +6481,26 @@
        AUTO REFRESH
 
        Только главная страница.
-       Каждые 2 секунды.
+       Каждую 1 секунду.
        Архив и история сюда не входят.
        ===================================================== */
 
     let lastKnownPeriodKey =
       getCurrentPeriod().key;
+
+
+    /*
+      Если пользователь вернулся в Telegram/WebView,
+      обновляем рейтинг сразу, не ждём следующую секунду.
+    */
+    document.addEventListener(
+      "visibilitychange",
+      () => {
+        if (!document.hidden && !state.currentMonthLoading) {
+          loadCurrentMonth(true);
+        }
+      }
+    );
 
     setInterval(
       () => {
@@ -6519,7 +6533,7 @@
 
         loadCurrentMonth(true);
       },
-      2000
+      1000
     );
 
 
