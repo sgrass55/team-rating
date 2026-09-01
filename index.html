@@ -329,8 +329,9 @@
           #31d879
         );
 
-      transition:
-        width 3s cubic-bezier(.16,.78,.18,1);
+      transition: none;
+
+      will-change: width;
     }
 
     .bar-hint {
@@ -3346,27 +3347,18 @@
             newPercent
           );
 
-        if (fillEl) {
-
-          /*
-            Шкала использует ту же адаптивную длительность,
-            что и число. Большой диапазон больше не пролетает
-            слишком быстро.
-          */
-
-          fillEl.style.transition =
-            `width ${percentAnimationMs}ms ${RANKING_EASING}`;
-
-          fillEl.style.width =
-            newPercent + "%";
-        }
-
+        /*
+          Число и шкала теперь двигаются ОДНИМ requestAnimationFrame.
+          Поэтому шкала в каждый момент точно соответствует
+          отображаемому проценту и останавливается одновременно с ним.
+        */
         animatePercentValue(
           percentEl,
           oldPercent,
           newPercent,
           percentAnimationMs,
-          card
+          card,
+          fillEl
         );
 
         if (percentEl) {
@@ -3402,7 +3394,8 @@
       from,
       to,
       duration = PERCENT_ANIMATION_MIN_MS,
-      card = null
+      card = null,
+      fillElement = null
     ) {
 
       if (!element) {
@@ -3421,6 +3414,12 @@
       ) {
         element.textContent =
           formatPercent(endValue);
+
+        if (fillElement) {
+          fillElement.style.width =
+            clampPercent(endValue) + "%";
+        }
+
         return;
       }
 
@@ -3492,6 +3491,11 @@
         element.textContent =
           formatPercent(currentValue);
 
+        if (fillElement) {
+          fillElement.style.width =
+            clampPercent(currentValue) + "%";
+        }
+
         if (card) {
           card.dataset.visualPercent =
             String(currentValue);
@@ -3510,6 +3514,11 @@
           element.textContent =
             formatPercent(endValue);
 
+          if (fillElement) {
+            fillElement.style.width =
+              clampPercent(endValue) + "%";
+          }
+
           if (card) {
             card.dataset.visualPercent =
               String(endValue);
@@ -3525,6 +3534,11 @@
 
       element.textContent =
         formatPercent(startValue);
+
+      if (fillElement) {
+        fillElement.style.width =
+          clampPercent(startValue) + "%";
+      }
 
       if (card) {
         card.dataset.visualPercent =
