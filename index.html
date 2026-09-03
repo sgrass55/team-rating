@@ -555,6 +555,325 @@
     }
 
     /* =====================================================
+       v152 — FAST PERSISTENT ARCHIVE
+
+       Внешний вид и анимации v29 НЕ меняются.
+       Оптимизируется только получение архивных данных:
+       один archivebundle + localStorage + фоновый прогрев.
+       ===================================================== */
+
+    const ARCHIVE_STORAGE_PREFIX_V152 =
+      "team-rating-archive-v152:";
+
+
+    function getArchiveStoragePhaseV147() {
+
+      const now =
+        new Date();
+
+      const year =
+        now.getFullYear();
+
+      const month =
+        String(
+          now.getMonth() + 1
+        ).padStart(
+          2,
+          "0"
+        );
+
+      const phase =
+        now.getDate() <= 5
+          ? "pre6"
+          : "post6";
+
+
+      return (
+        year +
+        "-" +
+        month +
+        "-" +
+        phase
+      );
+    }
+
+
+    function getArchiveStorageKeyV147() {
+
+      return (
+        ARCHIVE_STORAGE_PREFIX_V152 +
+        getArchiveStoragePhaseV147()
+      );
+    }
+
+
+    function readArchiveBundleLocalV147() {
+
+      try {
+
+        const raw =
+          localStorage.getItem(
+            getArchiveStorageKeyV147()
+          );
+
+
+        if (!raw) {
+          return null;
+        }
+
+
+        const parsed =
+          JSON.parse(
+            raw
+          );
+
+
+        if (
+          !parsed ||
+          parsed.ok !== true ||
+          !Array.isArray(
+            parsed.periods
+          ) ||
+          !parsed.rankings ||
+          typeof parsed.rankings !==
+            "object"
+        ) {
+
+          return null;
+        }
+
+
+        return parsed;
+
+      } catch (error) {
+
+        return null;
+      }
+    }
+
+
+    function writeArchiveBundleLocalV147(
+      data
+    ) {
+
+      try {
+
+        /*
+          Удаляем старые версии/фазы этого же архива,
+          чтобы localStorage не рос бесконечно.
+        */
+        for (
+          let i =
+            localStorage.length - 1;
+          i >= 0;
+          i--
+        ) {
+
+          const key =
+            localStorage.key(i);
+
+
+          if (
+            key &&
+            key.indexOf(
+              ARCHIVE_STORAGE_PREFIX_V152
+            ) === 0 &&
+            key !==
+              getArchiveStorageKeyV147()
+          ) {
+
+            localStorage.removeItem(
+              key
+            );
+          }
+        }
+
+
+        localStorage.setItem(
+          getArchiveStorageKeyV147(),
+          JSON.stringify(
+            data
+          )
+        );
+
+      } catch (error) {
+
+        /*
+          Без localStorage всё продолжит работать
+          через обычный серверный запрос.
+        */
+      }
+    }
+
+
+    function hydrateArchiveBundleV147(
+      data
+    ) {
+
+      const source =
+        Array.isArray(
+          data && data.periods
+        )
+          ? data.periods
+          : Array.isArray(
+              data && data.months
+            )
+              ? data.months
+              : [];
+
+
+      const currentKey =
+        getCurrentPeriod()
+          .key;
+
+
+      state.archivePeriods =
+        source
+          .map(
+            normalizePeriodObject
+          )
+          .filter(
+            item =>
+              item &&
+              item.key !==
+                currentKey
+          )
+          .sort(
+            (a, b) =>
+              a.sort -
+              b.sort
+          );
+
+
+      const rankings =
+        data &&
+        data.rankings &&
+        typeof data.rankings ===
+          "object"
+          ? data.rankings
+          : {};
+
+
+      Object
+        .keys(
+          rankings
+        )
+        .forEach(
+          periodKey => {
+
+            const people =
+              sanitizePeople(
+                Array.isArray(
+                  rankings[
+                    periodKey
+                  ]
+                )
+                  ? rankings[
+                      periodKey
+                    ]
+                  : []
+              );
+
+
+            state.archiveRankingCache
+              .set(
+                periodKey,
+                people
+              );
+          }
+        );
+    }
+
+
+    async function ensureArchiveBundleV147() {
+
+      if (
+        state.archivePeriods
+      ) {
+
+        return true;
+      }
+
+
+      const local =
+        readArchiveBundleLocalV147();
+
+
+      if (local) {
+
+        hydrateArchiveBundleV147(
+          local
+        );
+
+        return true;
+      }
+
+
+      if (
+        state.archiveBundleLoading
+      ) {
+
+        return state.archiveBundleLoading;
+      }
+
+
+      state.archiveBundleLoading =
+        (async () => {
+
+          const data =
+            await api({
+              mode:
+                "archivebundle"
+            });
+
+
+          hydrateArchiveBundleV147(
+            data
+          );
+
+
+          writeArchiveBundleLocalV147(
+            data
+          );
+
+
+          return true;
+        })();
+
+
+      try {
+
+        return await state.archiveBundleLoading;
+
+      } finally {
+
+        state.archiveBundleLoading =
+          null;
+      }
+    }
+
+
+    function warmArchiveBundleV147() {
+
+      /*
+        После того как главная уже показана, тихо прогреваем архив.
+        Пользователь этого не ждёт.
+      */
+      setTimeout(
+        () => {
+
+          ensureArchiveBundleV147()
+            .catch(
+              () => {}
+            );
+        },
+        250
+      );
+    }
+
+
+
+    /* =====================================================
        ARCHIVE
        ===================================================== */
 
@@ -1795,14 +2114,9 @@
 
 <body>
   <script>
-    // v151 — Telegram-only режим.
-    //
-    // ВАЖНО:
-    // Эта правка НЕ меняет CSS, архив, анимации шкал,
-    // расположение сравнения или разметку приложения.
-    //
-    // Сохраняем оригинальный интерфейс v29 и меняем
-    // только момент раскрытия Telegram Mini App.
+    // Telegram-only режим:
+    // разворачиваем WebApp, но НЕ включаем requestFullscreen().
+    // На iPhone полноэкранный режим перекрывает заголовок нативной панелью Telegram.
     (function () {
       try {
         const tg = window.Telegram && window.Telegram.WebApp;
@@ -1812,22 +2126,7 @@
         document.body.classList.add('telegram-webapp');
 
         tg.ready();
-
-        const expandNow = function () {
-          try {
-            tg.expand();
-          } catch (e) {}
-        };
-
-        // Сразу.
-        expandNow();
-
-        // На iOS Telegram иногда сначала фиксирует half-sheet,
-        // поэтому повторяем expand после запуска нативной анимации.
-        setTimeout(expandNow, 80);
-        setTimeout(expandNow, 250);
-        setTimeout(expandNow, 600);
-
+        tg.expand();
       } catch (e) {}
     })();
   </script>
@@ -2141,6 +2440,14 @@
         new Map(),
 
       /*
+        v152:
+        один общий Promise для загрузки archivebundle,
+        чтобы не запускать несколько одинаковых запросов одновременно.
+      */
+      archiveBundleLoading:
+        null,
+
+      /*
         История + сравнение тоже
         НЕ грузятся при открытии сайта.
 
@@ -2450,6 +2757,14 @@
 
         state.currentPeople = people;
         setStatus("");
+
+        /*
+          v152:
+          после того как текущий рейтинг уже показан,
+          тихо загружаем весь фиксированный архив одним пакетом.
+          Поэтому пользователь обычно открывает архив уже из памяти.
+        */
+        warmArchiveBundleV147();
 
       } catch (error) {
 
@@ -3584,6 +3899,10 @@
           archiveModal
         );
 
+        /*
+          Сохраняем оригинальный интерфейс v29:
+          сначала экран выбора года/месяца.
+        */
         showArchiveSelector();
 
         if (
@@ -3603,43 +3922,15 @@
 
         try {
 
-          const data =
-            await api({
-              mode:
-                "months"
-            });
+          /*
+            v152:
+            вместо mode=months + отдельного запроса каждого месяца
+            получаем один archivebundle.
 
-          const source =
-            Array.isArray(
-              data.months
-            )
-              ? data.months
-              : Array.isArray(
-                  data.periods
-                )
-                ? data.periods
-                : [];
-
-          const currentKey =
-            getCurrentPeriod()
-              .key;
-
-          state.archivePeriods =
-            source
-              .map(
-                normalizePeriodObject
-              )
-              .filter(
-                item =>
-                  item &&
-                  item.key !==
-                    currentKey
-              )
-              .sort(
-                (a, b) =>
-                  a.sort -
-                  b.sort
-              );
+            Зафиксированные рейтинги сразу попадают в
+            state.archiveRankingCache.
+          */
+          await ensureArchiveBundleV147();
 
           ensureArchiveStartYear();
           renderArchiveControls();
@@ -4207,6 +4498,38 @@
             period.key,
             people
           );
+
+
+        /*
+          v152:
+          fixed archive сохраняем и между перезапусками приложения.
+          Live-период 1–5 числа сюда не попадёт, пока сервер
+          не вернёт archive:true.
+        */
+        if (
+          data &&
+          data.archive === true
+        ) {
+
+          const local =
+            readArchiveBundleLocalV147();
+
+          if (local) {
+
+            local.rankings =
+              local.rankings &&
+              typeof local.rankings === "object"
+                ? local.rankings
+                : {};
+
+            local.rankings[period.key] =
+              people;
+
+            writeArchiveBundleLocalV147(
+              local
+            );
+          }
+        }
 
 
         renderArchiveMonthResult(
