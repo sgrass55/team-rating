@@ -2158,6 +2158,48 @@
         null
     };
 
+    // v156 — previous month stays LIVE through day 5 (Moscow time).
+    // From day 6 it is treated as frozen archive.
+    function getMoscowNowV156() {
+      const parts = new Intl.DateTimeFormat("en-CA", {
+        timeZone: "Europe/Moscow",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit"
+      }).formatToParts(new Date());
+
+      const obj = {};
+      parts.forEach(function (p) {
+        if (p.type !== "literal") obj[p.type] = p.value;
+      });
+
+      return {
+        year: Number(obj.year),
+        month: Number(obj.month),
+        day: Number(obj.day)
+      };
+    }
+
+    function getPreviousMonthKeyV156() {
+      const now = getMoscowNowV156();
+      let year = now.year;
+      let month = now.month - 1;
+      if (month < 1) {
+        month = 12;
+        year -= 1;
+      }
+      return String(year) + "-" + String(month).padStart(2, "0");
+    }
+
+    function isPreviousMonthStillLiveV156(monthKey) {
+      const now = getMoscowNowV156();
+      return (
+        now.day <= 5 &&
+        String(monthKey || "") === getPreviousMonthKeyV156()
+      );
+    }
+
+
 
     /* =====================================================
            v154 — FAST ARCHIVE INSIDE MAIN APP SCRIPT
@@ -4442,6 +4484,22 @@
     async function loadArchiveMonth(
       period
     ) {
+      // v156: August/previous month must remain live through the 5th.
+      if (isPreviousMonthStillLiveV156(period)) {
+        try {
+          if (typeof loadMonth === "function") {
+            await loadMonth(period, { forceLive: true, bypassArchive: true });
+            return;
+          }
+          if (typeof loadCurrentMonth === "function") {
+            await loadCurrentMonth(period, { forceLive: true, bypassArchive: true });
+            return;
+          }
+        } catch (e) {
+          console.warn("v156 live previous-month fallback failed", e);
+        }
+      }
+
 
       showRankingLoader(
         archiveRankingEl
@@ -6938,6 +6996,41 @@
           }
         } catch (e) {}
       }, 900);
+    });
+  </script>
+
+
+  <script>
+    // v156 startup safety: previous month must not stay frozen in localStorage through day 5.
+    window.addEventListener("load", function () {
+      try {
+        const nowParts = new Intl.DateTimeFormat("en-CA", {
+          timeZone: "Europe/Moscow",
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit"
+        }).formatToParts(new Date());
+        const o = {};
+        nowParts.forEach(function (p) {
+          if (p.type !== "literal") o[p.type] = p.value;
+        });
+        const day = Number(o.day);
+        let y = Number(o.year);
+        let m = Number(o.month) - 1;
+        if (m < 1) { m = 12; y -= 1; }
+        const prevKey = String(y) + "-" + String(m).padStart(2, "0");
+
+        if (day <= 5) {
+          Object.keys(localStorage).forEach(function (k) {
+            if (
+              k.indexOf("ARCHIVE") !== -1 &&
+              (k.indexOf(prevKey) !== -1 || k.indexOf(String(m).padStart(2, "0")) !== -1)
+            ) {
+              localStorage.removeItem(k);
+            }
+          });
+        }
+      } catch (e) {}
     });
   </script>
 
