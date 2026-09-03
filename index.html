@@ -555,325 +555,6 @@
     }
 
     /* =====================================================
-       v152 — FAST PERSISTENT ARCHIVE
-
-       Внешний вид и анимации v29 НЕ меняются.
-       Оптимизируется только получение архивных данных:
-       один archivebundle + localStorage + фоновый прогрев.
-       ===================================================== */
-
-    const ARCHIVE_STORAGE_PREFIX_V152 =
-      "team-rating-archive-v152:";
-
-
-    function getArchiveStoragePhaseV147() {
-
-      const now =
-        new Date();
-
-      const year =
-        now.getFullYear();
-
-      const month =
-        String(
-          now.getMonth() + 1
-        ).padStart(
-          2,
-          "0"
-        );
-
-      const phase =
-        now.getDate() <= 5
-          ? "pre6"
-          : "post6";
-
-
-      return (
-        year +
-        "-" +
-        month +
-        "-" +
-        phase
-      );
-    }
-
-
-    function getArchiveStorageKeyV147() {
-
-      return (
-        ARCHIVE_STORAGE_PREFIX_V152 +
-        getArchiveStoragePhaseV147()
-      );
-    }
-
-
-    function readArchiveBundleLocalV147() {
-
-      try {
-
-        const raw =
-          localStorage.getItem(
-            getArchiveStorageKeyV147()
-          );
-
-
-        if (!raw) {
-          return null;
-        }
-
-
-        const parsed =
-          JSON.parse(
-            raw
-          );
-
-
-        if (
-          !parsed ||
-          parsed.ok !== true ||
-          !Array.isArray(
-            parsed.periods
-          ) ||
-          !parsed.rankings ||
-          typeof parsed.rankings !==
-            "object"
-        ) {
-
-          return null;
-        }
-
-
-        return parsed;
-
-      } catch (error) {
-
-        return null;
-      }
-    }
-
-
-    function writeArchiveBundleLocalV147(
-      data
-    ) {
-
-      try {
-
-        /*
-          Удаляем старые версии/фазы этого же архива,
-          чтобы localStorage не рос бесконечно.
-        */
-        for (
-          let i =
-            localStorage.length - 1;
-          i >= 0;
-          i--
-        ) {
-
-          const key =
-            localStorage.key(i);
-
-
-          if (
-            key &&
-            key.indexOf(
-              ARCHIVE_STORAGE_PREFIX_V152
-            ) === 0 &&
-            key !==
-              getArchiveStorageKeyV147()
-          ) {
-
-            localStorage.removeItem(
-              key
-            );
-          }
-        }
-
-
-        localStorage.setItem(
-          getArchiveStorageKeyV147(),
-          JSON.stringify(
-            data
-          )
-        );
-
-      } catch (error) {
-
-        /*
-          Без localStorage всё продолжит работать
-          через обычный серверный запрос.
-        */
-      }
-    }
-
-
-    function hydrateArchiveBundleV147(
-      data
-    ) {
-
-      const source =
-        Array.isArray(
-          data && data.periods
-        )
-          ? data.periods
-          : Array.isArray(
-              data && data.months
-            )
-              ? data.months
-              : [];
-
-
-      const currentKey =
-        getCurrentPeriod()
-          .key;
-
-
-      state.archivePeriods =
-        source
-          .map(
-            normalizePeriodObject
-          )
-          .filter(
-            item =>
-              item &&
-              item.key !==
-                currentKey
-          )
-          .sort(
-            (a, b) =>
-              a.sort -
-              b.sort
-          );
-
-
-      const rankings =
-        data &&
-        data.rankings &&
-        typeof data.rankings ===
-          "object"
-          ? data.rankings
-          : {};
-
-
-      Object
-        .keys(
-          rankings
-        )
-        .forEach(
-          periodKey => {
-
-            const people =
-              sanitizePeople(
-                Array.isArray(
-                  rankings[
-                    periodKey
-                  ]
-                )
-                  ? rankings[
-                      periodKey
-                    ]
-                  : []
-              );
-
-
-            state.archiveRankingCache
-              .set(
-                periodKey,
-                people
-              );
-          }
-        );
-    }
-
-
-    async function ensureArchiveBundleV147() {
-
-      if (
-        state.archivePeriods
-      ) {
-
-        return true;
-      }
-
-
-      const local =
-        readArchiveBundleLocalV147();
-
-
-      if (local) {
-
-        hydrateArchiveBundleV147(
-          local
-        );
-
-        return true;
-      }
-
-
-      if (
-        state.archiveBundleLoading
-      ) {
-
-        return state.archiveBundleLoading;
-      }
-
-
-      state.archiveBundleLoading =
-        (async () => {
-
-          const data =
-            await api({
-              mode:
-                "archivebundle"
-            });
-
-
-          hydrateArchiveBundleV147(
-            data
-          );
-
-
-          writeArchiveBundleLocalV147(
-            data
-          );
-
-
-          return true;
-        })();
-
-
-      try {
-
-        return await state.archiveBundleLoading;
-
-      } finally {
-
-        state.archiveBundleLoading =
-          null;
-      }
-    }
-
-
-    function warmArchiveBundleV147() {
-
-      /*
-        После того как главная уже показана, тихо прогреваем архив.
-        Пользователь этого не ждёт.
-      */
-      setTimeout(
-        () => {
-
-          ensureArchiveBundleV147()
-            .catch(
-              () => {}
-            );
-        },
-        250
-      );
-    }
-
-
-
-    /* =====================================================
        ARCHIVE
        ===================================================== */
 
@@ -2110,6 +1791,325 @@
     }
 
   </style>
+
+  <script>
+    /* =====================================================
+       v153 — FIXED FAST PERSISTENT ARCHIVE
+
+       Внешний вид и анимации v29 НЕ меняются.
+       Оптимизируется только получение архивных данных:
+       один archivebundle + localStorage + фоновый прогрев.
+       ===================================================== */
+
+    const ARCHIVE_STORAGE_PREFIX_V152 =
+      "team-rating-archive-v152:";
+
+
+    function getArchiveStoragePhaseV147() {
+
+      const now =
+        new Date();
+
+      const year =
+        now.getFullYear();
+
+      const month =
+        String(
+          now.getMonth() + 1
+        ).padStart(
+          2,
+          "0"
+        );
+
+      const phase =
+        now.getDate() <= 5
+          ? "pre6"
+          : "post6";
+
+
+      return (
+        year +
+        "-" +
+        month +
+        "-" +
+        phase
+      );
+    }
+
+
+    function getArchiveStorageKeyV147() {
+
+      return (
+        ARCHIVE_STORAGE_PREFIX_V152 +
+        getArchiveStoragePhaseV147()
+      );
+    }
+
+
+    function readArchiveBundleLocalV147() {
+
+      try {
+
+        const raw =
+          localStorage.getItem(
+            getArchiveStorageKeyV147()
+          );
+
+
+        if (!raw) {
+          return null;
+        }
+
+
+        const parsed =
+          JSON.parse(
+            raw
+          );
+
+
+        if (
+          !parsed ||
+          parsed.ok !== true ||
+          !Array.isArray(
+            parsed.periods
+          ) ||
+          !parsed.rankings ||
+          typeof parsed.rankings !==
+            "object"
+        ) {
+
+          return null;
+        }
+
+
+        return parsed;
+
+      } catch (error) {
+
+        return null;
+      }
+    }
+
+
+    function writeArchiveBundleLocalV147(
+      data
+    ) {
+
+      try {
+
+        /*
+          Удаляем старые версии/фазы этого же архива,
+          чтобы localStorage не рос бесконечно.
+        */
+        for (
+          let i =
+            localStorage.length - 1;
+          i >= 0;
+          i--
+        ) {
+
+          const key =
+            localStorage.key(i);
+
+
+          if (
+            key &&
+            key.indexOf(
+              ARCHIVE_STORAGE_PREFIX_V152
+            ) === 0 &&
+            key !==
+              getArchiveStorageKeyV147()
+          ) {
+
+            localStorage.removeItem(
+              key
+            );
+          }
+        }
+
+
+        localStorage.setItem(
+          getArchiveStorageKeyV147(),
+          JSON.stringify(
+            data
+          )
+        );
+
+      } catch (error) {
+
+        /*
+          Без localStorage всё продолжит работать
+          через обычный серверный запрос.
+        */
+      }
+    }
+
+
+    function hydrateArchiveBundleV147(
+      data
+    ) {
+
+      const source =
+        Array.isArray(
+          data && data.periods
+        )
+          ? data.periods
+          : Array.isArray(
+              data && data.months
+            )
+              ? data.months
+              : [];
+
+
+      const currentKey =
+        getCurrentPeriod()
+          .key;
+
+
+      state.archivePeriods =
+        source
+          .map(
+            normalizePeriodObject
+          )
+          .filter(
+            item =>
+              item &&
+              item.key !==
+                currentKey
+          )
+          .sort(
+            (a, b) =>
+              a.sort -
+              b.sort
+          );
+
+
+      const rankings =
+        data &&
+        data.rankings &&
+        typeof data.rankings ===
+          "object"
+          ? data.rankings
+          : {};
+
+
+      Object
+        .keys(
+          rankings
+        )
+        .forEach(
+          periodKey => {
+
+            const people =
+              sanitizePeople(
+                Array.isArray(
+                  rankings[
+                    periodKey
+                  ]
+                )
+                  ? rankings[
+                      periodKey
+                    ]
+                  : []
+              );
+
+
+            state.archiveRankingCache
+              .set(
+                periodKey,
+                people
+              );
+          }
+        );
+    }
+
+
+    async function ensureArchiveBundleV147() {
+
+      if (
+        state.archivePeriods
+      ) {
+
+        return true;
+      }
+
+
+      const local =
+        readArchiveBundleLocalV147();
+
+
+      if (local) {
+
+        hydrateArchiveBundleV147(
+          local
+        );
+
+        return true;
+      }
+
+
+      if (
+        state.archiveBundleLoading
+      ) {
+
+        return state.archiveBundleLoading;
+      }
+
+
+      state.archiveBundleLoading =
+        (async () => {
+
+          const data =
+            await api({
+              mode:
+                "archivebundle"
+            });
+
+
+          hydrateArchiveBundleV147(
+            data
+          );
+
+
+          writeArchiveBundleLocalV147(
+            data
+          );
+
+
+          return true;
+        })();
+
+
+      try {
+
+        return await state.archiveBundleLoading;
+
+      } finally {
+
+        state.archiveBundleLoading =
+          null;
+      }
+    }
+
+
+    function warmArchiveBundleV147() {
+
+      /*
+        После того как главная уже показана, тихо прогреваем архив.
+        Пользователь этого не ждёт.
+      */
+      setTimeout(
+        () => {
+
+          ensureArchiveBundleV147()
+            .catch(
+              () => {}
+            );
+        },
+        250
+      );
+    }
+  </script>
 </head>
 
 <body>
