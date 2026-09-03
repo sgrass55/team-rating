@@ -6915,5 +6915,31 @@
 
   </script>
 
+
+  <script>
+    // v155 safety bootstrap:
+    // after the page is fully initialized, if the current-month card is empty,
+    // request the current month again. This does not affect archive mode.
+    window.addEventListener("load", function () {
+      setTimeout(function () {
+        try {
+          const archiveOpen =
+            document.body &&
+            document.body.classList.contains("archive-open");
+
+          const hasCurrentData =
+            document.querySelector(
+              "[data-current-month-loaded='1'], .person-card, .rating-card, .team-row"
+            );
+
+          if (!archiveOpen && !hasCurrentData &&
+              typeof loadCurrentMonth === "function") {
+            Promise.resolve(loadCurrentMonth()).catch(function () {});
+          }
+        } catch (e) {}
+      }, 900);
+    });
+  </script>
+
 </body>
 </html>
