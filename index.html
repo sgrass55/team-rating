@@ -6,6 +6,9 @@
 
   <title>Рейтинг команды</title>
 
+  <!-- Telegram Mini App bridge: нужен только когда сайт открыт из кнопки бота -->
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
   <style>
     * {
       box-sizing: border-box;
@@ -35,6 +38,7 @@
 
     body {
       min-height: 100vh;
+      min-height: 100dvh;
 
       font-family:
         -apple-system,
@@ -160,8 +164,12 @@
         );
 
       transition:
-        transform 0.15s ease,
-        border-color 0.15s ease;
+        transform 3s cubic-bezier(.16,.78,.18,1),
+        border-color 0.3s ease,
+        box-shadow 0.3s ease,
+        opacity 0.3s ease;
+
+      will-change: transform;
     }
 
     .rank-card:hover {
@@ -214,6 +222,31 @@
 
     .percent.green {
       color: var(--green);
+    }
+
+    .percent {
+      transition:
+        color 0.35s ease,
+        transform 0.25s ease;
+    }
+
+    .percent.value-changed {
+      transform: scale(1.08);
+    }
+
+    .rank-card.new-card {
+      animation: cardAppear 0.45s ease both;
+    }
+
+    @keyframes cardAppear {
+      from {
+        opacity: 0;
+        transform: translateY(12px) scale(.985);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
     }
 
     /* =====================================================
@@ -296,8 +329,9 @@
           #31d879
         );
 
-      transition:
-        width 0.25s ease;
+      transition: none;
+
+      will-change: width;
     }
 
     .bar-hint {
@@ -572,7 +606,24 @@
       display: grid;
       gap: 9px;
 
-      margin-top: 16px;
+      margin-top: 0;
+    }
+
+    .archive-view-header {
+      text-align: center;
+      margin: 2px 0 8px;
+    }
+
+    .archive-view-header .subtitle {
+      margin-top: 0;
+    }
+
+    .archive-view-header .current-period {
+      margin-top: 8px;
+    }
+
+    .archive-controls-panel {
+      margin-top: 22px;
     }
 
     .archive-placeholder {
@@ -580,6 +631,69 @@
 
       text-align: center;
       color: var(--muted);
+    }
+
+    #archiveModal .archive-modal-head {
+      display: grid;
+      grid-template-columns: 40px minmax(0, 1fr) 40px;
+      align-items: center;
+      gap: 10px;
+    }
+
+    #archiveModal .archive-modal-head .modal-title {
+      grid-column: 2;
+      text-align: center;
+    }
+
+    #archiveModal .close-btn {
+      grid-column: 3;
+      justify-self: end;
+    }
+
+    .archive-back-btn {
+      grid-column: 1;
+      justify-self: start;
+      width: 38px;
+      height: 38px;
+      padding: 0;
+      border: 1px solid rgba(255, 255, 255, 0.11);
+      border-radius: 50%;
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.06);
+      cursor: pointer;
+      font-size: 24px;
+      line-height: 1;
+    }
+
+    .archive-back-btn.hidden,
+    .archive-detail.hidden,
+    .archive-selector.hidden {
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .archive-detail.hidden,
+    .archive-selector.hidden {
+      display: none;
+    }
+
+    .archive-back-btn.hidden {
+      opacity: 0;
+    }
+
+    .archive-month-title {
+      margin-top: 22px;
+    }
+
+    .archive-swipe-hint {
+      margin: 16px 0 4px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    #archiveDetail {
+      touch-action: pan-y;
     }
 
     /* =====================================================
@@ -757,13 +871,47 @@
           12px;
       }
 
+      /* Архив: экран выбора периода прокручивается вертикально,
+         а месяцы и годы остаются крупными кнопками. */
+      #archiveModal .archive-controls-panel {
+        position: static;
+        margin: 0;
+        padding: 15px;
+        background: rgba(255, 255, 255, 0.035);
+        box-shadow: none;
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+      }
+
+      #archiveModal .archive-years,
+      #archiveModal .archive-months {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 9px;
+        overflow: visible;
+        touch-action: auto;
+      }
+
+      #archiveModal .period-button {
+        width: 100%;
+        min-width: 0;
+        min-height: 46px;
+      }
+
       .modal {
-        padding: 8px;
+        padding:
+          max(46px, calc(env(safe-area-inset-top) + 28px))
+          8px
+          max(8px, env(safe-area-inset-bottom));
+      }
+
+      .modal.visible {
+        align-items: flex-start;
       }
 
       .modal-card {
         max-height:
-          calc(100vh - 16px);
+          calc(100vh - max(54px, calc(env(safe-area-inset-top) + 36px)));
 
         border-radius: 17px;
       }
@@ -780,20 +928,915 @@
         font-size: 18px;
       }
     }
+  
+    .rank-card {
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      transform: translateZ(0);
+    }
+
+  
+    /* =====================================================
+       ARCHIVE — MOBILE POLISH + SWIPE
+       ===================================================== */
+
+    #archiveModal .modal-card {
+      overflow: hidden;
+    }
+
+    #archiveModal .modal-body {
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    #archiveDetail {
+      position: relative;
+      overflow-x: hidden;
+      touch-action: pan-y;
+    }
+
+    #archiveRanking {
+      will-change: transform, opacity;
+      transform: translate3d(0, 0, 0);
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+    }
+
+    #archiveModal .archive-modal-head {
+      background:
+        linear-gradient(
+          180deg,
+          rgba(17, 31, 57, 0.99),
+          rgba(14, 27, 49, 0.96)
+        );
+    }
+
+    #archiveModal .archive-back-btn,
+    #archiveModal .close-btn {
+      transition:
+        transform 160ms ease,
+        background 160ms ease,
+        border-color 160ms ease;
+    }
+
+    #archiveModal .archive-back-btn:active,
+    #archiveModal .close-btn:active {
+      transform: scale(.92);
+      background: rgba(255, 255, 255, 0.12);
+    }
+
+    #archiveModal .archive-swipe-hint {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+
+      width: fit-content;
+      max-width: calc(100% - 24px);
+
+      margin:
+        18px
+        auto
+        4px;
+
+      padding:
+        8px
+        12px;
+
+      border:
+        1px solid
+        rgba(255,255,255,.08);
+
+      border-radius: 999px;
+
+      background:
+        rgba(255,255,255,.045);
+
+      color:
+        rgba(219, 228, 247, .62);
+
+      font-size: 11px;
+      line-height: 1.25;
+    }
+
+    #archiveModal .archive-view-header {
+      margin:
+        4px
+        0
+        18px;
+
+      padding:
+        4px
+        0
+        2px;
+    }
+
+    #archiveModal .archive-view-header .subtitle {
+      font-size: 13px;
+      letter-spacing: .01em;
+    }
+
+    #archiveModal .archive-view-header .current-period {
+      margin-top: 7px;
+      font-size: clamp(27px, 7vw, 38px);
+      line-height: 1.04;
+      letter-spacing: -.025em;
+    }
+
+    @media (max-width: 700px) {
+
+      #archiveModal {
+        box-sizing: border-box;
+
+        padding:
+          max(18px, env(safe-area-inset-top))
+          8px
+          max(14px, env(safe-area-inset-bottom));
+      }
+
+      #archiveModal.visible {
+        align-items: stretch;
+      }
+
+      #archiveModal .modal-card {
+        width: 100%;
+
+        /*
+          100dvh учитывает реальную видимую высоту Safari,
+          включая изменение нижней панели браузера.
+        */
+        height:
+          calc(
+            100dvh
+            - max(18px, env(safe-area-inset-top))
+            - max(14px, env(safe-area-inset-bottom))
+          );
+
+        max-height: none;
+
+        display: flex;
+        flex-direction: column;
+
+        border-radius: 22px;
+      }
+
+      @supports not (height: 100dvh) {
+        #archiveModal .modal-card {
+          height:
+            calc(
+              100vh
+              - max(54px, calc(env(safe-area-inset-top) + 30px))
+            );
+        }
+      }
+
+      #archiveModal .modal-head {
+        flex: 0 0 auto;
+
+        min-height: 66px;
+
+        padding:
+          12px
+          14px;
+
+        border-bottom-color:
+          rgba(255,255,255,.075);
+      }
+
+      #archiveModal .archive-modal-head {
+        grid-template-columns:
+          44px
+          minmax(0, 1fr)
+          44px;
+      }
+
+      #archiveModal .archive-back-btn,
+      #archiveModal .close-btn {
+        width: 42px;
+        height: 42px;
+      }
+
+      #archiveModal .archive-back-btn {
+        font-size: 27px;
+      }
+
+      #archiveModal .close-btn {
+        font-size: 23px;
+      }
+
+      #archiveModal .modal-title {
+        font-size: 22px;
+        letter-spacing: -.01em;
+      }
+
+      #archiveModal .modal-body {
+        flex: 1 1 auto;
+
+        min-height: 0;
+
+        padding:
+          18px
+          12px
+          max(34px, calc(env(safe-area-inset-bottom) + 26px));
+
+        /*
+          Дополнительное пространство снизу — последняя карточка
+          больше не прячется за панелью Safari.
+        */
+        scroll-padding-bottom:
+          max(70px, calc(env(safe-area-inset-bottom) + 56px));
+      }
+
+      #archiveModal .archive-ranking {
+        padding-bottom: 16px;
+      }
+
+      #archiveModal .ranking {
+        gap: 11px;
+      }
+
+      #archiveModal .rank-card {
+        border-radius: 19px;
+
+        padding:
+          11px
+          12px
+          7px;
+
+        box-shadow:
+          0 8px 24px
+          rgba(0,0,0,.10);
+      }
+
+      #archiveModal .person-name {
+        font-size: clamp(17px, 5.1vw, 23px);
+      }
+
+      #archiveModal .percent {
+        font-size: clamp(17px, 4.9vw, 22px);
+      }
+
+      #archiveModal .archive-swipe-hint {
+        margin-bottom:
+          max(18px, env(safe-area-inset-bottom));
+      }
+    }
+
+  
+    /* =====================================================
+       ARCHIVE V10 — CENTERED DETAIL
+       ===================================================== */
+
+    #archiveModal .modal-body {
+      box-sizing: border-box;
+    }
+
+    #archiveDetail {
+      width: 100%;
+      max-width: 100%;
+      margin: 0 auto;
+    }
+
+    #archiveRanking {
+      width: 100%;
+      max-width: 760px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    #archiveModal .archive-view-header {
+      margin-top: 18px;
+      margin-bottom: 22px;
+      padding-top: 4px;
+      text-align: center;
+    }
+
+    #archiveModal .archive-view-header .subtitle {
+      margin: 0;
+      text-align: center;
+    }
+
+    #archiveModal .archive-view-header .current-period {
+      margin-top: 10px;
+      text-align: center;
+    }
+
+    @media (max-width: 700px) {
+      #archiveModal .modal-body {
+        padding-left: 14px;
+        padding-right: 14px;
+      }
+
+      #archiveDetail {
+        width: 100%;
+      }
+
+      #archiveRanking {
+        width: 100%;
+        max-width: 100%;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      #archiveModal .archive-view-header {
+        margin-top: 26px;
+        margin-bottom: 24px;
+        padding-left: 8px;
+        padding-right: 8px;
+      }
+
+      #archiveModal .archive-view-header .subtitle {
+        font-size: 13px;
+      }
+
+      #archiveModal .archive-view-header .current-period {
+        margin-top: 11px;
+      }
+    }
+
+  
+    /* =====================================================
+       ARCHIVE V11 — MONTH ARROWS + CENTERING
+       ===================================================== */
+
+    #archiveModal .archive-detail {
+      width: 100%;
+      max-width: 760px;
+      margin: 0 auto;
+    }
+
+    #archiveModal .archive-ranking {
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    #archiveModal .archive-view-header {
+      width: 100%;
+      margin:
+        34px
+        auto
+        26px;
+
+      padding:
+        0
+        4px;
+
+      box-sizing: border-box;
+    }
+
+    .archive-period-nav {
+      display: grid;
+      grid-template-columns:
+        52px
+        minmax(0, 1fr)
+        52px;
+
+      align-items: center;
+
+      gap: 12px;
+
+      width: 100%;
+    }
+
+    .archive-period-center {
+      min-width: 0;
+      text-align: center;
+    }
+
+    .archive-period-center .subtitle {
+      margin: 0;
+      text-align: center;
+    }
+
+    .archive-period-center .current-period {
+      margin-top: 10px;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .archive-month-arrow {
+      appearance: none;
+
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+
+      width: 48px;
+      height: 48px;
+
+      padding: 0;
+
+      border:
+        1px solid
+        rgba(255,255,255,.13);
+
+      border-radius: 50%;
+
+      color: var(--text);
+
+      background:
+        rgba(255,255,255,.065);
+
+      cursor: pointer;
+
+      font-size: 28px;
+      line-height: 1;
+
+      transition:
+        transform 150ms ease,
+        background 150ms ease,
+        opacity 150ms ease;
+    }
+
+    .archive-month-arrow:active {
+      transform: scale(.92);
+      background:
+        rgba(255,255,255,.12);
+    }
+
+    .archive-month-arrow:disabled {
+      opacity: .26;
+      cursor: default;
+    }
+
+    .archive-month-arrow:disabled:active {
+      transform: none;
+    }
+
+    #archiveModal .archive-swipe-hint {
+      margin-top: 20px;
+    }
+
+    @media (max-width: 700px) {
+
+      #archiveModal .modal-body {
+        padding-left: 16px;
+        padding-right: 16px;
+      }
+
+      #archiveModal .archive-detail {
+        width: 100%;
+        max-width: none;
+        margin: 0 auto;
+      }
+
+      #archiveModal .archive-ranking {
+        width: 100%;
+        max-width: none;
+        margin: 0 auto;
+      }
+
+      #archiveModal .archive-view-header {
+        margin-top: 42px;
+        margin-bottom: 28px;
+        padding-left: 0;
+        padding-right: 0;
+      }
+
+      .archive-period-nav {
+        grid-template-columns:
+          46px
+          minmax(0, 1fr)
+          46px;
+
+        gap: 9px;
+      }
+
+      .archive-month-arrow {
+        width: 44px;
+        height: 44px;
+        font-size: 26px;
+      }
+
+      .archive-period-center .subtitle {
+        font-size: 12px;
+      }
+
+      .archive-period-center .current-period {
+        margin-top: 10px;
+        font-size: clamp(27px, 7.2vw, 36px);
+        line-height: 1.03;
+      }
+
+      #archiveModal .ranking {
+        width: 100%;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      #archiveModal .rank-card {
+        width: 100%;
+        box-sizing: border-box;
+        margin-left: auto;
+        margin-right: auto;
+      }
+    }
+
+  
+    @media (min-width: 701px) {
+      #archiveModal .archive-detail {
+        padding-bottom: 8px;
+      }
+    }
+
+  
+    /* =====================================================
+       HISTORY / COMPARISON GRAPH — MOBILE POSITION
+       ===================================================== */
+
+    #personModal .modal-card,
+    #historyModal .modal-card,
+    #compareModal .modal-card {
+      align-self: flex-start;
+    }
+
+    .chart-wrap {
+      margin-top: 10px;
+    }
+
+    #compareChart {
+      display: block;
+    }
+
+    @media (max-width: 700px) {
+
+      /*
+        Окно истории/сравнения поднимаем выше и используем
+        доступную высоту телефона эффективнее.
+      */
+
+      #personModal,
+      #historyModal,
+      #compareModal {
+        padding-top:
+          max(12px, env(safe-area-inset-top));
+      }
+
+      #personModal.visible,
+      #historyModal.visible,
+      #compareModal.visible {
+        align-items: flex-start;
+      }
+
+      #personModal .modal-card,
+      #historyModal .modal-card,
+      #compareModal .modal-card {
+        margin-top: 0;
+        max-height:
+          calc(
+            100dvh
+            - max(12px, env(safe-area-inset-top))
+            - max(12px, env(safe-area-inset-bottom))
+          );
+      }
+
+      /*
+        Уменьшаем лишние вертикальные отступы над графиком.
+      */
+
+      .person-history-head,
+      .history-head,
+      .compare-head,
+      .compare-controls {
+        margin-bottom: 10px;
+      }
+
+      .chart-wrap {
+        margin-top: 4px;
+      }
+
+      /*
+        Сам график становится выше в видимой части,
+        но начинается заметно раньше.
+      */
+
+      #compareChart {
+        min-width: 700px;
+        height: auto;
+      }
+
+      /*
+        Если вокруг SVG есть контейнер с горизонтальным скроллом,
+        не добавляем лишнюю пустоту сверху/снизу.
+      */
+
+      .chart-wrap {
+        padding-top: 0;
+        padding-bottom: 4px;
+      }
+    }
+
+  
+    @media (max-width: 700px) {
+      .chart-wrap svg {
+        max-height: 320px;
+        vertical-align: top;
+      }
+    }
+
+  
+    /* =====================================================
+       V13 — COMPARISON NAMES FULLY VISIBLE ON MOBILE
+       ===================================================== */
+
+    @media (max-width: 700px) {
+
+      .compare-options {
+        display: grid;
+        grid-template-columns:
+          repeat(2, minmax(0, 1fr));
+
+        gap: 7px;
+
+        width: 100%;
+        margin-bottom: 10px;
+      }
+
+      .compare-option {
+        min-width: 0;
+        width: 100%;
+
+        box-sizing: border-box;
+
+        gap: 6px;
+
+        padding:
+          7px
+          8px;
+
+        border-radius: 9px;
+
+        font-size: 12px;
+        line-height: 1.12;
+      }
+
+      .compare-option input {
+        flex:
+          0 0 auto;
+
+        width: 16px;
+        height: 16px;
+
+        margin: 0;
+      }
+
+      .compare-option span {
+        min-width: 0;
+
+        /*
+          Имя не обрезается многоточием.
+          При необходимости переносится максимум на 2 строки.
+        */
+        white-space: normal;
+        overflow: visible;
+        text-overflow: clip;
+        overflow-wrap: anywhere;
+      }
+
+      /*
+        Блок выбора участников занимает меньше высоты,
+        поэтому график начинается выше и остаётся в поле зрения.
+      */
+
+      #personModal .panel {
+        padding-top: 12px;
+        padding-bottom: 12px;
+      }
+
+      #personModal .section-title {
+        margin-bottom: 9px;
+      }
+
+      #personModal .chart-wrap {
+        margin-top: 2px;
+      }
+    }
+
+    @media (max-width: 380px) {
+      .compare-option {
+        font-size: 11px;
+        padding:
+          6px
+          7px;
+      }
+    }
+
+  
+    /* =====================================================
+       V14 — WHOLE CARD OPENS PERSON HISTORY
+       ===================================================== */
+
+    .rank-card {
+      cursor: pointer;
+    }
+
+    .rank-card:focus-visible {
+      outline:
+        2px solid
+        rgba(74, 195, 255, .9);
+
+      outline-offset:
+        2px;
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      .rank-card:hover {
+        border-color:
+          rgba(255,255,255,.22);
+      }
+    }
+
+    .rank-card:active {
+      transform:
+        scale(.992);
+    }
+
+  
+    /* =====================================================
+       V16 — GOLD FIRST-PLACE CARD
+       ===================================================== */
+
+    .rank-card:first-child {
+      border-width: 3px;
+      border-color: #D9AD43;
+      box-shadow:
+        0 0 0 1px rgba(217, 173, 67, .10),
+        0 10px 28px rgba(217, 173, 67, .08);
+    }
+
+    /*
+      Цифра первого места намеренно не отличается
+      по размеру и жирности от остальных мест.
+    */
+    .rank-card:first-child .place {
+      font-size: inherit;
+      font-weight: inherit;
+    }
+
+  
+    /* V17 — all place numbers are exactly identical */
+    .rank-card .place,
+    .rank-card:first-child .place {
+      font-size: 16px;
+      font-weight: 800;
+      line-height: 1;
+      letter-spacing: 0;
+    }
+
+  
+    /* =====================================================
+       V18 — LARGER, VERTICALLY CENTERED PLACE NUMBERS
+       ===================================================== */
+
+    .rank-card .place,
+    .rank-card:first-child .place {
+      align-self: stretch;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      font-size: 22px;
+      font-weight: 800;
+      line-height: 1;
+      letter-spacing: 0;
+
+      height: auto;
+      margin-top: 0;
+      margin-bottom: 0;
+    }
+
+    @media (max-width: 700px) {
+      .rank-card .place,
+      .rank-card:first-child .place {
+        font-size: 23px;
+      }
+    }
+
+
+  
+    /* =====================================================
+       V20 — PLACE NUMBER ON CARD MIDLINE
+       ===================================================== */
+
+    .rank-card .place,
+    .rank-card:first-child .place {
+      position: static;
+      width: auto;
+      height: auto;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      margin: 0;
+      padding: 0;
+
+      font-size: 23px;
+      font-weight: 800;
+      line-height: 1;
+      letter-spacing: 0;
+
+      transform: none;
+    }
+
+    @media (max-width: 700px) {
+
+      .rank-card {
+        /*
+          Номер остаётся в штатной левой колонке,
+          но занимает обе строки карточки.
+          Поэтому он стоит ровно на средней
+          горизонтальной оси всего блока.
+        */
+        grid-template-areas:
+          "place name percent"
+          "place bar bar";
+
+        padding:
+          9px
+          11px
+          5px;
+      }
+
+      .rank-card .place,
+      .rank-card:first-child .place {
+        grid-area: place;
+        align-self: stretch;
+        justify-self: stretch;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        font-size: 23px;
+      }
+    }
+
+  
+    /* =====================================================
+       TELEGRAM ONLY
+       Обычная браузерная версия не затрагивается.
+       ===================================================== */
+    body.telegram-webapp .header {
+      margin-top: 0 !important;
+      padding-top: 10px !important;
+    }
+
+    body.telegram-webapp .container {
+      padding-top: 0 !important;
+    }
+
+    body.telegram-webapp .page {
+      min-height: 100dvh;
+    }
+
   </style>
 </head>
 
 <body>
+  <script>
+    // v151 — Telegram-only режим.
+    //
+    // ВАЖНО:
+    // Эта правка НЕ меняет CSS, архив, анимации шкал,
+    // расположение сравнения или разметку приложения.
+    //
+    // Сохраняем оригинальный интерфейс v29 и меняем
+    // только момент раскрытия Telegram Mini App.
+    (function () {
+      try {
+        const tg = window.Telegram && window.Telegram.WebApp;
+        if (!tg) return;
+
+        document.documentElement.classList.add('telegram-webapp');
+        document.body.classList.add('telegram-webapp');
+
+        tg.ready();
+
+        const expandNow = function () {
+          try {
+            tg.expand();
+          } catch (e) {}
+        };
+
+        // Сразу.
+        expandNow();
+
+        // На iOS Telegram иногда сначала фиксирует half-sheet,
+        // поэтому повторяем expand после запуска нативной анимации.
+        setTimeout(expandNow, 80);
+        setTimeout(expandNow, 250);
+        setTimeout(expandNow, 600);
+
+      } catch (e) {}
+    })();
+  </script>
 
   <main class="page">
 
     <div class="container">
 
       <header class="header">
-
-        <h1 class="title">
-          🏆 Рейтинг команды
-        </h1>
 
         <div class="subtitle">
           Текущий месяц
@@ -862,7 +1905,15 @@
       aria-modal="true"
       aria-labelledby="archiveTitle">
 
-      <div class="modal-head">
+      <div class="modal-head archive-modal-head">
+
+        <button
+          class="archive-back-btn hidden"
+          id="archiveBack"
+          type="button"
+          aria-label="Назад к выбору месяца">
+          ←
+        </button>
 
         <h2
           class="modal-title"
@@ -883,39 +1934,41 @@
 
       <div class="modal-body">
 
-        <div class="panel">
+        <div
+          class="archive-selector"
+          id="archiveSelector">
 
-          <div class="section-title">
-            Выберите месяц
-          </div>
+          <div class="panel archive-controls-panel">
 
-          <div
-            class="archive-years"
-            id="archiveYears">
-          </div>
+            <div class="section-title">
+              Выберите год
+            </div>
 
-          <div
-            class="archive-months"
-            id="archiveMonths">
+            <div
+              class="archive-years"
+              id="archiveYears">
+            </div>
+
+            <div class="section-title archive-month-title">
+              Выберите месяц
+            </div>
+
+            <div
+              class="archive-months"
+              id="archiveMonths">
+            </div>
+
           </div>
 
         </div>
 
-
-        <!--
-          Рейтинг архивного месяца
-          НЕ загружается заранее.
-
-          Он появится только после
-          клика по конкретному месяцу.
-        -->
-
         <div
-          class="archive-ranking"
-          id="archiveRanking">
+          class="archive-detail hidden"
+          id="archiveDetail">
 
-          <div class="archive-placeholder">
-            Выберите архивный месяц
+          <div
+            class="archive-ranking"
+            id="archiveRanking">
           </div>
 
         </div>
@@ -973,20 +2026,6 @@
         <div class="panel">
 
           <h3 class="section-title">
-            История статистики
-          </h3>
-
-          <div
-            class="history-list"
-            id="historyList">
-          </div>
-
-        </div>
-
-
-        <div class="panel">
-
-          <h3 class="section-title">
             Сравнение участников
           </h3>
 
@@ -1005,6 +2044,20 @@
               preserveAspectRatio="none">
             </svg>
 
+          </div>
+
+        </div>
+
+
+        <div class="panel">
+
+          <h3 class="section-title">
+            История статистики
+          </h3>
+
+          <div
+            class="history-list"
+            id="historyList">
           </div>
 
         </div>
@@ -1080,16 +2133,12 @@
         null,
 
       /*
-        v147:
-        Зафиксированные архивные рейтинги загружаются одним пакетом
-        и сохраняются также в localStorage браузера.
+        Архивные рейтинги кешируем
+        только ПОСЛЕ первого клика.
       */
 
       archiveRankingCache:
         new Map(),
-
-      archiveBundleLoading:
-        null,
 
       /*
         История + сравнение тоже
@@ -1111,8 +2160,14 @@
       selectedComparePeople:
         new Set(),
 
-      mainRequestId:
-        0
+      currentMonthLoading:
+        false,
+
+      rankingAnimationRunning:
+        false,
+
+      pendingRankingPeople:
+        null
     };
 
 
@@ -1148,6 +2203,21 @@
     const archiveClose =
       document.getElementById(
         "archiveClose"
+      );
+
+    const archiveBack =
+      document.getElementById(
+        "archiveBack"
+      );
+
+    const archiveSelector =
+      document.getElementById(
+        "archiveSelector"
+      );
+
+    const archiveDetail =
+      document.getElementById(
+        "archiveDetail"
       );
 
     const archiveYearsEl =
@@ -1311,453 +2381,1199 @@
       silent = false
     ) {
 
+      if (state.currentMonthLoading) {
+        return;
+      }
+
+      state.currentMonthLoading = true;
+
       const period =
         getCurrentPeriod();
 
+      const monthChanged =
+        state.currentPeriod &&
+        state.currentPeriod.key !== period.key;
 
-      state.currentPeriod =
-        period;
-
-
-      currentPeriodEl.textContent =
-        period.label;
-
-
-      const requestId =
-        ++state.mainRequestId;
-
-
-      if (!silent) {
-
-        showRankingLoader(
-          rankingEl
-        );
-
-        setStatus(
-          "Загрузка…"
-        );
+      if (monthChanged) {
+        state.archivePeriods = null;
+        state.archiveSelectedYear = null;
+        state.archiveSelectedPeriod = null;
+        state.archiveRankingCache.clear();
+        state.historyData = null;
+        state.historyLoading = null;
+        state.currentPeople = [];
+        rankingEl.innerHTML = "";
       }
 
+      state.currentPeriod = period;
+      currentPeriodEl.textContent = period.label;
+
+      if (!silent && !rankingEl.children.length) {
+        showRankingLoader(rankingEl);
+      }
+
+      setStatus("");
 
       try {
 
         /*
-          ВАЖНО:
-          mode=months здесь НЕ вызывается.
-
-          Главная сразу спрашивает
-          только текущий месяц.
+          fresh=1 предназначен для текущего месяца.
+          После небольшого изменения Code.gs он
+          заставит сервер отдавать свежие данные,
+          не используя 20-секундный live-cache.
         */
+        const data = await api({
+          mode: "month",
+          period: period.key,
+          fresh: "1"
+        });
 
-        const data =
-          await api({
-            mode:
-              "month",
+        const actualPeriod = getCurrentPeriod();
 
-            period:
-              period.key
-          });
-
-
-        if (
-          requestId !==
-          state.mainRequestId
-        ) {
+        if (actualPeriod.key !== period.key) {
           return;
         }
 
+        const people = sanitizePeople(
+          getRankingArray(data)
+        );
 
-        const people =
-          sanitizePeople(
-            getRankingArray(
-              data
-            )
+        if (!rankingEl.querySelector(".rank-card")) {
+          renderRanking(
+            rankingEl,
+            people,
+            { clickableScale: true }
           );
+        } else {
+          updateLiveRanking(people);
+        }
 
-
-        state.currentPeople =
-          people;
-
-
-        renderRanking(
-          rankingEl,
-          people,
-          {
-            clickableScale:
-              true
-          }
-        );
-
-
-        setStatus(
-          "Данные обновлены"
-        );
-
-
-        /*
-          v147:
-          главная уже отрисована — теперь можно тихо прогреть архив,
-          чтобы первый клик по «Архив» обычно был мгновенным.
-        */
-        warmArchiveBundleV147();
-
+        state.currentPeople = people;
+        setStatus("");
 
       } catch (error) {
 
-        if (
-          requestId !==
-          state.mainRequestId
-        ) {
-          return;
-        }
-
-
         console.error(
+          "Ошибка обновления текущего месяца:",
           error
         );
 
+        if (!state.currentPeople.length) {
+          setStatus(
+            "Ошибка загрузки данных",
+            true
+          );
 
-        setStatus(
-          "Ошибка загрузки данных",
-          true
-        );
+          showEmpty(
+            rankingEl,
+            "Не удалось получить данные текущего месяца"
+          );
+        }
 
-
-        showEmpty(
-          rankingEl,
-          "Не удалось получить данные текущего месяца"
-        );
+      } finally {
+        state.currentMonthLoading = false;
       }
     }
 
 
     /* =====================================================
-       v147 — PERSISTENT ARCHIVE CACHE
+       LIVE RANKING UPDATE
 
-       Зафиксированный архив меняется только при добавлении
-       нового завершённого месяца. Поэтому:
-       - старые месяцы храним в localStorage;
-       - 1–5 числа предыдущий месяц НЕ считаем зафиксированным;
-       - на 6-е число ключ автоматически меняется и архив
-         перечитывается один раз.
+       Не удаляем карточки при каждом обновлении.
+       Меняем существующие элементы и используем
+       FLIP-анимацию для перемещения по рейтингу.
        ===================================================== */
 
-    const ARCHIVE_STORAGE_PREFIX_V147 =
-      "team-rating-archive-v147:";
+    function updateLiveRanking(people) {
 
+      if (!Array.isArray(people) || !people.length) {
+        return;
+      }
 
-    function getArchiveStoragePhaseV147() {
+      /*
+        Храним только самое свежее положение рейтинга.
+        Если новый ответ API пришёл, пока карточки ещё
+        переставляются, после текущего шага анимация
+        продолжится уже к новому порядку.
+      */
+      state.pendingRankingPeople =
+        people.map(person => ({ ...person }));
 
-      const now =
-        new Date();
+      const existingCards =
+        new Map();
 
-      const year =
-        now.getFullYear();
+      Array.from(
+        rankingEl.querySelectorAll(".rank-card")
+      ).forEach(card => {
+        const name =
+          card.dataset.personName || "";
 
-      const month =
-        String(
-          now.getMonth() + 1
-        ).padStart(
-          2,
-          "0"
+        if (name) {
+          existingCards.set(name, card);
+        }
+      });
+
+      const incomingNames =
+        new Set(
+          people.map(person => person.name)
         );
 
-      const phase =
-        now.getDate() <= 5
-          ? "pre6"
-          : "post6";
+      existingCards.forEach((card, name) => {
+        if (!incomingNames.has(name)) {
+          card.remove();
+        }
+      });
 
+      /*
+        Проценты меняем сразу и плавно, но место/медаль
+        пока оставляем соответствующими текущему визуальному
+        положению карточки.
+      */
+      people.forEach(person => {
+        let card =
+          existingCards.get(person.name);
 
-      return (
-        year +
-        "-" +
-        month +
-        "-" +
-        phase
-      );
-    }
-
-
-    function getArchiveStorageKeyV147() {
-
-      return (
-        ARCHIVE_STORAGE_PREFIX_V147 +
-        getArchiveStoragePhaseV147()
-      );
-    }
-
-
-    function readArchiveBundleLocalV147() {
-
-      try {
-
-        const raw =
-          localStorage.getItem(
-            getArchiveStorageKeyV147()
+        if (!card) {
+          card = createRankingCard(
+            person,
+            rankingEl.querySelectorAll(".rank-card").length,
+            true
           );
 
+          card.classList.add("new-card");
+          rankingEl.appendChild(card);
+          existingCards.set(person.name, card);
+        }
 
-        if (!raw) {
-          return null;
+        const currentCards =
+          Array.from(
+            rankingEl.querySelectorAll(".rank-card")
+          );
+
+        const currentIndex =
+          Math.max(
+            0,
+            currentCards.indexOf(card)
+          );
+
+        updateRankingCard(
+          card,
+          person,
+          currentIndex
+        );
+      });
+
+      refreshRankingPlaces();
+      runRankingReorderQueue();
+    }
+
+
+    const RANKING_ANIMATION_MS = 3000;
+    const RANKING_EASING =
+      "cubic-bezier(.22,.72,.18,1)";
+
+    /*
+      Процент двигается с адаптивной скоростью.
+      Чем больше разница между старым и новым значением,
+      тем больше времени даём анимации, чтобы даже большой
+      скачок выглядел спокойно и плавно.
+    */
+    const PERCENT_ANIMATION_MIN_MS = 3000;
+    const PERCENT_ANIMATION_MAX_MS = 7500;
+
+    function getPercentAnimationDuration(from, to) {
+      const delta =
+        Math.abs(
+          Number(to) - Number(from)
+        );
+
+      if (!Number.isFinite(delta)) {
+        return PERCENT_ANIMATION_MIN_MS;
+      }
+
+      /*
+        До 4 процентных пунктов — стандартные 3 секунды.
+        Дальше постепенно добавляем время.
+        Примеры:
+        4 п.п.  → 3.0 с
+        10 п.п. → 3.7 с
+        20 п.п. → 4.9 с
+        40 п.п. → 7.3 с
+      */
+      return Math.min(
+        PERCENT_ANIMATION_MAX_MS,
+        PERCENT_ANIMATION_MIN_MS +
+          Math.max(0, delta - 4) * 120
+      );
+    }
+
+
+    function buildAdjacentSwapPlan(
+      currentNames,
+      targetPeople
+    ) {
+
+      const targetNames =
+        targetPeople.map(
+          person => person.name
+        );
+
+      const targetPercentByName =
+        new Map(
+          targetPeople.map(
+            person => [
+              person.name,
+              clampPercent(person.percent)
+            ]
+          )
+        );
+
+      const working =
+        currentNames.slice();
+
+      const plan = [];
+
+
+      /*
+        Формируем последовательность соседних обгонов.
+
+        Дополнительно каждому обгону назначаем "расстояние
+        по процентной шкале". Чем дальше друг от друга
+        проценты двух соседних участников, тем медленнее
+        проходит этот участок движения. Если проценты рядом —
+        обгон происходит быстрее.
+
+        В итоге карточка движется не одинаковыми шагами
+        по списку, а словно по невидимой шкале процентов.
+      */
+
+      for (
+        let targetIndex = 0;
+        targetIndex < targetNames.length;
+        targetIndex++
+      ) {
+
+        const wantedName =
+          targetNames[targetIndex];
+
+        let currentIndex =
+          working.indexOf(wantedName);
+
+        if (currentIndex < 0) {
+          continue;
         }
 
 
-        const parsed =
-          JSON.parse(
-            raw
+        while (
+          currentIndex >
+          targetIndex
+        ) {
+
+          const upperIndex =
+            currentIndex - 1;
+
+          const displacedName =
+            working[upperIndex];
+
+          const movingPercent =
+            targetPercentByName.get(
+              wantedName
+            );
+
+          const displacedPercent =
+            targetPercentByName.get(
+              displacedName
+            );
+
+          /*
+            Небольшой минимальный "метр" нужен, чтобы
+            равные или почти равные проценты всё равно
+            давали заметный, но короткий визуальный обгон.
+          */
+          const scaleGap =
+            Number.isFinite(movingPercent) &&
+            Number.isFinite(displacedPercent)
+              ? Math.max(
+                  0.35,
+                  Math.abs(
+                    movingPercent -
+                    displacedPercent
+                  )
+                )
+              : 1;
+
+
+          plan.push({
+            movingName: wantedName,
+            displacedName,
+            scaleGap
+          });
+
+
+          working[upperIndex] =
+            wantedName;
+
+          working[currentIndex] =
+            displacedName;
+
+          currentIndex--;
+        }
+      }
+
+
+      return plan;
+    }
+
+
+    function getRankingScaleAnimationDuration(
+      targetPeople
+    ) {
+
+      /*
+        Общая длительность перемещения карточек берётся
+        из той же логики, что и анимация процентов.
+
+        Если кто-то изменился сильно — вся перестановка
+        получает больше времени. Это позволяет движению
+        карточек и изменению чисел ощущаться как одна шкала.
+      */
+
+      let maxDuration =
+        PERCENT_ANIMATION_MIN_MS;
+
+
+      targetPeople.forEach(person => {
+
+        const card =
+          Array.from(
+            rankingEl.querySelectorAll(
+              ".rank-card"
+            )
+          ).find(
+            item =>
+              item.dataset.personName ===
+              person.name
           );
 
+        if (!card) {
+          return;
+        }
+
+        const visual =
+          Number(
+            card.dataset.visualPercent
+          );
+
+        const stored =
+          Number(
+            card.dataset.percent
+          );
+
+        const from =
+          Number.isFinite(visual)
+            ? visual
+            : stored;
+
+        const to =
+          clampPercent(person.percent);
 
         if (
-          !parsed ||
-          parsed.ok !== true ||
-          !Array.isArray(
-            parsed.periods
-          ) ||
-          !parsed.rankings ||
-          typeof parsed.rankings !==
-            "object"
+          Number.isFinite(from) &&
+          Number.isFinite(to)
         ) {
-
-          return null;
+          maxDuration =
+            Math.max(
+              maxDuration,
+              getPercentAnimationDuration(
+                from,
+                to
+              )
+            );
         }
+      });
 
 
-        return parsed;
-
-      } catch (error) {
-
-        return null;
-      }
+      return Math.min(
+        PERCENT_ANIMATION_MAX_MS,
+        maxDuration
+      );
     }
 
 
-    function writeArchiveBundleLocalV147(
-      data
+    async function animateAdjacentRankingSwap(
+      moving,
+      displaced,
+      duration
     ) {
+
+      if (
+        !moving ||
+        !displaced
+      ) {
+        return;
+      }
+
+
+      const movingFirst =
+        moving.getBoundingClientRect();
+
+      const displacedFirst =
+        displaced.getBoundingClientRect();
+
+
+      /*
+        DOM меняется на следующий соседний порядок.
+      */
+
+      rankingEl.insertBefore(
+        moving,
+        displaced
+      );
+
+
+      const movingLast =
+        moving.getBoundingClientRect();
+
+      const displacedLast =
+        displaced.getBoundingClientRect();
+
+
+      const movingDy =
+        movingFirst.top -
+        movingLast.top;
+
+      const displacedDy =
+        displacedFirst.top -
+        displacedLast.top;
+
+
+      /*
+        Обе карточки визуально остаются на старых местах.
+      */
+
+      moving.style.transition = "none";
+      displaced.style.transition = "none";
+
+      moving.style.transform =
+        `translate3d(0, ${movingDy}px, 0)`;
+
+      displaced.style.transform =
+        `translate3d(0, ${displacedDy}px, 0)`;
+
+      moving.style.willChange =
+        "transform";
+
+      displaced.style.willChange =
+        "transform";
+
+      moving.style.zIndex = "4";
+      displaced.style.zIndex = "3";
+
+
+      void rankingEl.offsetHeight;
+
+
+      /*
+        Затем одновременно меняются местами.
+        Это и создаёт эффект настоящего обгона:
+        один занимает место другого, второй — освободившееся место.
+      */
+
+      await new Promise(resolve => {
+
+        requestAnimationFrame(() => {
+
+          requestAnimationFrame(() => {
+
+            const transition =
+              `transform ${duration}ms ${RANKING_EASING}`;
+
+            moving.style.transition =
+              transition;
+
+            displaced.style.transition =
+              transition;
+
+            moving.style.transform =
+              "translate3d(0, 0, 0)";
+
+            displaced.style.transform =
+              "translate3d(0, 0, 0)";
+
+            setTimeout(
+              resolve,
+              duration + 8
+            );
+          });
+        });
+      });
+
+
+      moving.style.transition = "";
+      displaced.style.transition = "";
+
+      moving.style.transform = "";
+      displaced.style.transform = "";
+
+      moving.style.willChange = "";
+      displaced.style.willChange = "";
+
+      moving.style.zIndex = "";
+      displaced.style.zIndex = "";
+
+
+      /*
+        После каждого конкретного обгона сразу обновляем места,
+        чтобы визуальная последовательность была понятной.
+      */
+
+      refreshRankingPlaces();
+    }
+
+
+    async function runRankingReorderQueue() {
+
+      if (state.rankingAnimationRunning) {
+        return;
+      }
+
+      state.rankingAnimationRunning = true;
+
 
       try {
 
-        /*
-          Удаляем старые версии/фазы этого же архива,
-          чтобы localStorage не рос бесконечно.
-        */
-        for (
-          let i =
-            localStorage.length - 1;
-          i >= 0;
-          i--
-        ) {
+        while (state.pendingRankingPeople) {
 
-          const key =
-            localStorage.key(i);
+          const targetPeople =
+            state.pendingRankingPeople;
+
+          state.pendingRankingPeople =
+            null;
 
 
-          if (
-            key &&
-            key.indexOf(
-              ARCHIVE_STORAGE_PREFIX_V147
-            ) === 0 &&
-            key !==
-              getArchiveStorageKeyV147()
+          const targetNames =
+            targetPeople.map(
+              person => person.name
+            );
+
+
+          const currentNames =
+            Array.from(
+              rankingEl.querySelectorAll(".rank-card")
+            ).map(
+              card =>
+                card.dataset.personName || ""
+            );
+
+
+          const swapPlan =
+            buildAdjacentSwapPlan(
+              currentNames,
+              targetPeople
+            );
+
+          const rankingScaleDuration =
+            getRankingScaleAnimationDuration(
+              targetPeople
+            );
+
+
+          if (!swapPlan.length) {
+
+            /*
+              Если места не изменились — всё равно даём шкале
+              и процентам закончить общий 3-секундный цикл.
+            */
+
+            await new Promise(resolve =>
+              setTimeout(
+                resolve,
+                rankingScaleDuration
+              )
+            );
+
+            refreshRankingPlaces();
+
+            continue;
+          }
+
+
+          /*
+            ВРЕМЯ ДВИЖЕНИЯ ПО "НЕВИДИМОЙ ШКАЛЕ".
+
+            Раньше каждый соседний обгон занимал одинаковое
+            время. Теперь длительность каждого участка
+            зависит от разницы процентов между двумя
+            соседними карточками.
+
+            Большой разрыв процентов = более длинный участок.
+            Маленький разрыв = короткий участок.
+
+            Общая длительность сопоставима с анимацией
+            изменения процентов.
+          */
+
+          const totalScaleGap =
+            swapPlan.reduce(
+              (sum, step) =>
+                sum + step.scaleGap,
+              0
+            ) || 1;
+
+          const minimumSwapMs = 150;
+
+          const startedAt =
+            performance.now();
+
+
+          for (
+            let i = 0;
+            i < swapPlan.length;
+            i++
           ) {
 
-            localStorage.removeItem(
-              key
+            const step =
+              swapPlan[i];
+
+
+            const cards =
+              Array.from(
+                rankingEl.querySelectorAll(".rank-card")
+              );
+
+
+            const moving =
+              cards.find(
+                card =>
+                  card.dataset.personName ===
+                  step.movingName
+              );
+
+
+            const displaced =
+              cards.find(
+                card =>
+                  card.dataset.personName ===
+                  step.displacedName
+              );
+
+
+            /*
+              Длительность конкретного соседнего обгона
+              пропорциональна расстоянию процентов.
+
+              Например:
+              91,0 ↔ 91,4  — быстрый короткий шаг;
+              82,0 ↔ 91,0  — заметно более длинный шаг.
+            */
+
+            const elapsed =
+              performance.now() -
+              startedAt;
+
+            const remainingTime =
+              Math.max(
+                minimumSwapMs,
+                rankingScaleDuration -
+                elapsed
+              );
+
+            const remainingWeight =
+              swapPlan
+                .slice(i)
+                .reduce(
+                  (sum, item) =>
+                    sum + item.scaleGap,
+                  0
+                ) || step.scaleGap;
+
+            const proportionalDuration =
+              remainingTime *
+              (
+                step.scaleGap /
+                remainingWeight
+              );
+
+            const duration =
+              Math.max(
+                minimumSwapMs,
+                proportionalDuration
+              );
+
+
+            await animateAdjacentRankingSwap(
+              moving,
+              displaced,
+              duration
             );
           }
+
+
+          refreshRankingPlaces();
         }
-
-
-        localStorage.setItem(
-          getArchiveStorageKeyV147(),
-          JSON.stringify(
-            data
-          )
-        );
-
-      } catch (error) {
-
-        /*
-          Без localStorage всё продолжит работать
-          через обычный серверный запрос.
-        */
-      }
-    }
-
-
-    function hydrateArchiveBundleV147(
-      data
-    ) {
-
-      const source =
-        Array.isArray(
-          data && data.periods
-        )
-          ? data.periods
-          : Array.isArray(
-              data && data.months
-            )
-              ? data.months
-              : [];
-
-
-      const currentKey =
-        getCurrentPeriod()
-          .key;
-
-
-      state.archivePeriods =
-        source
-          .map(
-            normalizePeriodObject
-          )
-          .filter(
-            item =>
-              item &&
-              item.key !==
-                currentKey
-          )
-          .sort(
-            (a, b) =>
-              a.sort -
-              b.sort
-          );
-
-
-      const rankings =
-        data &&
-        data.rankings &&
-        typeof data.rankings ===
-          "object"
-          ? data.rankings
-          : {};
-
-
-      Object
-        .keys(
-          rankings
-        )
-        .forEach(
-          periodKey => {
-
-            const people =
-              sanitizePeople(
-                Array.isArray(
-                  rankings[
-                    periodKey
-                  ]
-                )
-                  ? rankings[
-                      periodKey
-                    ]
-                  : []
-              );
-
-
-            state.archiveRankingCache
-              .set(
-                periodKey,
-                people
-              );
-          }
-        );
-    }
-
-
-    async function ensureArchiveBundleV147() {
-
-      if (
-        state.archivePeriods
-      ) {
-
-        return true;
-      }
-
-
-      const local =
-        readArchiveBundleLocalV147();
-
-
-      if (local) {
-
-        hydrateArchiveBundleV147(
-          local
-        );
-
-        return true;
-      }
-
-
-      if (
-        state.archiveBundleLoading
-      ) {
-
-        return state.archiveBundleLoading;
-      }
-
-
-      state.archiveBundleLoading =
-        (async () => {
-
-          const data =
-            await api({
-              mode:
-                "archivebundle"
-            });
-
-
-          hydrateArchiveBundleV147(
-            data
-          );
-
-
-          writeArchiveBundleLocalV147(
-            data
-          );
-
-
-          return true;
-        })();
-
-
-      try {
-
-        return await state.archiveBundleLoading;
 
       } finally {
 
-        state.archiveBundleLoading =
-          null;
+        state.rankingAnimationRunning = false;
+
+        if (state.pendingRankingPeople) {
+          runRankingReorderQueue();
+        }
       }
     }
 
 
-    function warmArchiveBundleV147() {
+    function refreshRankingPlaces() {
+
+      Array.from(
+        rankingEl.querySelectorAll(".rank-card")
+      ).forEach((card, index) => {
+
+        card.classList.toggle("first", index === 0);
+        card.classList.toggle("second", index === 1);
+        card.classList.toggle("third", index === 2);
+
+        const placeEl =
+          card.querySelector(".place");
+
+        if (placeEl) {
+          placeEl.textContent =
+            getPlaceIcon(index);
+        }
+      });
+    }
+
+
+    function createRankingCard(
+      person,
+      index,
+      clickableScale = true
+    ) {
+
+      const card =
+        document.createElement("article");
+
+      card.className = "rank-card";
+      card.dataset.personName = person.name;
+
 
       /*
-        После того как главная уже показана, тихо прогреваем архив.
-        Пользователь этого не ждёт.
+        История человека теперь открывается по нажатию
+        на ЛЮБОЕ место карточки, а не только на шкалу.
       */
-      setTimeout(
-        () => {
 
-          ensureArchiveBundleV147()
-            .catch(
-              () => {}
-            );
-        },
-        250
+      card.setAttribute(
+        "role",
+        "button"
       );
+
+      card.setAttribute(
+        "tabindex",
+        "0"
+      );
+
+      card.setAttribute(
+        "aria-label",
+        `Открыть историю: ${person.name}`
+      );
+
+
+      card.addEventListener(
+        "click",
+        event => {
+
+          /*
+            Если внутри карточки позже появятся отдельные кнопки,
+            не перехватываем их собственное действие.
+          */
+
+          if (
+            event.target.closest(
+              "button, a, input, label, select, textarea"
+            )
+          ) {
+            return;
+          }
+
+          openPersonDetails(
+            person.name
+          );
+        }
+      );
+
+
+      card.addEventListener(
+        "keydown",
+        event => {
+
+          if (
+            event.key === "Enter" ||
+            event.key === " "
+          ) {
+
+            event.preventDefault();
+
+            openPersonDetails(
+              person.name
+            );
+          }
+        }
+      );
+      card.dataset.percent = String(
+        clampPercent(person.percent)
+      );
+
+      card.innerHTML = `
+        <div class="place"></div>
+
+        <div
+          class="person-name"
+          title="${escapeHtml(person.name)}">
+          ${escapeHtml(person.name)}
+        </div>
+
+        <div
+          class="bar-wrap"
+          ${clickableScale ? 'tabindex="0" role="button"' : ""}>
+
+          <div class="bar">
+            <div class="bar-fill"></div>
+          </div>
+
+          ${
+            clickableScale
+              ? '<span class="bar-hint">нажмите для истории</span>'
+              : ""
+          }
+        </div>
+
+        <div class="percent"></div>
+      `;
+
+      if (clickableScale) {
+        const scale =
+          card.querySelector(".bar-wrap");
+
+        const activate = () => {
+          openPersonDetails(person.name);
+        };
+
+        scale.addEventListener("click", activate);
+
+        scale.addEventListener(
+          "keydown",
+          event => {
+            if (
+              event.key === "Enter" ||
+              event.key === " "
+            ) {
+              event.preventDefault();
+              activate();
+            }
+          }
+        );
+      }
+
+      updateRankingCard(
+        card,
+        person,
+        index,
+        true
+      );
+
+      return card;
+    }
+
+
+    function updateRankingCard(
+      card,
+      person,
+      index,
+      immediate = false
+    ) {
+
+      const newPercent =
+        clampPercent(person.percent);
+
+      /*
+        Берём именно ТЕКУЩЕЕ визуальное значение.
+        Если новый ответ приходит во время незавершённой
+        анимации, новая анимация продолжится с текущей цифры,
+        а не прыгнет со старой цели.
+      */
+      const visualPercent =
+        Number(card.dataset.visualPercent);
+
+      const oldPercent =
+        Number.isFinite(visualPercent)
+          ? visualPercent
+          : Number(card.dataset.percent);
+
+      card.dataset.personName = person.name;
+
+      card.classList.toggle("first", index === 0);
+      card.classList.toggle("second", index === 1);
+      card.classList.toggle("third", index === 2);
+
+      const placeEl =
+        card.querySelector(".place");
+
+      const nameEl =
+        card.querySelector(".person-name");
+
+      const fillEl =
+        card.querySelector(".bar-fill");
+
+      const percentEl =
+        card.querySelector(".percent");
+
+      if (placeEl) {
+        placeEl.textContent =
+          getPlaceIcon(index);
+      }
+
+      if (nameEl) {
+        nameEl.textContent = person.name;
+        nameEl.title = person.name;
+      }
+
+      if (
+        immediate ||
+        !Number.isFinite(oldPercent)
+      ) {
+        if (fillEl) {
+          fillEl.style.width =
+            newPercent + "%";
+        }
+
+        if (percentEl) {
+          percentEl.textContent =
+            formatPercent(newPercent);
+        }
+
+        card.dataset.percent =
+          String(newPercent);
+
+        card.dataset.visualPercent =
+          String(newPercent);
+
+      } else if (
+        Math.abs(oldPercent - newPercent) > 0.0001
+      ) {
+
+        const percentAnimationMs =
+          getPercentAnimationDuration(
+            oldPercent,
+            newPercent
+          );
+
+        /*
+          Число и шкала теперь двигаются ОДНИМ requestAnimationFrame.
+          Поэтому шкала в каждый момент точно соответствует
+          отображаемому проценту и останавливается одновременно с ним.
+        */
+        animatePercentValue(
+          percentEl,
+          oldPercent,
+          newPercent,
+          percentAnimationMs,
+          card,
+          fillEl
+        );
+
+        if (percentEl) {
+          percentEl.classList.add(
+            "value-changed"
+          );
+
+          setTimeout(
+            () => {
+              percentEl.classList.remove(
+                "value-changed"
+              );
+            },
+            260
+          );
+        }
+
+        card.dataset.percent =
+          String(newPercent);
+      }
+
+      if (percentEl) {
+        percentEl.classList.toggle(
+          "green",
+          newPercent >= 90
+        );
+      }
+    }
+
+
+    function animatePercentValue(
+      element,
+      from,
+      to,
+      duration = PERCENT_ANIMATION_MIN_MS,
+      card = null,
+      fillElement = null
+    ) {
+
+      if (!element) {
+        return;
+      }
+
+      const startValue =
+        Number(from);
+
+      const endValue =
+        Number(to);
+
+      if (
+        !Number.isFinite(startValue) ||
+        !Number.isFinite(endValue)
+      ) {
+        element.textContent =
+          formatPercent(endValue);
+
+        if (fillElement) {
+          fillElement.style.width =
+            clampPercent(endValue) + "%";
+        }
+
+        return;
+      }
+
+
+      const animationId =
+        String(Date.now()) + Math.random();
+
+      element.dataset.animationId =
+        animationId;
+
+
+      /*
+        Число меняется ровно столько же,
+        сколько перемещается карточка и заполняется шкала:
+        3000 мс.
+
+        Длительность зависит от размера изменения.
+        На каждом кадре значение округляется до сотых,
+        поэтому движение остаётся непрерывным и мягким.
+      */
+
+      const startedAt =
+        performance.now();
+
+
+      function frame(now) {
+
+        if (
+          element.dataset.animationId !==
+          animationId
+        ) {
+          return;
+        }
+
+
+        const rawProgress =
+          Math.min(
+            1,
+            Math.max(
+              0,
+              (now - startedAt) /
+              Math.max(1, duration)
+            )
+          );
+
+
+        /*
+          То же ощущение ускорения/мягкого торможения,
+          что и у движения карточек.
+          Используем smoothstep — плавно без рывка на старте
+          и без резкой остановки в конце.
+        */
+
+        const eased =
+          rawProgress *
+          rawProgress *
+          (3 - 2 * rawProgress);
+
+
+        const currentValue =
+          Math.round(
+            (
+              startValue +
+              (endValue - startValue) * eased
+            ) * 100
+          ) / 100;
+
+
+        element.textContent =
+          formatPercent(currentValue);
+
+        if (fillElement) {
+          fillElement.style.width =
+            clampPercent(currentValue) + "%";
+        }
+
+        if (card) {
+          card.dataset.visualPercent =
+            String(currentValue);
+        }
+
+
+        element.classList.toggle(
+          "green",
+          currentValue >= 90
+        );
+
+
+        if (rawProgress < 1) {
+          requestAnimationFrame(frame);
+        } else {
+          element.textContent =
+            formatPercent(endValue);
+
+          if (fillElement) {
+            fillElement.style.width =
+              clampPercent(endValue) + "%";
+          }
+
+          if (card) {
+            card.dataset.visualPercent =
+              String(endValue);
+          }
+
+          element.classList.toggle(
+            "green",
+            endValue >= 90
+          );
+        }
+      }
+
+
+      element.textContent =
+        formatPercent(startValue);
+
+      if (fillElement) {
+        fillElement.style.width =
+          clampPercent(startValue) + "%";
+      }
+
+      if (card) {
+        card.dataset.visualPercent =
+          String(startValue);
+      }
+
+      requestAnimationFrame(frame);
     }
 
 
     /* =====================================================
        ARCHIVE
 
-       v147:
-       список периодов и все ЗАФИКСИРОВАННЫЕ рейтинги
-       загружаются одним пакетом.
+       Список периодов грузится
+       ТОЛЬКО после клика "Архив".
        ===================================================== */
 
     archiveBtn.addEventListener(
@@ -1768,16 +3584,16 @@
           archiveModal
         );
 
+        showArchiveSelector();
 
         if (
           state.archivePeriods
         ) {
 
+          ensureArchiveStartYear();
           renderArchiveControls();
-
           return;
         }
-
 
         archiveYearsEl.innerHTML =
           '<div class="loader"></div>';
@@ -1785,21 +3601,53 @@
         archiveMonthsEl.innerHTML =
           "";
 
-
         try {
 
-          /*
-            v147:
-            Один archivebundle вместо отдельного mode=months
-            и последующих запросов каждого зафиксированного месяца.
-          */
-          await ensureArchiveBundleV147();
+          const data =
+            await api({
+              mode:
+                "months"
+            });
 
+          const source =
+            Array.isArray(
+              data.months
+            )
+              ? data.months
+              : Array.isArray(
+                  data.periods
+                )
+                ? data.periods
+                : [];
 
-          chooseArchiveStartYear();
+          const currentKey =
+            getCurrentPeriod()
+              .key;
 
+          state.archivePeriods =
+            source
+              .map(
+                normalizePeriodObject
+              )
+              .filter(
+                item =>
+                  item &&
+                  item.key !==
+                    currentKey
+              )
+              .sort(
+                (a, b) =>
+                  a.sort -
+                  b.sort
+              );
+
+          ensureArchiveStartYear();
           renderArchiveControls();
 
+          if (!state.archivePeriods.length) {
+            archiveMonthsEl.innerHTML =
+              '<div class="subtle">Архивных месяцев пока нет</div>';
+          }
 
         } catch (error) {
 
@@ -1807,45 +3655,287 @@
             error
           );
 
-
           archiveYearsEl.innerHTML =
             "";
 
           archiveMonthsEl.innerHTML =
-            "";
-
-
-          showEmpty(
-            archiveRankingEl,
-            "Не удалось загрузить архив"
-          );
+            '<div class="subtle">Не удалось загрузить архив</div>';
         }
       }
     );
 
 
-    function chooseArchiveStartYear() {
+    function showArchiveSelector() {
+      archiveSelector.classList.remove("hidden");
+      archiveDetail.classList.add("hidden");
+      archiveBack.classList.add("hidden");
+    }
 
-      if (
-        !state.archivePeriods ||
-        state.archivePeriods.length === 0
-      ) {
 
-        state.archiveSelectedYear =
-          null;
+    function showArchiveDetail() {
+      archiveSelector.classList.add("hidden");
+      archiveDetail.classList.remove("hidden");
+      archiveBack.classList.remove("hidden");
+    }
+
+
+    function ensureArchiveStartYear() {
+      const periods = state.archivePeriods || [];
+
+      if (!periods.length) {
+        state.archiveSelectedYear = null;
+        state.archiveSelectedPeriod = null;
+        return;
+      }
+
+      const years = [...new Set(periods.map(item => item.year))]
+        .sort((a, b) => b - a);
+
+      if (!years.includes(state.archiveSelectedYear)) {
+        state.archiveSelectedYear = years[0];
+      }
+
+      state.archiveSelectedPeriod = null;
+    }
+
+
+    function enterArchiveMonth(period) {
+      if (!period) {
+        return Promise.resolve();
+      }
+
+      state.archiveSelectedYear = period.year;
+      state.archiveSelectedPeriod = period.key;
+      showArchiveDetail();
+
+      return loadArchiveMonth(period);
+    }
+
+
+    function getShiftedArchivePeriod(direction) {
+      const periods = (state.archivePeriods || [])
+        .slice()
+        .sort((a, b) => a.sort - b.sort);
+
+      if (!periods.length) {
+        return null;
+      }
+
+      let index = periods.findIndex(
+        item => item.key === state.archiveSelectedPeriod
+      );
+
+      if (index < 0) {
+        index = periods.length - 1;
+      }
+
+      const nextIndex = index + direction;
+
+      if (nextIndex < 0 || nextIndex >= periods.length) {
+        return null;
+      }
+
+      return periods[nextIndex];
+    }
+
+
+    function shiftArchiveMonth(direction) {
+      const period =
+        getShiftedArchivePeriod(direction);
+
+      if (!period) {
+        return Promise.resolve(false);
+      }
+
+      return enterArchiveMonth(period)
+        .then(() => true);
+    }
+
+
+    let archiveSwipeAnimating = false;
+    let archiveSwipeCurrentX = 0;
+
+
+    async function animateArchiveSwipe(
+      direction,
+      startX = 0
+    ) {
+
+      if (archiveSwipeAnimating) {
+        return;
+      }
+
+
+      const nextPeriod =
+        getShiftedArchivePeriod(direction);
+
+
+      const width =
+        Math.max(
+          1,
+          archiveDetail.clientWidth
+        );
+
+
+      if (!nextPeriod) {
+
+        /*
+          Граница архива — мягкий отскок с текущего положения.
+        */
+
+        archiveSwipeAnimating = true;
+
+        archiveRankingEl.style.transition =
+          "transform 320ms cubic-bezier(.2,.8,.18,1), opacity 260ms ease";
+
+        archiveRankingEl.style.transform =
+          "translate3d(0, 0, 0)";
+
+        archiveRankingEl.style.opacity =
+          "1";
+
+
+        await new Promise(resolve =>
+          setTimeout(resolve, 330)
+        );
+
+
+        archiveRankingEl.style.transition = "";
+        archiveSwipeAnimating = false;
+        archiveSwipeCurrentX = 0;
 
         return;
       }
 
 
-      const latest =
-        state.archivePeriods[
-          state.archivePeriods.length - 1
-        ];
+      archiveSwipeAnimating = true;
 
 
-      state.archiveSelectedYear =
-        latest.year;
+      /*
+        Направление строго соответствует пальцу:
+        свайп влево -> текущий месяц улетает влево,
+        свайп вправо -> текущий месяц улетает вправо.
+      */
+
+      const exitX =
+        direction > 0
+          ? -width * 1.14
+          : width * 1.14;
+
+
+      const enterX =
+        direction > 0
+          ? width * 1.04
+          : -width * 1.04;
+
+
+      /*
+        ВАЖНО:
+        не возвращаем карточки в центр после отпускания пальца.
+        Продолжаем движение ровно с той точки, до которой
+        пользователь уже дотянул содержимое.
+      */
+
+      archiveRankingEl.style.transition =
+        "none";
+
+      archiveRankingEl.style.transform =
+        `translate3d(${startX}px, 0, 0)`;
+
+
+      void archiveRankingEl.offsetHeight;
+
+
+      await new Promise(resolve => {
+
+        requestAnimationFrame(() => {
+
+          archiveRankingEl.style.transition =
+            "transform 520ms cubic-bezier(.16,.82,.18,1), opacity 430ms ease";
+
+          archiveRankingEl.style.transform =
+            `translate3d(${exitX}px, 0, 0)`;
+
+          archiveRankingEl.style.opacity =
+            "0";
+
+          setTimeout(resolve, 530);
+        });
+      });
+
+
+      /*
+        Новый месяц появляется строго с противоположной стороны,
+        уже за пределами окна.
+      */
+
+      archiveRankingEl.style.transition =
+        "none";
+
+      archiveRankingEl.style.transform =
+        `translate3d(${enterX}px, 0, 0)`;
+
+      archiveRankingEl.style.opacity =
+        "0";
+
+
+      await enterArchiveMonth(
+        nextPeriod
+      );
+
+
+      void archiveRankingEl.offsetHeight;
+
+
+      /*
+        И плавно заезжает в центр.
+      */
+
+      await new Promise(resolve => {
+
+        requestAnimationFrame(() => {
+
+          requestAnimationFrame(() => {
+
+            archiveRankingEl.style.transition =
+              "transform 540ms cubic-bezier(.16,.82,.18,1), opacity 430ms ease";
+
+            archiveRankingEl.style.transform =
+              "translate3d(0, 0, 0)";
+
+            archiveRankingEl.style.opacity =
+              "1";
+
+            setTimeout(resolve, 550);
+          });
+        });
+      });
+
+
+      archiveRankingEl.style.transition = "";
+      archiveRankingEl.style.transform = "";
+      archiveRankingEl.style.opacity = "";
+
+      archiveSwipeCurrentX = 0;
+      archiveSwipeAnimating = false;
+    }
+
+
+    function chooseArchiveStartPeriod() {
+      ensureArchiveStartYear();
+      return null;
+    }
+
+
+    function getSelectedArchivePeriod() {
+
+      return (
+        state.archivePeriods || []
+      ).find(
+        item =>
+          item.key ===
+          state.archiveSelectedPeriod
+      ) || null;
     }
 
 
@@ -1934,12 +4024,7 @@
               state.archiveSelectedPeriod =
                 null;
 
-
               renderArchiveControls();
-
-
-              archiveRankingEl.innerHTML =
-                '<div class="archive-placeholder">Выберите архивный месяц</div>';
             }
           );
 
@@ -1949,6 +4034,19 @@
           );
         }
       );
+
+      requestAnimationFrame(() => {
+        const active =
+          archiveYearsEl.querySelector(".period-button.active");
+
+        if (active) {
+          active.scrollIntoView({
+            behavior: "smooth",
+            block: "nearest",
+            inline: "center"
+          });
+        }
+      });
     }
 
 
@@ -2022,23 +4120,7 @@
             "click",
             () => {
 
-              state.archiveSelectedPeriod =
-                period.key;
-
-
-              renderArchiveMonths();
-
-
-              /*
-                КЛЮЧЕВОЙ МОМЕНТ:
-
-                ranking за месяц
-                загружается только
-                прямо сейчас —
-                после клика по месяцу.
-              */
-
-              loadArchiveMonth(
+              enterArchiveMonth(
                 period
               );
             }
@@ -2050,6 +4132,19 @@
           );
         }
       );
+
+      requestAnimationFrame(() => {
+        const active =
+          archiveMonthsEl.querySelector(".period-button.active");
+
+        if (active) {
+          active.scrollIntoView({
+            behavior: "smooth",
+            block: "nearest",
+            inline: "center"
+          });
+        }
+      });
     }
 
 
@@ -2114,43 +4209,6 @@
           );
 
 
-        /*
-          Если сервер подтвердил, что месяц уже ARCHIVE,
-          дописываем его и в постоянный браузерный bundle.
-          Live-периоды 1–5 числа сюда НЕ сохраняем.
-        */
-        if (
-          data &&
-          data.archive === true
-        ) {
-
-          const local =
-            readArchiveBundleLocalV147();
-
-
-          if (local) {
-
-            local.rankings =
-              local.rankings &&
-              typeof local.rankings ===
-                "object"
-                ? local.rankings
-                : {};
-
-
-            local.rankings[
-              period.key
-            ] =
-              people;
-
-
-            writeArchiveBundleLocalV147(
-              local
-            );
-          }
-        }
-
-
         renderArchiveMonthResult(
           period,
           people
@@ -2181,27 +4239,126 @@
         "";
 
 
-      const label =
+      const header =
         document.createElement(
           "div"
         );
 
 
-      label.className =
-        "section-title";
+      header.className =
+        "archive-view-header";
 
 
-      label.textContent =
-        MONTH_NAMES[
-          period.month - 1
-        ] +
-        " " +
-        period.year;
+      const previousPeriod =
+        getShiftedArchivePeriod(-1);
+
+      const nextPeriod =
+        getShiftedArchivePeriod(1);
+
+
+      header.innerHTML = `
+        <div class="archive-period-nav">
+
+          <button
+            class="archive-month-arrow archive-month-arrow-prev"
+            type="button"
+            aria-label="Предыдущий месяц"
+            ${previousPeriod ? "" : "disabled"}>
+            ←
+          </button>
+
+          <div class="archive-period-center">
+
+            <div class="subtitle">
+              Просматриваемый месяц
+            </div>
+
+            <div class="current-period">
+              ${escapeHtml(
+                MONTH_NAMES[
+                  period.month - 1
+                ] +
+                " " +
+                period.year
+              )}
+            </div>
+
+          </div>
+
+          <button
+            class="archive-month-arrow archive-month-arrow-next"
+            type="button"
+            aria-label="Следующий месяц"
+            ${nextPeriod ? "" : "disabled"}>
+            →
+          </button>
+
+        </div>
+      `;
 
 
       archiveRankingEl.appendChild(
-        label
+        header
       );
+
+
+      const previousButton =
+        header.querySelector(
+          ".archive-month-arrow-prev"
+        );
+
+      const nextButton =
+        header.querySelector(
+          ".archive-month-arrow-next"
+        );
+
+
+      if (previousButton) {
+
+        previousButton.addEventListener(
+          "click",
+          async event => {
+
+            event.stopPropagation();
+
+            if (
+              previousButton.disabled ||
+              archiveSwipeAnimating
+            ) {
+              return;
+            }
+
+            await animateArchiveSwipe(
+              -1,
+              0
+            );
+          }
+        );
+      }
+
+
+      if (nextButton) {
+
+        nextButton.addEventListener(
+          "click",
+          async event => {
+
+            event.stopPropagation();
+
+            if (
+              nextButton.disabled ||
+              archiveSwipeAnimating
+            ) {
+              return;
+            }
+
+            await animateArchiveSwipe(
+              1,
+              0
+            );
+          }
+        );
+      }
 
 
       const ranking =
@@ -2228,6 +4385,7 @@
         }
       );
     }
+
 
 
     /* =====================================================
@@ -2788,6 +4946,82 @@
     }
 
 
+    const CHART_PERSON_COLORS = [
+      "#00C2FF",  // голубой
+      "#FF9500",  // оранжевый
+      "#FF3B30",  // красный
+      "#D946EF",  // яркий пурпурный
+      "#22C55E",  // зелёный
+      "#FFD60A",  // жёлтый
+      "#7C4DFF",  // индиго
+      "#FF6B9A",  // розовый
+      "#00E5B0",  // мятно-бирюзовый
+      "#D4A373",  // песочно-коричневый
+      "#F2F2F7",  // светлый
+      "#5AC8FA"   // небесный
+    ];
+
+
+    function hashPersonName(name) {
+      const text = String(name || "");
+      let hash = 2166136261;
+
+      for (let i = 0; i < text.length; i++) {
+        hash ^= text.charCodeAt(i);
+        hash = Math.imul(hash, 16777619);
+      }
+
+      return hash >>> 0;
+    }
+
+
+    function buildPersonChartColorMap() {
+
+      const map = new Map();
+
+      const names =
+        state.historyData &&
+        state.historyData.people
+          ? Object.keys(state.historyData.people)
+          : [];
+
+      names.sort((a, b) =>
+        a.localeCompare(b, "ru")
+      );
+
+      names.forEach((name, index) => {
+        map.set(
+          name,
+          CHART_PERSON_COLORS[
+            index % CHART_PERSON_COLORS.length
+          ]
+        );
+      });
+
+      return map;
+    }
+
+
+    function getPersonChartColor(
+      name,
+      colorMap
+    ) {
+
+      const map =
+        colorMap ||
+        buildPersonChartColorMap();
+
+      if (map.has(name)) {
+        return map.get(name);
+      }
+
+      return CHART_PERSON_COLORS[
+        hashPersonName(name) %
+        CHART_PERSON_COLORS.length
+      ];
+    }
+
+
     function renderCompareChart() {
 
       const svg =
@@ -2848,7 +5082,18 @@
         900;
 
       const height =
-        370;
+        390;
+
+      svg.setAttribute(
+        "viewBox",
+        `0 0 ${width} ${height}`
+      );
+
+      svg.setAttribute(
+        "height",
+        String(height)
+      );
+
 
       const left =
         55;
@@ -2857,10 +5102,10 @@
         22;
 
       const top =
-        35;
+        42;
 
       const bottom =
-        55;
+        72;
 
       const chartWidth =
         width -
@@ -2881,7 +5126,8 @@
 
 
       /*
-        Y-шкала каждые 5%.
+        Горизонтальная шкала.
+        Граница 90% выделена отдельно.
       */
 
       for (
@@ -2906,13 +5152,53 @@
           );
 
 
-        addSvgLine(
-          svg,
-          left,
-          y,
-          width - right,
-          y,
-          "rgba(255,255,255,.09)"
+        const isTarget =
+          value === 90;
+
+
+        const line =
+          document.createElementNS(
+            "http://www.w3.org/2000/svg",
+            "line"
+          );
+
+
+        line.setAttribute(
+          "x1",
+          left
+        );
+
+        line.setAttribute(
+          "y1",
+          y
+        );
+
+        line.setAttribute(
+          "x2",
+          width - right
+        );
+
+        line.setAttribute(
+          "y2",
+          y
+        );
+
+        line.setAttribute(
+          "stroke",
+          isTarget
+            ? "rgba(49,216,121,.78)"
+            : "rgba(255,255,255,.09)"
+        );
+
+        line.setAttribute(
+          "stroke-width",
+          isTarget
+            ? "1.35"
+            : "1"
+        );
+
+        svg.appendChild(
+          line
         );
 
 
@@ -2921,25 +5207,33 @@
           46,
           y + 4,
           value + "%",
-          "#8e9bb7",
+          isTarget
+            ? "#31d879"
+            : "#8e9bb7",
           "end",
-          11
+          isTarget
+            ? 12
+            : 11
         );
       }
 
 
+      /*
+        Месяцы показываем одной буквой.
+        Год выводим отдельной строкой.
+        При смене года рисуем вертикальную границу.
+      */
+
+      const monthLetters =
+        [
+          "Я", "Ф", "М", "А",
+          "М", "И", "И", "А",
+          "С", "О", "Н", "Д"
+        ];
+
+
       periods.forEach(
         (period, index) => {
-
-          if (
-            periods.length > 14 &&
-            index % 2 !== 0 &&
-            index !==
-              periods.length - 1
-          ) {
-            return;
-          }
-
 
           const x =
             getChartX(
@@ -2950,24 +5244,166 @@
             );
 
 
-          const label =
-            MONTH_NAMES[
+          addSvgText(
+            svg,
+            x,
+            height - 37,
+            monthLetters[
               period.month - 1
-            ].slice(0, 3)
-            +
-            " "
-            +
-            String(
+            ] || "",
+            "#aab6cd",
+            "middle",
+            10
+          );
+
+
+          const previous =
+            index > 0
+              ? periods[index - 1]
+              : null;
+
+
+          if (
+            previous &&
+            previous.year !==
               period.year
-            ).slice(-2);
+          ) {
+
+            const previousX =
+              getChartX(
+                index - 1,
+                periods.length,
+                left,
+                chartWidth
+              );
+
+
+            const boundaryX =
+              (
+                previousX +
+                x
+              ) / 2;
+
+
+            const boundary =
+              document.createElementNS(
+                "http://www.w3.org/2000/svg",
+                "line"
+              );
+
+
+            boundary.setAttribute(
+              "x1",
+              boundaryX
+            );
+
+            boundary.setAttribute(
+              "y1",
+              top
+            );
+
+            boundary.setAttribute(
+              "x2",
+              boundaryX
+            );
+
+            boundary.setAttribute(
+              "y2",
+              height - 27
+            );
+
+            boundary.setAttribute(
+              "stroke",
+              "rgba(255,255,255,.20)"
+            );
+
+            boundary.setAttribute(
+              "stroke-width",
+              "1.2"
+            );
+
+            boundary.setAttribute(
+              "stroke-dasharray",
+              "3 5"
+            );
+
+
+            svg.appendChild(
+              boundary
+            );
+          }
+        }
+      );
+
+
+      const yearGroups =
+        [];
+
+
+      periods.forEach(
+        (period, index) => {
+
+          const last =
+            yearGroups[
+              yearGroups.length - 1
+            ];
+
+
+          if (
+            !last ||
+            last.year !==
+              period.year
+          ) {
+
+            yearGroups.push({
+              year:
+                period.year,
+
+              start:
+                index,
+
+              end:
+                index
+            });
+
+          } else {
+
+            last.end =
+              index;
+          }
+        }
+      );
+
+
+      yearGroups.forEach(
+        group => {
+
+          const startX =
+            getChartX(
+              group.start,
+              periods.length,
+              left,
+              chartWidth
+            );
+
+
+          const endX =
+            getChartX(
+              group.end,
+              periods.length,
+              left,
+              chartWidth
+            );
 
 
           addSvgText(
             svg,
-            x,
-            height - 18,
-            label,
-            "#8e9bb7",
+            (startX + endX) / 2,
+            height - 15,
+            String(
+              group.year
+            ),
+            "#667795",
             "middle",
             10
           );
@@ -2975,8 +5411,12 @@
       );
 
 
+      const personColorMap =
+        buildPersonChartColorMap();
+
+
       selected.forEach(
-        (name, seriesIndex) => {
+        name => {
 
           const rows =
             state.historyData.people[
@@ -3008,17 +5448,17 @@
           );
 
 
-          const hue =
-            (
-              seriesIndex *
-              71 +
-              188
-            ) %
-            360;
-
+          /*
+            Цвет зависит только от имени.
+            Поэтому добавление другого человека
+            больше не меняет цвета уже выбранных.
+          */
 
           const color =
-            `hsl(${hue} 75% 62%)`;
+            getPersonChartColor(
+              name,
+              personColorMap
+            );
 
 
           let path =
@@ -3041,8 +5481,15 @@
                 value === undefined
               ) {
 
-                started =
-                  false;
+                /*
+                  Нет значения за этот месяц:
+                  точку не рисуем, но линию не обрываем.
+                  Следующая реальная точка соединится
+                  с предыдущей реальной точкой.
+
+                  Это не создаёт выдуманных значений —
+                  на пропущенном месяце по-прежнему нет точки.
+                */
 
                 return;
               }
@@ -3174,21 +5621,35 @@
           svg.appendChild(
             pathEl
           );
+        }
+      );
 
+
+      /*
+        Легенда рисуется после линий
+        и тоже использует постоянный цвет человека.
+      */
+
+      selected.forEach(
+        (name, index) => {
 
           addSvgText(
             svg,
             left + 8,
             18 +
-            seriesIndex * 16,
+              index * 16,
             name,
-            color,
+            getPersonChartColor(
+              name,
+              personColorMap
+            ),
             "start",
             10
           );
         }
       );
     }
+
 
 
     /* =====================================================
@@ -3269,159 +5730,27 @@
       options = {}
     ) {
 
-      target.innerHTML =
-        "";
+      target.innerHTML = "";
 
-
-      if (
-        !people.length
-      ) {
-
+      if (!people.length) {
         showEmpty(
           target,
           "За этот месяц статистика не найдена"
         );
-
         return;
       }
-
 
       people.forEach(
         (person, index) => {
 
           const card =
-            document.createElement(
-              "article"
+            createRankingCard(
+              person,
+              index,
+              Boolean(options.clickableScale)
             );
 
-
-          card.className =
-            "rank-card";
-
-
-          if (index === 0) {
-            card.classList.add(
-              "first"
-            );
-          }
-
-          if (index === 1) {
-            card.classList.add(
-              "second"
-            );
-          }
-
-          if (index === 2) {
-            card.classList.add(
-              "third"
-            );
-          }
-
-
-          const percent =
-            clampPercent(
-              person.percent
-            );
-
-
-          const percentClass =
-            percent >= 90
-              ? "percent green"
-              : "percent";
-
-
-          card.innerHTML = `
-
-            <div class="place">
-              ${getPlaceIcon(index)}
-            </div>
-
-            <div
-              class="person-name"
-              title="${escapeHtml(person.name)}">
-              ${escapeHtml(person.name)}
-            </div>
-
-            <div
-              class="bar-wrap"
-              ${
-                options.clickableScale
-                  ? 'tabindex="0" role="button"'
-                  : ""
-              }
-              data-person="${escapeHtml(person.name)}">
-
-              <div class="bar">
-
-                <div
-                  class="bar-fill"
-                  style="width:${percent}%">
-                </div>
-
-              </div>
-
-              ${
-                options.clickableScale
-                  ? '<span class="bar-hint">нажмите для истории</span>'
-                  : ""
-              }
-
-            </div>
-
-            <div class="${percentClass}">
-              ${formatPercent(percent)}
-            </div>
-          `;
-
-
-          if (
-            options.clickableScale
-          ) {
-
-            const scale =
-              card.querySelector(
-                ".bar-wrap"
-              );
-
-
-            const activate =
-              () => {
-
-                openPersonDetails(
-                  person.name
-                );
-              };
-
-
-            scale.addEventListener(
-              "click",
-              activate
-            );
-
-
-            scale.addEventListener(
-              "keydown",
-              event => {
-
-                if (
-                  event.key ===
-                    "Enter" ||
-                  event.key ===
-                    " "
-                ) {
-
-                  event.preventDefault();
-
-                  activate();
-                }
-              }
-            );
-          }
-
-
-          target.appendChild(
-            card
-          );
+          target.appendChild(card);
         }
       );
     }
@@ -3557,6 +5886,232 @@
           );
       }
     }
+
+
+    archiveBack.addEventListener(
+      "click",
+      () => {
+        showArchiveSelector();
+        renderArchiveControls();
+      }
+    );
+
+
+    let archiveTouchStartX = 0;
+    let archiveTouchStartY = 0;
+    let archiveTouchDx = 0;
+    let archiveTouchDragging = false;
+
+
+    archiveDetail.addEventListener(
+      "touchstart",
+      event => {
+
+        if (archiveSwipeAnimating) {
+          return;
+        }
+
+        const touch =
+          event.changedTouches[0];
+
+        archiveTouchStartX =
+          touch.clientX;
+
+        archiveTouchStartY =
+          touch.clientY;
+
+        archiveTouchDx = 0;
+        archiveTouchDragging = false;
+
+        archiveRankingEl.style.transition =
+          "none";
+      },
+      { passive: true }
+    );
+
+
+    archiveDetail.addEventListener(
+      "touchmove",
+      event => {
+
+        if (archiveSwipeAnimating) {
+          return;
+        }
+
+        const touch =
+          event.changedTouches[0];
+
+        const dx =
+          touch.clientX -
+          archiveTouchStartX;
+
+        const dy =
+          touch.clientY -
+          archiveTouchStartY;
+
+
+        /*
+          Вертикальный скролл не перехватываем.
+        */
+
+        if (
+          !archiveTouchDragging &&
+          Math.abs(dx) <=
+            Math.abs(dy) * 1.08
+        ) {
+          return;
+        }
+
+
+        archiveTouchDragging =
+          true;
+
+        archiveTouchDx =
+          dx;
+
+
+        /*
+          Контент следует за пальцем,
+          но с лёгким сопротивлением.
+        */
+
+        const width =
+          Math.max(
+            1,
+            archiveDetail.clientWidth
+          );
+
+        const max =
+          width * 0.78;
+
+        const resisted =
+          Math.max(
+            -max,
+            Math.min(
+              max,
+              dx * 0.82
+            )
+          );
+
+
+        archiveSwipeCurrentX =
+          resisted;
+
+        archiveRankingEl.style.transform =
+          `translate3d(${resisted}px, 0, 0)`;
+
+
+        const opacity =
+          Math.max(
+            0.60,
+            1 -
+              Math.abs(resisted) /
+              width *
+              0.34
+          );
+
+
+        archiveRankingEl.style.opacity =
+          String(opacity);
+
+
+        event.preventDefault();
+      },
+      { passive: false }
+    );
+
+
+    archiveDetail.addEventListener(
+      "touchend",
+      async event => {
+
+        if (archiveSwipeAnimating) {
+          return;
+        }
+
+        const touch =
+          event.changedTouches[0];
+
+        const dx =
+          archiveTouchDragging
+            ? archiveTouchDx
+            : touch.clientX -
+              archiveTouchStartX;
+
+        const dy =
+          touch.clientY -
+          archiveTouchStartY;
+
+
+        const horizontal =
+          Math.abs(dx) >
+          Math.abs(dy) * 1.08;
+
+
+        if (
+          !horizontal ||
+          Math.abs(dx) < 58
+        ) {
+
+          archiveRankingEl.style.transition =
+            "transform 230ms cubic-bezier(.18,.82,.2,1), opacity 180ms ease";
+
+          archiveRankingEl.style.transform =
+            "translate3d(0, 0, 0)";
+
+          archiveRankingEl.style.opacity =
+            "1";
+
+          archiveSwipeCurrentX = 0;
+
+          return;
+        }
+
+
+        /*
+          Никакого возврата в центр:
+          после отпускания текущая информация продолжает
+          лететь в ту же сторону прямо из положения пальца.
+        */
+
+        const startX =
+          archiveSwipeCurrentX ||
+          dx * 0.82;
+
+
+        if (dx < 0) {
+          await animateArchiveSwipe(
+            1,
+            startX
+          );
+        } else {
+          await animateArchiveSwipe(
+            -1,
+            startX
+          );
+        }
+      },
+      { passive: true }
+    );
+
+
+    archiveDetail.addEventListener(
+      "touchcancel",
+      () => {
+
+        archiveRankingEl.style.transition =
+          "transform 220ms cubic-bezier(.18,.82,.2,1), opacity 180ms ease";
+
+        archiveRankingEl.style.transform =
+          "translate3d(0, 0, 0)";
+
+        archiveRankingEl.style.opacity =
+          "1";
+
+        archiveSwipeCurrentX = 0;
+      },
+      { passive: true }
+    );
 
 
     archiveClose.addEventListener(
@@ -3807,15 +6362,15 @@
     ) {
 
       if (index === 0) {
-        return "🥇";
+        return "1";
       }
 
       if (index === 1) {
-        return "🥈";
+        return "2";
       }
 
       if (index === 2) {
-        return "🥉";
+        return "3";
       }
 
 
@@ -3932,7 +6487,7 @@
 
       return (
         number
-          .toFixed(1)
+          .toFixed(2)
           .replace(
             ".",
             ","
@@ -3976,42 +6531,54 @@
     /* =====================================================
        AUTO REFRESH
 
-       Обновляется только текущий месяц.
-
-       Архив автоматически НЕ грузим.
-       Историю автоматически НЕ грузим.
+       Только главная страница.
+       Каждые 2 секунды.
+       Архив и история сюда не входят.
        ===================================================== */
+
+    let lastKnownPeriodKey =
+      getCurrentPeriod().key;
 
     setInterval(
       () => {
 
-        if (
-          document.hidden
-        ) {
+        if (document.hidden) {
           return;
         }
 
+        if (state.currentMonthLoading) {
+          return;
+        }
 
-        loadCurrentMonth(
-          true
-        );
+        const actualPeriod =
+          getCurrentPeriod();
 
+        if (
+          actualPeriod.key !==
+          lastKnownPeriodKey
+        ) {
+          lastKnownPeriodKey =
+            actualPeriod.key;
+
+          state.archivePeriods = null;
+          state.archiveSelectedYear = null;
+          state.archiveSelectedPeriod = null;
+          state.archiveRankingCache.clear();
+          state.historyData = null;
+          state.historyLoading = null;
+        }
+
+        loadCurrentMonth(true);
       },
-      20000
+      2000
     );
 
 
     document.addEventListener(
       "visibilitychange",
       () => {
-
-        if (
-          !document.hidden
-        ) {
-
-          loadCurrentMonth(
-            true
-          );
+        if (!document.hidden) {
+          loadCurrentMonth(true);
         }
       }
     );
@@ -4023,53 +6590,6 @@
 
     loadCurrentMonth();
 
-  </script>
-
-
-  <!-- v150 SAFE TELEGRAM EXPAND
-       Только разворачивание Mini App. Внешний вид страницы не меняется. -->
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <script>
-    (function () {
-      function expandTelegramMiniAppSafeV150() {
-        try {
-          var tg =
-            window.Telegram &&
-            window.Telegram.WebApp
-              ? window.Telegram.WebApp
-              : null;
-
-          if (!tg) return;
-
-          tg.ready();
-          tg.expand();
-
-          /*
-           * Один мягкий повтор после открытия iOS-sheet.
-           * Без disableVerticalSwipes(), без viewportChanged,
-           * без изменения цветов/header/background и без CSS-правок.
-           */
-          setTimeout(function () {
-            try {
-              tg.expand();
-            } catch (e) {}
-          }, 250);
-
-        } catch (e) {
-          console.log("Telegram expand error:", e);
-        }
-      }
-
-      if (document.readyState === "loading") {
-        document.addEventListener(
-          "DOMContentLoaded",
-          expandTelegramMiniAppSafeV150,
-          { once: true }
-        );
-      } else {
-        expandTelegramMiniAppSafeV150();
-      }
-    })();
   </script>
 
 </body>
