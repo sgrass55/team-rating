@@ -2191,11 +2191,53 @@
       return String(year) + "-" + String(month).padStart(2, "0");
     }
 
-    function isPreviousMonthStillLiveV156(monthKey) {
+    function isPreviousMonthStillLiveV156(periodOrKey) {
       const now = getMoscowNowV156();
+
+      if (now.day > 5) {
+        return false;
+      }
+
+      let prevYear = now.year;
+      let prevMonth = now.month - 1;
+
+      if (prevMonth < 1) {
+        prevMonth = 12;
+        prevYear -= 1;
+      }
+
+      /*
+        Основной формат архива — объект:
+        { key: "АВГУСТ2026", month: 8, year: 2026 }
+
+        Старый v156 ошибочно сравнивал весь объект со строкой
+        "2026-08", поэтому условие никогда не срабатывало.
+      */
+      if (
+        periodOrKey &&
+        typeof periodOrKey === "object"
+      ) {
+        return (
+          Number(periodOrKey.year) === prevYear &&
+          Number(periodOrKey.month) === prevMonth
+        );
+      }
+
+      const value =
+        String(periodOrKey || "");
+
+      const russianKey =
+        MONTH_KEYS[prevMonth - 1] +
+        prevYear;
+
+      const isoKey =
+        String(prevYear) +
+        "-" +
+        String(prevMonth).padStart(2, "0");
+
       return (
-        now.day <= 5 &&
-        String(monthKey || "") === getPreviousMonthKeyV156()
+        value === russianKey ||
+        value === isoKey
       );
     }
 
@@ -4484,19 +4526,79 @@
     async function loadArchiveMonth(
       period
     ) {
-      // v156: August/previous month must remain live through the 5th.
-      if (isPreviousMonthStillLiveV156(period)) {
+      /*
+        v157:
+        До 5-го числа предыдущий месяц загружаем НАПРЯМУЮ
+        с сервера и полностью игнорируем архивный клиентский кеш.
+
+        Например 3 сентября:
+        АВГУСТ2026 -> live API -> свежие данные из таблиц.
+      */
+      if (
+        isPreviousMonthStillLiveV156(
+          period
+        )
+      ) {
+        showRankingLoader(
+          archiveRankingEl
+        );
+
         try {
-          if (typeof loadMonth === "function") {
-            await loadMonth(period, { forceLive: true, bypassArchive: true });
-            return;
+          /*
+            Удаляем старое значение из памяти, чтобы август
+            не мог остаться замороженным после предыдущего открытия.
+          */
+          if (
+            period &&
+            period.key
+          ) {
+            state.archiveRankingCache
+              .delete(period.key);
           }
-          if (typeof loadCurrentMonth === "function") {
-            await loadCurrentMonth(period, { forceLive: true, bypassArchive: true });
-            return;
-          }
-        } catch (e) {
-          console.warn("v156 live previous-month fallback failed", e);
+
+          const liveData =
+            await api({
+              mode: "month",
+              period: period.key,
+              fresh: "1"
+            });
+
+          const livePeople =
+            sanitizePeople(
+              getRankingArray(
+                liveData
+              )
+            );
+
+          /*
+            В память текущего сеанса кладём только свежий ответ.
+            localStorage для live-предыдущего месяца не используем.
+          */
+          state.archiveRankingCache
+            .set(
+              period.key,
+              livePeople
+            );
+
+          renderArchiveMonthResult(
+            period,
+            livePeople
+          );
+
+          return;
+
+        } catch (error) {
+          console.error(
+            "Ошибка LIVE-загрузки предыдущего месяца:",
+            error
+          );
+
+          showEmpty(
+            archiveRankingEl,
+            "Не удалось обновить данные этого месяца"
+          );
+
+          return;
         }
       }
 
